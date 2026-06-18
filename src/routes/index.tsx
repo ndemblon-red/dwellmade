@@ -44,6 +44,8 @@ function Workspace() {
   const notes = useStore((s) => s.notes);
   const generations = useStore((s) => s.generations);
   const activeGenerationId = useStore((s) => s.activeGenerationId);
+  const blobError = useStore((s) => s.blobError);
+  const clearBlobError = useStore((s) => s.clearBlobError);
 
   const setRoom = useStore((s) => s.setRoom);
   const addInspo = useStore((s) => s.addInspo);
@@ -226,6 +228,17 @@ function Workspace() {
                 </p>
                 {error ? (
                   <p className="mt-3 text-[11px] text-destructive text-center">{error}</p>
+                ) : null}
+                {blobError ? (
+                  <p className="mt-3 text-[11px] text-destructive text-center">
+                    {blobError}{" "}
+                    <button
+                      onClick={clearBlobError}
+                      className="underline underline-offset-2"
+                    >
+                      dismiss
+                    </button>
+                  </p>
                 ) : null}
               </div>
             </div>
