@@ -155,15 +155,19 @@ export const useStore = create<State>()(
     }),
     {
       name: "studio-syn-session",
-      storage: createJSONStorage(() =>
-        typeof window === "undefined"
-          ? ({
-              getItem: () => null,
-              setItem: () => {},
-              removeItem: () => {},
-            } as Storage)
-          : window.sessionStorage,
-      ),
+      storage: createJSONStorage(() => {
+        if (typeof window === "undefined") {
+          return {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {},
+            length: 0,
+            clear: () => {},
+            key: () => null,
+          } satisfies Storage;
+        }
+        return window.sessionStorage;
+      }),
     },
   ),
 );
