@@ -313,9 +313,27 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
   const inspo = useStore((s) => s.inspo);
   const brief = useStore((s) => s.brief);
   const patchBrief = useStore((s) => s.patchBrief);
+  const togglePaletteColor = useStore((s) => s.togglePaletteColor);
+  const addPaletteColor = useStore((s) => s.addPaletteColor);
+  const removePaletteColor = useStore((s) => s.removePaletteColor);
   const resetBriefFromInspo = useStore((s) => s.resetBriefFromInspo);
 
   const { conflicts } = useMemo(() => deriveBrief(inspo), [inspo]);
+
+  // For each selected brief color, count how many image swatches across all
+  // tagged references it matches — used to render the "×N" multiplicity badge.
+  const allInspoSwatches = useMemo(
+    () =>
+      inspo
+        .filter((i) => i.status === "ready" && i.aspects)
+        .flatMap((i) => i.aspects!.palette),
+    [inspo],
+  );
+  const countFor = useCallback(
+    (hex: string) =>
+      allInspoSwatches.reduce((n, c) => (colorsMatch(c, hex) ? n + 1 : n), 0),
+    [allInspoSwatches],
+  );
 
   return (
     <div className="grid grid-cols-12 gap-10">
@@ -325,10 +343,15 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
             Moodboard
           </h2>
           <span className="text-[10px] uppercase tracking-widest text-muted-ink">
-            {inspo.filter((i) => i.status === "ready").length} tagged
+            {inspo.filter((i) => i.status === "ready").length} tagged ·{" "}
+            <span className="text-ink">click swatches to build palette</span>
           </span>
         </div>
-        <Moodboard inspo={inspo} />
+        <Moodboard
+          inspo={inspo}
+          selected={brief.palette}
+          onToggle={togglePaletteColor}
+        />
       </section>
 
       <section className="col-span-12 lg:col-span-5 space-y-6">
@@ -339,11 +362,19 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
           <button
             onClick={resetBriefFromInspo}
             className="text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
+            title="Re-derive materials, furniture style, and vibe from references (palette is kept)"
           >
             Re-derive
           </button>
         </div>
-        <BriefEditor brief={brief} patch={patchBrief} conflicts={conflicts} />
+        <BriefEditor
+          brief={brief}
+          patch={patchBrief}
+          conflicts={conflicts}
+          onAddColor={addPaletteColor}
+          onRemoveColor={removePaletteColor}
+          countFor={countFor}
+        />
       </section>
 
       <div className="col-span-12 flex justify-between items-center pt-4">
@@ -364,8 +395,17 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
   );
 }
 
-function Moodboard({ inspo }: { inspo: InspoImage[] }) {
+function Moodboard({
+  inspo,
+  selected,
+  onToggle,
+}: {
+  inspo: InspoImage[];
+  selected: string[];
+  onToggle: (hex: string) => void;
+}) {
   const ready = inspo.filter((i) => i.dataUrl);
+  const isSelected = (hex: string) => selected.some((c) => colorsMatch(c, hex));
   if (ready.length === 0) {
     return (
       <div className="aspect-[4/3] bg-paper ring-1 ring-black/5 rounded-xl grid place-items-center">
@@ -388,10 +428,30 @@ function Moodboard({ inspo }: { inspo: InspoImage[] }) {
             className={`w-full object-cover ${idx % 3 === 0 ? "aspect-[3/4]" : "aspect-square"}`}
           />
           {i.aspects?.palette?.length ? (
-            <div className="flex gap-0.5 h-3">
-              {i.aspects.palette.slice(0, 6).map((c, n) => (
-                <span key={n} className="flex-1" style={{ backgroundColor: c }} />
-              ))}
+            <div className="flex gap-1 p-1.5 bg-paper">
+              {i.aspects.palette.slice(0, 6).map((c, n) => {
+                const sel = isSelected(c);
+                return (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => onToggle(c)}
+                    title={sel ? `${c} — selected (click to remove)` : `${c} — click to add to brief`}
+                    className={`group relative flex-1 h-6 rounded-sm transition-all ${
+                      sel
+                        ? "ring-2 ring-ink ring-offset-1 ring-offset-paper -translate-y-0.5 shadow-sm"
+                        : "ring-1 ring-black/10 hover:-translate-y-0.5 hover:ring-ink/40"
+                    }`}
+                    style={{ backgroundColor: c }}
+                  >
+                    {sel ? (
+                      <span className="absolute inset-0 grid place-items-center text-[10px] leading-none text-paper drop-shadow-sm">
+                        ✓
+                      </span>
+                    ) : null}
+                  </button>
+                );
+              })}
             </div>
           ) : null}
         </figure>
@@ -404,10 +464,16 @@ function BriefEditor({
   brief,
   patch,
   conflicts,
+  onAddColor,
+  onRemoveColor,
+  countFor,
 }: {
   brief: AestheticBrief;
   patch: (p: Partial<Omit<AestheticBrief, "userEdited">>) => void;
   conflicts: { styles: string[]; paletteDiverges: boolean };
+  onAddColor: (hex: string) => void;
+  onRemoveColor: (hex: string) => void;
+  countFor: (hex: string) => number;
 }) {
   return (
     <div className="bg-paper ring-1 ring-black/5 rounded-xl p-6 space-y-7">
@@ -415,11 +481,13 @@ function BriefEditor({
       <div className="space-y-3">
         <Label
           title="Palette"
-          hint={conflicts.paletteDiverges ? "References diverge — your selection overrides." : null}
+          hint={conflicts.paletteDiverges ? "References diverge — pick deliberately." : null}
         />
-        <PaletteEditor
+        <BriefPalette
           palette={brief.palette}
-          onChange={(palette) => patch({ palette })}
+          onAdd={onAddColor}
+          onRemove={onRemoveColor}
+          countFor={countFor}
         />
       </div>
 
