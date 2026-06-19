@@ -1237,49 +1237,45 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
   );
 }
 
-function BriefSummary({ brief }: { brief: AestheticBrief }) {
+function BriefSummaryStrip({ brief, onEdit }: { brief: AestheticBrief; onEdit: () => void }) {
+  const vibeWords = brief.vibe.trim().split(/\s+/).filter(Boolean);
+  const vibeShort =
+    vibeWords.length > 6 ? vibeWords.slice(0, 6).join(" ") + "…" : brief.vibe;
+  const materials = brief.materials.join(", ");
   return (
-    <div className="bg-paper ring-1 ring-black/5 rounded-xl p-6 space-y-5">
-      <div>
-        <p className="text-[10px] uppercase tracking-widest text-muted-ink mb-2">
-          Palette
-        </p>
+    <div className="bg-paper ring-1 ring-black/5 rounded-md px-4 py-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+      <div className="flex items-center gap-1.5">
         {brief.palette.length ? (
-          <div className="flex gap-1">
-            {brief.palette.map((c) => (
-              <span
-                key={c}
-                className="size-8 rounded-md ring-1 ring-black/10"
-                style={{ backgroundColor: c }}
-                title={c}
-              />
-            ))}
-          </div>
+          brief.palette.map((c) => (
+            <span
+              key={c}
+              className="size-5 rounded-full ring-1 ring-black/10"
+              style={{ backgroundColor: c }}
+              title={c}
+            />
+          ))
         ) : (
-          <p className="italic text-muted-ink text-sm">None set.</p>
+          <span className="text-[11px] italic text-muted-ink">No palette</span>
         )}
       </div>
-      <div>
-        <p className="text-[10px] uppercase tracking-widest text-muted-ink mb-2">
-          Materials
-        </p>
-        <p className="text-sm">{brief.materials.join(" · ") || <span className="italic text-muted-ink">None set.</span>}</p>
-      </div>
-      <div>
-        <p className="text-[10px] uppercase tracking-widest text-muted-ink mb-2">
-          Furniture style
-        </p>
-        <p className="text-sm">{brief.furnitureStyle || <span className="italic text-muted-ink">None set.</span>}</p>
-      </div>
-      <div>
-        <p className="text-[10px] uppercase tracking-widest text-muted-ink mb-2">
-          Vibe
-        </p>
-        <p className="text-sm font-serif italic">{brief.vibe || <span className="not-italic font-sans text-muted-ink">None set.</span>}</p>
-      </div>
+      <span className="text-muted-ink/40">·</span>
+      <span className="text-xs text-muted-ink truncate max-w-[20ch]">
+        {materials || <span className="italic">no materials</span>}
+      </span>
+      <span className="text-muted-ink/40">·</span>
+      <span className="text-xs font-serif italic text-ink truncate max-w-[40ch]">
+        {vibeShort || <span className="not-italic font-sans text-muted-ink">no vibe</span>}
+      </span>
+      <button
+        onClick={onEdit}
+        className="ml-auto text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
+      >
+        Edit brief →
+      </button>
     </div>
   );
 }
+
 
 // --- Reused atoms ------------------------------------------------------------
 
