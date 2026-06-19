@@ -565,63 +565,72 @@ function Label({ title, hint }: { title: string; hint?: string | null }) {
   );
 }
 
-function PaletteEditor({
+function BriefPalette({
   palette,
-  onChange,
+  onAdd,
+  onRemove,
+  countFor,
 }: {
   palette: string[];
-  onChange: (p: string[]) => void;
+  onAdd: (hex: string) => void;
+  onRemove: (hex: string) => void;
+  countFor: (hex: string) => number;
 }) {
   const [draft, setDraft] = useState("#");
-  const replace = (idx: number, hex: string) => {
-    const next = [...palette];
-    next[idx] = hex;
-    onChange(next);
-  };
-  const remove = (idx: number) => onChange(palette.filter((_, i) => i !== idx));
-  const move = (idx: number, dir: -1 | 1) => {
-    const j = idx + dir;
-    if (j < 0 || j >= palette.length) return;
-    const next = [...palette];
-    [next[idx], next[j]] = [next[j], next[idx]];
-    onChange(next);
-  };
   const add = () => {
     if (!/^#[0-9a-fA-F]{6}$/.test(draft)) return;
-    if (palette.length >= 8) return;
-    onChange([...palette, draft.toLowerCase()]);
+    onAdd(draft.toLowerCase());
     setDraft("#");
   };
 
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
-        {palette.map((c, i) => (
-          <div key={i} className="group relative">
-            <label className="block size-10 rounded-md ring-1 ring-black/10 cursor-pointer overflow-hidden">
-              <span className="block size-full" style={{ backgroundColor: c }} />
-              <input
-                type="color"
-                value={c}
-                onChange={(e) => replace(i, e.target.value)}
-                className="sr-only"
-              />
-            </label>
-            <div className="absolute inset-x-0 -bottom-5 hidden group-hover:flex justify-between text-[10px] text-muted-ink">
-              <button onClick={() => move(i, -1)} title="Move left">‹</button>
-              <button onClick={() => remove(i)} title="Remove" className="text-destructive">×</button>
-              <button onClick={() => move(i, 1)} title="Move right">›</button>
-            </div>
-          </div>
-        ))}
         {palette.length === 0 ? (
-          <span className="text-[11px] italic text-muted-ink">No swatches yet.</span>
-        ) : null}
+          <span className="text-[11px] italic text-muted-ink">
+            Click swatches under the references to build your palette.
+          </span>
+        ) : (
+          palette.map((c) => {
+            const n = countFor(c);
+            return (
+              <div key={c} className="group relative">
+                <div
+                  className="size-10 rounded-md ring-1 ring-black/15 overflow-hidden"
+                  style={{ backgroundColor: c }}
+                  title={c}
+                />
+                {n > 1 ? (
+                  <span
+                    className="absolute -top-1.5 -right-1.5 min-w-4 h-4 px-1 grid place-items-center rounded-full bg-ink text-paper text-[9px] font-medium ring-2 ring-paper"
+                    title={`Appears in ${n} reference swatches`}
+                  >
+                    ×{n}
+                  </span>
+                ) : null}
+                <button
+                  onClick={() => onRemove(c)}
+                  className="absolute inset-0 grid place-items-center bg-paper/0 hover:bg-paper/70 transition-colors text-destructive text-sm opacity-0 hover:opacity-100 rounded-md"
+                  title="Remove from brief"
+                  aria-label={`Remove ${c}`}
+                >
+                  ×
+                </button>
+              </div>
+            );
+          })
+        )}
       </div>
-      <div className="flex gap-2 items-center pt-3">
+      <div className="flex gap-2 items-center pt-1">
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              add();
+            }
+          }}
           placeholder="#hex"
           className="bg-canvas/70 ring-1 ring-black/5 rounded-md px-2 py-1 text-xs w-24 font-mono"
         />
