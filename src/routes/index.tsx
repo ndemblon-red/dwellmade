@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   useStore,
   type AestheticBrief,
@@ -15,7 +15,7 @@ import { deriveBrief, colorsMatch } from "@/lib/brief";
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "@tanstack/react-router";
 import { AppHeader } from "@/components/AppHeader";
-import { useEffect } from "react";
+
 
 export const Route = createFileRoute("/")({ component: IndexPage });
 
