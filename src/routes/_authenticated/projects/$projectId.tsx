@@ -93,22 +93,10 @@ function ProjectPage() {
           />
         ) : null}
 
-        <div className="grid grid-cols-12 gap-6 mt-8">
-          <aside className="col-span-12 md:col-span-3 space-y-2">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-widest text-muted-ink">
-                Rooms
-              </span>
-              <button
-                onClick={() => createRoomMut.mutate()}
-                disabled={createRoomMut.isPending}
-                className="text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
-              >
-                + New room
-              </button>
-            </div>
+        <div className="mt-6">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
             {(roomsQ.data ?? []).map((r) => (
-              <RoomTab
+              <RoomPill
                 key={r.id}
                 room={r}
                 active={r.id === activeRoomId}
@@ -125,32 +113,37 @@ function ProjectPage() {
                 }}
               />
             ))}
-            {roomsQ.data && roomsQ.data.length === 0 ? (
-              <p className="text-xs italic text-muted-ink">No rooms yet.</p>
-            ) : null}
-          </aside>
-
-          <div className="col-span-12 md:col-span-9">
-            {activeRoom && projectQ.data ? (
-              <SyncedWorkspace
-                room={activeRoom}
-                masterPalette={projectQ.data.master_palette ?? []}
-              />
-            ) : (
-              <div className="bg-paper ring-1 ring-black/5 rounded-xl p-12 text-center">
-                <p className="font-serif text-2xl italic mb-2">
-                  Add your first room.
-                </p>
-                <button
-                  onClick={() => createRoomMut.mutate()}
-                  className="mt-3 bg-ink text-paper px-5 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
-                >
-                  + New room
-                </button>
-              </div>
-            )}
+            <button
+              onClick={() => createRoomMut.mutate()}
+              disabled={createRoomMut.isPending}
+              className="shrink-0 px-3 py-1.5 rounded-full text-xs border border-black/20 text-muted-ink hover:text-ink hover:border-ink/50 transition-colors whitespace-nowrap"
+            >
+              + New room
+            </button>
           </div>
         </div>
+
+        <div className="mt-6">
+          {activeRoom && projectQ.data ? (
+            <SyncedWorkspace
+              room={activeRoom}
+              masterPalette={projectQ.data.master_palette ?? []}
+            />
+          ) : (
+            <div className="bg-paper ring-1 ring-black/5 rounded-xl p-12 text-center">
+              <p className="font-serif text-2xl italic mb-2">
+                Add your first room.
+              </p>
+              <button
+                onClick={() => createRoomMut.mutate()}
+                className="mt-3 bg-ink text-paper px-5 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
+              >
+                + New room
+              </button>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
@@ -282,7 +275,7 @@ function MasterPaletteEditor({
   );
 }
 
-function RoomTab({
+function RoomPill({
   room,
   active,
   onSelect,
@@ -296,17 +289,18 @@ function RoomTab({
   onDelete: () => void;
 }) {
   const [editing, setEditing] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [draft, setDraft] = useState(room.name);
   useEffect(() => setDraft(room.name), [room.name]);
 
+  const base =
+    "shrink-0 inline-flex items-center gap-1 rounded-full pl-3 pr-1 py-1 text-xs transition-colors whitespace-nowrap";
+  const activeStyle = "bg-[#1A1A2E] text-[#F5F0E8]";
+  const inactiveStyle =
+    "border border-black/15 text-muted-ink hover:text-ink hover:border-ink/40";
+
   return (
-    <div
-      className={`group flex items-center justify-between rounded-md px-3 py-2 transition-colors ${
-        active
-          ? "bg-ink text-paper"
-          : "bg-paper ring-1 ring-black/5 hover:ring-ink/30"
-      }`}
-    >
+    <div className={`relative group ${base} ${active ? activeStyle : inactiveStyle}`}>
       {editing ? (
         <input
           autoFocus
@@ -320,27 +314,48 @@ function RoomTab({
             if (e.key === "Enter") (e.target as HTMLInputElement).blur();
             if (e.key === "Escape") setEditing(false);
           }}
-          className="bg-transparent border-b border-current focus:outline-none text-sm flex-1 min-w-0"
+          className="bg-transparent border-b border-current focus:outline-none text-xs min-w-0 w-28"
         />
       ) : (
-        <button
-          onClick={onSelect}
-          onDoubleClick={() => setEditing(true)}
-          className="text-sm text-left flex-1 min-w-0 truncate"
-        >
+        <button onClick={onSelect} className="text-xs">
           {room.name}
         </button>
       )}
       <button
-        onClick={onDelete}
-        className={`ml-2 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity ${
-          active ? "text-paper/70 hover:text-paper" : "text-muted-ink hover:text-destructive"
+        onClick={() => setMenuOpen((v) => !v)}
+        className={`ml-1 size-5 grid place-items-center rounded-full text-[11px] leading-none opacity-0 group-hover:opacity-100 transition-opacity ${
+          active ? "hover:bg-white/10" : "hover:bg-black/5"
         }`}
-        aria-label="Delete room"
-        title="Delete room"
+        aria-label="Room actions"
+        title="More"
       >
-        ×
+        ···
       </button>
+      {menuOpen ? (
+        <div
+          className="absolute top-full left-0 mt-1 bg-paper ring-1 ring-black/10 rounded-md shadow-md z-10 py-1 min-w-[120px]"
+          onMouseLeave={() => setMenuOpen(false)}
+        >
+          <button
+            onClick={() => {
+              setEditing(true);
+              setMenuOpen(false);
+            }}
+            className="block w-full text-left px-3 py-1.5 text-xs text-ink hover:bg-black/5"
+          >
+            Rename
+          </button>
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              onDelete();
+            }}
+            className="block w-full text-left px-3 py-1.5 text-xs text-destructive hover:bg-black/5"
+          >
+            Delete
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

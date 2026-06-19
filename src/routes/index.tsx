@@ -443,7 +443,6 @@ export function Workspace() {
 
   return (
     <div className="min-h-screen bg-canvas text-ink font-sans">
-      <Header />
       <StageNav
         stage={stage}
         setStage={setStage}
@@ -460,7 +459,10 @@ export function Workspace() {
               onNext={() => setStage("generate")}
             />
           ) : (
-            <GenerateStage onBack={() => setStage("curate")} />
+            <GenerateStage
+              onBack={() => setStage("curate")}
+              onEditBrief={() => setStage("curate")}
+            />
           )}
         </div>
       </main>
@@ -468,24 +470,9 @@ export function Workspace() {
   );
 }
 
+
 // --- Header / Nav ------------------------------------------------------------
 
-function Header() {
-  return (
-    <header className="py-8 px-6">
-      <div className="max-w-7xl mx-auto flex items-end justify-between border-b border-zinc-950/5 pb-6">
-        <div className="space-y-1">
-          <h1 className="font-serif text-3xl leading-none text-balance">
-            Studio <span className="italic">Syn</span>
-          </h1>
-          <p className="text-sm text-muted-ink max-w-[52ch] text-pretty">
-            Resynthesize your room from a brief you assemble out of the references you've pinned.
-          </p>
-        </div>
-      </div>
-    </header>
-  );
-}
 
 function StageNav({
   stage,
@@ -1094,7 +1081,7 @@ function ChipList({
 
 // --- Stage 3: Generate -------------------------------------------------------
 
-function GenerateStage({ onBack }: { onBack: () => void }) {
+function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrief: () => void }) {
   const room = useStore((s) => s.room);
   const inspo = useStore((s) => s.inspo);
   const brief = useStore((s) => s.brief);
@@ -1177,15 +1164,10 @@ function GenerateStage({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="space-y-10">
-      <div className="grid grid-cols-12 gap-10">
-        <section className="col-span-12 lg:col-span-7 space-y-4">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-ink">
-            The Brief
-          </h2>
-          <BriefSummary brief={brief} />
-        </section>
+      <BriefSummaryStrip brief={brief} onEdit={onEditBrief} />
 
-        <section className="col-span-12 lg:col-span-5 space-y-4">
+      <div className="grid grid-cols-12 gap-10">
+        <section className="col-span-12 space-y-4">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-ink">
             Constraints
           </h2>
@@ -1197,6 +1179,7 @@ function GenerateStage({ onBack }: { onBack: () => void }) {
           />
         </section>
       </div>
+
 
       <div className="flex flex-col items-center gap-3">
         {error ? <p className="text-[11px] text-destructive">{error}</p> : null}
@@ -1238,49 +1221,45 @@ function GenerateStage({ onBack }: { onBack: () => void }) {
   );
 }
 
-function BriefSummary({ brief }: { brief: AestheticBrief }) {
+function BriefSummaryStrip({ brief, onEdit }: { brief: AestheticBrief; onEdit: () => void }) {
+  const vibeWords = brief.vibe.trim().split(/\s+/).filter(Boolean);
+  const vibeShort =
+    vibeWords.length > 6 ? vibeWords.slice(0, 6).join(" ") + "…" : brief.vibe;
+  const materials = brief.materials.join(", ");
   return (
-    <div className="bg-paper ring-1 ring-black/5 rounded-xl p-6 space-y-5">
-      <div>
-        <p className="text-[10px] uppercase tracking-widest text-muted-ink mb-2">
-          Palette
-        </p>
+    <div className="bg-paper ring-1 ring-black/5 rounded-md px-4 py-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+      <div className="flex items-center gap-1.5">
         {brief.palette.length ? (
-          <div className="flex gap-1">
-            {brief.palette.map((c) => (
-              <span
-                key={c}
-                className="size-8 rounded-md ring-1 ring-black/10"
-                style={{ backgroundColor: c }}
-                title={c}
-              />
-            ))}
-          </div>
+          brief.palette.map((c) => (
+            <span
+              key={c}
+              className="size-5 rounded-full ring-1 ring-black/10"
+              style={{ backgroundColor: c }}
+              title={c}
+            />
+          ))
         ) : (
-          <p className="italic text-muted-ink text-sm">None set.</p>
+          <span className="text-[11px] italic text-muted-ink">No palette</span>
         )}
       </div>
-      <div>
-        <p className="text-[10px] uppercase tracking-widest text-muted-ink mb-2">
-          Materials
-        </p>
-        <p className="text-sm">{brief.materials.join(" · ") || <span className="italic text-muted-ink">None set.</span>}</p>
-      </div>
-      <div>
-        <p className="text-[10px] uppercase tracking-widest text-muted-ink mb-2">
-          Furniture style
-        </p>
-        <p className="text-sm">{brief.furnitureStyle || <span className="italic text-muted-ink">None set.</span>}</p>
-      </div>
-      <div>
-        <p className="text-[10px] uppercase tracking-widest text-muted-ink mb-2">
-          Vibe
-        </p>
-        <p className="text-sm font-serif italic">{brief.vibe || <span className="not-italic font-sans text-muted-ink">None set.</span>}</p>
-      </div>
+      <span className="text-muted-ink/40">·</span>
+      <span className="text-xs text-muted-ink truncate max-w-[20ch]">
+        {materials || <span className="italic">no materials</span>}
+      </span>
+      <span className="text-muted-ink/40">·</span>
+      <span className="text-xs font-serif italic text-ink truncate max-w-[40ch]">
+        {vibeShort || <span className="not-italic font-sans text-muted-ink">no vibe</span>}
+      </span>
+      <button
+        onClick={onEdit}
+        className="ml-auto text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
+      >
+        Edit brief →
+      </button>
     </div>
   );
 }
+
 
 // --- Reused atoms ------------------------------------------------------------
 
