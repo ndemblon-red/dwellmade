@@ -90,8 +90,6 @@ export function deriveBrief(inspo: InspoImage[]): {
   conflicts: BriefConflicts;
 } {
   const ready = inspo.filter((i) => i.status === "ready" && i.aspects);
-  const allColors = ready.flatMap((i) => i.aspects!.palette);
-  const palette = dedupePalette(allColors, 6);
   const materials = rankByFrequency(
     ready.flatMap((i) => i.aspects!.materials),
     8,
@@ -123,8 +121,18 @@ export function deriveBrief(inspo: InspoImage[]): {
     paletteDiverges: palettesDiverge(ready.map((i) => i.aspects!.palette)),
   };
 
+  // Palette is intentionally empty: users build it by clicking
+  // per-image swatches in the moodboard.
   return {
-    brief: { palette, materials, furnitureStyle, vibe, userEdited: false },
+    brief: { palette: [], materials, furnitureStyle, vibe, userEdited: false },
     conflicts,
   };
+}
+
+/** Two hex colors match perceptually (RGB distance below threshold). */
+export function colorsMatch(a: string, b: string): boolean {
+  const ra = hexToRgb(a);
+  const rb = hexToRgb(b);
+  if (!ra || !rb) return false;
+  return rgbDist(ra, rb) < 28;
 }
