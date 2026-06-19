@@ -113,18 +113,21 @@ async function trySetBlob(
   }
 }
 
-/** Lazy import to avoid a circular type dep at module load. */
+/** Lazy import to avoid a circular type dep at module load.
+ *  Note: palette is NEVER auto-derived — users build it by clicking
+ *  per-image swatches in the moodboard. We only refresh materials,
+ *  furnitureStyle, and vibe (and only if the user has not edited the brief). */
 async function autoDerive(set: (p: Partial<State>) => void, get: () => State) {
   const { brief, inspo } = get();
   if (brief.userEdited) return;
   const ready = inspo.filter((i) => i.status === "ready" && i.aspects);
   if (ready.length === 0) {
-    set({ brief: EMPTY_BRIEF });
+    set({ brief: { ...EMPTY_BRIEF, palette: brief.palette } });
     return;
   }
   const { deriveBrief } = await import("./brief");
   const { brief: derived } = deriveBrief(inspo);
-  set({ brief: { ...derived, userEdited: false } });
+  set({ brief: { ...derived, palette: brief.palette, userEdited: false } });
 }
 
 export const useStore = create<State>()(
