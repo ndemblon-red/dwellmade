@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +22,9 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [resendBusy, setResendBusy] = useState(false);
+  const [resendMsg, setResendMsg] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -38,12 +41,13 @@ function AuthPage() {
         const { data, error: err } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/projects` },
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/confirm?email=${encodeURIComponent(email)}`,
+          },
         });
         if (err) throw err;
         if (!data.session) {
-          setError("Account created. Check your email to confirm, then sign in.");
-          setMode("signin");
+          setPendingEmail(email);
           setBusy(false);
           return;
         }
@@ -78,6 +82,61 @@ function AuthPage() {
     if (result.redirected) return;
     navigate({ to: redirect ?? "/projects" });
   };
+
+  const resend = async () => {
+    if (!pendingEmail) return;
+    setResendBusy(true);
+    setResendMsg(null);
+    const { error: err } = await supabase.auth.resend({
+      type: "signup",
+      email: pendingEmail,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/confirm?email=${encodeURIComponent(pendingEmail)}`,
+      },
+    });
+    setResendBusy(false);
+    setResendMsg(err ? err.message : "Sent. Check your inbox.");
+  };
+
+  if (pendingEmail) {
+    return (
+      <div className="min-h-screen bg-canvas text-ink font-sans">
+        <AppHeader />
+        <main className="max-w-md mx-auto px-6 py-16">
+          <h1 className="font-serif text-4xl mb-2">
+            Check your <span className="italic">inbox</span>
+          </h1>
+          <p className="text-sm text-muted-ink mb-2">
+            We've sent a confirmation link to
+          </p>
+          <p className="text-sm text-ink mb-8 font-medium">{pendingEmail}</p>
+
+          <div className="space-y-3">
+            <button
+              onClick={resend}
+              disabled={resendBusy}
+              className="w-full bg-paper ring-1 ring-black/10 rounded-md py-3 text-sm font-medium hover:ring-ink/40 disabled:opacity-50"
+            >
+              {resendBusy ? "Sending…" : "Resend email"}
+            </button>
+            {resendMsg ? (
+              <p className="text-xs text-muted-ink">{resendMsg}</p>
+            ) : null}
+            <button
+              onClick={() => {
+                setPendingEmail(null);
+                setResendMsg(null);
+                setMode("signin");
+              }}
+              className="block w-full text-center text-xs underline underline-offset-4 text-muted-ink hover:text-ink"
+            >
+              Back
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-canvas text-ink font-sans">
