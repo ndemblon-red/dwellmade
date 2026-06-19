@@ -14,13 +14,177 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      aesthetic_briefs: {
+        Row: {
+          furniture_style: string
+          id: string
+          materials: Json
+          palette: Json
+          room_id: string
+          updated_at: string
+          vibe: string
+        }
+        Insert: {
+          furniture_style?: string
+          id?: string
+          materials?: Json
+          palette?: Json
+          room_id: string
+          updated_at?: string
+          vibe?: string
+        }
+        Update: {
+          furniture_style?: string
+          id?: string
+          materials?: Json
+          palette?: Json
+          room_id?: string
+          updated_at?: string
+          vibe?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aesthetic_briefs_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: true
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      generations: {
+        Row: {
+          created_at: string
+          id: string
+          prompt_used: string
+          result_image_url: string
+          room_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          prompt_used?: string
+          result_image_url: string
+          room_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          prompt_used?: string
+          result_image_url?: string
+          room_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generations_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inspiration_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          room_id: string
+          tags: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          room_id: string
+          tags?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          room_id?: string
+          tags?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inspiration_images_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          created_at: string
+          id: string
+          master_palette: Json
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          master_palette?: Json
+          name?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          master_palette?: Json
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      rooms: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          project_id: string
+          room_photo_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string
+          project_id: string
+          room_photo_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          project_id?: string
+          room_photo_url?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rooms_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_project_owner: { Args: { p_id: string }; Returns: boolean }
+      is_room_owner: { Args: { r_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
