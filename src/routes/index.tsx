@@ -473,22 +473,6 @@ export function Workspace() {
 
 // --- Header / Nav ------------------------------------------------------------
 
-function Header() {
-  return (
-    <header className="py-8 px-6">
-      <div className="max-w-7xl mx-auto flex items-end justify-between border-b border-zinc-950/5 pb-6">
-        <div className="space-y-1">
-          <h1 className="font-serif text-3xl leading-none text-balance">
-            Studio <span className="italic">Syn</span>
-          </h1>
-          <p className="text-sm text-muted-ink max-w-[52ch] text-pretty">
-            Resynthesize your room from a brief you assemble out of the references you've pinned.
-          </p>
-        </div>
-      </div>
-    </header>
-  );
-}
 
 function StageNav({
   stage,
