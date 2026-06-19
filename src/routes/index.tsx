@@ -48,7 +48,7 @@ const STAGE_LABELS: Record<Stage, { num: string; title: string; sub: string }> =
   generate: { num: "03", title: "Generate", sub: "Apply brief to room" },
 };
 
-function Workspace() {
+export function Workspace() {
   const stage = useStore((s) => s.stage);
   const setStage = useStore((s) => s.setStage);
   const room = useStore((s) => s.room);
