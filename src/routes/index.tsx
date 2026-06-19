@@ -10,7 +10,7 @@ import {
 import { tagInspoImage } from "@/lib/tagging.functions";
 import { streamImage } from "@/lib/streamImage";
 import { BeforeAfter } from "@/components/BeforeAfter";
-import { deriveBrief } from "@/lib/brief";
+import { deriveBrief, colorsMatch } from "@/lib/brief";
 
 export const Route = createFileRoute("/")({ component: Workspace });
 
