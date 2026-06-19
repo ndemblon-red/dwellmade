@@ -12,7 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthConfirmRouteImport } from './routes/auth.confirm'
+import { Route as AuthConfirmRouteImport } from './routes/auth_.confirm'
 import { Route as ApiGenerateRouteImport } from './routes/api/generate'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects/index'
 import { Route as AuthenticatedProjectsProjectIdRouteImport } from './routes/_authenticated/projects/$projectId'
@@ -32,9 +32,9 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthConfirmRoute = AuthConfirmRouteImport.update({
-  id: '/confirm',
-  path: '/confirm',
-  getParentRoute: () => AuthRoute,
+  id: '/auth_/confirm',
+  path: '/auth/confirm',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiGenerateRoute = ApiGenerateRouteImport.update({
   id: '/api/generate',
@@ -56,7 +56,7 @@ const AuthenticatedProjectsProjectIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRouteWithChildren
+  '/auth': typeof AuthRoute
   '/api/generate': typeof ApiGenerateRoute
   '/auth/confirm': typeof AuthConfirmRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
@@ -64,7 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRouteWithChildren
+  '/auth': typeof AuthRoute
   '/api/generate': typeof ApiGenerateRoute
   '/auth/confirm': typeof AuthConfirmRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
@@ -74,9 +74,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/auth': typeof AuthRouteWithChildren
+  '/auth': typeof AuthRoute
   '/api/generate': typeof ApiGenerateRoute
-  '/auth/confirm': typeof AuthConfirmRoute
+  '/auth_/confirm': typeof AuthConfirmRoute
   '/_authenticated/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
 }
@@ -103,7 +103,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/api/generate'
-    | '/auth/confirm'
+    | '/auth_/confirm'
     | '/_authenticated/projects/$projectId'
     | '/_authenticated/projects/'
   fileRoutesById: FileRoutesById
@@ -111,8 +111,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AuthRoute: typeof AuthRouteWithChildren
+  AuthRoute: typeof AuthRoute
   ApiGenerateRoute: typeof ApiGenerateRoute
+  AuthConfirmRoute: typeof AuthConfirmRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -138,12 +139,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/confirm': {
-      id: '/auth/confirm'
-      path: '/confirm'
+    '/auth_/confirm': {
+      id: '/auth_/confirm'
+      path: '/auth/confirm'
       fullPath: '/auth/confirm'
       preLoaderRoute: typeof AuthConfirmRouteImport
-      parentRoute: typeof AuthRoute
+      parentRoute: typeof rootRouteImport
     }
     '/api/generate': {
       id: '/api/generate'
@@ -182,21 +183,12 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface AuthRouteChildren {
-  AuthConfirmRoute: typeof AuthConfirmRoute
-}
-
-const AuthRouteChildren: AuthRouteChildren = {
-  AuthConfirmRoute: AuthConfirmRoute,
-}
-
-const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AuthRoute: AuthRouteWithChildren,
+  AuthRoute: AuthRoute,
   ApiGenerateRoute: ApiGenerateRoute,
+  AuthConfirmRoute: AuthConfirmRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -10,7 +10,7 @@ const searchSchema = z.object({
   email: z.string().optional(),
 });
 
-export const Route = createFileRoute("/auth/confirm")({
+export const Route = createFileRoute("/auth_/confirm")({
   validateSearch: searchSchema,
   component: ConfirmPage,
 });
