@@ -93,22 +93,10 @@ function ProjectPage() {
           />
         ) : null}
 
-        <div className="grid grid-cols-12 gap-6 mt-8">
-          <aside className="col-span-12 md:col-span-3 space-y-2">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-widest text-muted-ink">
-                Rooms
-              </span>
-              <button
-                onClick={() => createRoomMut.mutate()}
-                disabled={createRoomMut.isPending}
-                className="text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
-              >
-                + New room
-              </button>
-            </div>
+        <div className="mt-6">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
             {(roomsQ.data ?? []).map((r) => (
-              <RoomTab
+              <RoomPill
                 key={r.id}
                 room={r}
                 active={r.id === activeRoomId}
@@ -125,32 +113,37 @@ function ProjectPage() {
                 }}
               />
             ))}
-            {roomsQ.data && roomsQ.data.length === 0 ? (
-              <p className="text-xs italic text-muted-ink">No rooms yet.</p>
-            ) : null}
-          </aside>
-
-          <div className="col-span-12 md:col-span-9">
-            {activeRoom && projectQ.data ? (
-              <SyncedWorkspace
-                room={activeRoom}
-                masterPalette={projectQ.data.master_palette ?? []}
-              />
-            ) : (
-              <div className="bg-paper ring-1 ring-black/5 rounded-xl p-12 text-center">
-                <p className="font-serif text-2xl italic mb-2">
-                  Add your first room.
-                </p>
-                <button
-                  onClick={() => createRoomMut.mutate()}
-                  className="mt-3 bg-ink text-paper px-5 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
-                >
-                  + New room
-                </button>
-              </div>
-            )}
+            <button
+              onClick={() => createRoomMut.mutate()}
+              disabled={createRoomMut.isPending}
+              className="shrink-0 px-3 py-1.5 rounded-full text-xs border border-black/20 text-muted-ink hover:text-ink hover:border-ink/50 transition-colors whitespace-nowrap"
+            >
+              + New room
+            </button>
           </div>
         </div>
+
+        <div className="mt-6">
+          {activeRoom && projectQ.data ? (
+            <SyncedWorkspace
+              room={activeRoom}
+              masterPalette={projectQ.data.master_palette ?? []}
+            />
+          ) : (
+            <div className="bg-paper ring-1 ring-black/5 rounded-xl p-12 text-center">
+              <p className="font-serif text-2xl italic mb-2">
+                Add your first room.
+              </p>
+              <button
+                onClick={() => createRoomMut.mutate()}
+                className="mt-3 bg-ink text-paper px-5 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
+              >
+                + New room
+              </button>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
