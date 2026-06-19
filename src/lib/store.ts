@@ -194,8 +194,39 @@ export const useStore = create<State>()(
       setBrief: (brief) => set({ brief: { ...brief, userEdited: true } }),
       patchBrief: (p) =>
         set((s) => ({ brief: { ...s.brief, ...p, userEdited: true } })),
+      togglePaletteColor: async (hex) => {
+        const { colorsMatch } = await import("./brief");
+        set((s) => {
+          const has = s.brief.palette.some((c) => colorsMatch(c, hex));
+          const palette = has
+            ? s.brief.palette.filter((c) => !colorsMatch(c, hex))
+            : [...s.brief.palette, hex.toLowerCase()];
+          return { brief: { ...s.brief, palette } };
+        });
+      },
+      addPaletteColor: (hex) =>
+        set((s) =>
+          s.brief.palette.length >= 12 ||
+          !/^#[0-9a-f]{6}$/i.test(hex)
+            ? s
+            : {
+                brief: {
+                  ...s.brief,
+                  palette: [...s.brief.palette, hex.toLowerCase()],
+                },
+              },
+        ),
+      removePaletteColor: (hex) =>
+        set((s) => ({
+          brief: {
+            ...s.brief,
+            palette: s.brief.palette.filter((c) => c !== hex),
+          },
+        })),
       resetBriefFromInspo: () => {
-        set({ brief: { ...EMPTY_BRIEF } });
+        // Preserve the user's palette selections; only re-derive
+        // materials, furniture style, and vibe.
+        set((s) => ({ brief: { ...EMPTY_BRIEF, palette: s.brief.palette } }));
         void autoDerive((p) => set(p as Partial<State>), get);
       },
 
