@@ -35,12 +35,18 @@ function AuthPage() {
     setError(null);
     try {
       if (mode === "signup") {
-        const { error: err } = await supabase.auth.signUp({
+        const { data, error: err } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin },
+          options: { emailRedirectTo: `${window.location.origin}/projects` },
         });
         if (err) throw err;
+        if (!data.session) {
+          setError("Account created. Check your email to confirm, then sign in.");
+          setMode("signin");
+          setBusy(false);
+          return;
+        }
       } else {
         const { error: err } = await supabase.auth.signInWithPassword({
           email,
