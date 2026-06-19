@@ -513,19 +513,30 @@ function StageNav({
               key={s}
               onClick={() => enabled && setStage(s)}
               disabled={!enabled}
-              className={`text-left border-t pt-3 transition-colors ${
+              className={`text-left pt-3 transition-colors border-t-2 ${
                 active
-                  ? "border-ink text-ink"
+                  ? "text-ink"
                   : enabled
-                    ? "border-zinc-300 text-muted-ink hover:text-ink hover:border-ink/40"
-                    : "border-zinc-200 text-zinc-300 cursor-not-allowed"
+                    ? "border-transparent text-muted-ink hover:text-ink"
+                    : "border-transparent text-muted-ink/50 cursor-not-allowed"
               }`}
+              style={active ? { borderTopColor: "#F0A500" } : undefined}
             >
               <div className="flex items-baseline gap-3">
-                <span className="font-mono text-[10px]">{meta.num}</span>
+                <span
+                  className="font-mono text-[10px]"
+                  style={active ? { color: "#F0A500" } : undefined}
+                >
+                  {meta.num}
+                </span>
                 <span className="font-serif text-xl">{meta.title}</span>
               </div>
-              <p className="text-[11px] uppercase tracking-widest mt-1">{meta.sub}</p>
+              <p
+                className="text-[11px] uppercase tracking-[0.12em] mt-1"
+                style={active ? { color: "#F0A500" } : undefined}
+              >
+                {meta.sub}
+              </p>
             </button>
           );
         })}
