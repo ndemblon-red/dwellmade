@@ -1,29 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
-const InspoSchema = z.object({
-  dataUrl: z.string().startsWith("data:"),
-  influence: z.number().min(0).max(100),
-  enabled: z.object({
-    palette: z.boolean(),
-    materials: z.boolean(),
-    furnitureStyle: z.boolean(),
-    lightingMood: z.boolean(),
-  }),
-  aspects: z
-    .object({
-      palette: z.array(z.string()),
-      materials: z.array(z.string()),
-      furnitureStyle: z.string(),
-      lightingMood: z.string(),
-      vibe: z.string(),
-    })
-    .optional(),
+const BriefSchema = z.object({
+  palette: z.array(z.string()),
+  materials: z.array(z.string()),
+  furnitureStyle: z.string(),
+  vibe: z.string(),
 });
 
 const BodySchema = z.object({
   room: z.string().startsWith("data:"),
-  inspo: z.array(InspoSchema).min(1),
+  inspo: z.array(z.string().startsWith("data:")).default([]),
+  brief: BriefSchema,
   keepChange: z.object({
     walls: z.enum(["keep", "change"]),
     flooring: z.enum(["keep", "change"]),
@@ -34,60 +22,36 @@ const BodySchema = z.object({
 });
 
 function buildPrompt(payload: z.infer<typeof BodySchema>): string {
-  const active = payload.inspo.filter((i) => i.influence > 0 && i.aspects);
-  const weightLabel = (w: number) =>
-    w >= 75 ? "dominant" : w >= 40 ? "strong" : "subtle";
+  const { brief, keepChange, notes } = payload;
 
-  const directives = active.map((i, idx) => {
-    const a = i.aspects!;
-    const parts: string[] = [];
-    if (i.enabled.palette && a.palette.length)
-      parts.push(`palette ${a.palette.join(", ")}`);
-    if (i.enabled.materials && a.materials.length)
-      parts.push(`materials ${a.materials.join(", ")}`);
-    if (i.enabled.furnitureStyle) parts.push(`furniture in ${a.furnitureStyle} style`);
-    if (i.enabled.lightingMood) parts.push(`${a.lightingMood} lighting`);
-    return `Reference ${idx + 1} (${weightLabel(i.influence)}, ${i.influence}% weight): ${parts.join("; ")}. Vibe: ${a.vibe}`;
+  const keepList: string[] = [];
+  const changeList: string[] = [];
+  const labels: Record<keyof typeof keepChange, string> = {
+    walls: "walls & surfaces",
+    flooring: "flooring",
+    furniture: "major furniture",
+    decor: "decor & lighting",
+  };
+  (Object.keys(keepChange) as Array<keyof typeof keepChange>).forEach((k) => {
+    (keepChange[k] === "keep" ? keepList : changeList).push(labels[k]);
   });
 
-  const kc = payload.keepChange;
-  const constraints: string[] = [];
-  constraints.push(
-    kc.walls === "keep"
-      ? "Preserve wall placement and openings exactly."
-      : "Walls may be re-finished (paint, paneling, wallpaper) but keep their position.",
-  );
-  constraints.push(
-    kc.flooring === "keep"
-      ? "Keep the existing flooring."
-      : "Flooring may be re-imagined to suit the new aesthetic.",
-  );
-  constraints.push(
-    kc.furniture === "keep"
-      ? "Preserve the major furniture pieces (sofa, bed, large case goods) in their current positions; only re-style upholstery and finishes where natural."
-      : "Major furniture may be replaced with pieces matching the inspiration.",
-  );
-  constraints.push(
-    kc.decor === "keep"
-      ? "Keep existing decor and accessories."
-      : "Decor, art, textiles, lighting fixtures, and accessories should be reimagined.",
-  );
+  const paletteStr =
+    brief.palette.length > 0 ? brief.palette.join(", ") : "(no palette set)";
+  const materialsStr =
+    brief.materials.length > 0 ? brief.materials.join(", ") : "(no materials set)";
+  const styleStr = brief.furnitureStyle || "(no style set)";
+  const vibeStr = brief.vibe || "(no vibe set)";
 
-  return [
-    "Redesign the room shown in the first image, blending in influences from the additional reference images.",
+  const lines = [
+    `Redesign this room applying: palette [${paletteStr}], materials [${materialsStr}], furniture style [${styleStr}], vibe [${vibeStr}], keeping [${keepList.join(", ") || "nothing"}] unchanged${changeList.length ? `, while reimagining [${changeList.join(", ")}]` : ""}.`,
     "Maintain the exact room geometry, camera angle, perspective, and window placement of the source room.",
-    "",
-    "Inspiration directives:",
-    ...directives,
-    "",
-    "Constraints:",
-    ...constraints,
-    payload.notes ? `\nAdditional notes from the user: ${payload.notes}` : "",
-    "",
+    "Use the additional reference images only as visual anchors for the brief above — do not blend their geometry into the room.",
+    notes ? `Additional notes from the user: ${notes}` : "",
     "Output a single photorealistic interior photograph of the same room, redesigned. No text overlays, no annotations.",
-  ]
-    .filter(Boolean)
-    .join("\n");
+  ].filter(Boolean);
+
+  return lines.join("\n");
 }
 
 export const Route = createFileRoute("/api/generate")({
@@ -110,15 +74,15 @@ export const Route = createFileRoute("/api/generate")({
 
         const prompt = buildPrompt(payload);
 
-        // Gemini image preview accepts multiple image_url inputs in the messages content.
         const content: Array<
-          { type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }
+          | { type: "text"; text: string }
+          | { type: "image_url"; image_url: { url: string } }
         > = [
           { type: "text", text: prompt },
           { type: "image_url", image_url: { url: payload.room } },
         ];
-        for (const i of payload.inspo) {
-          content.push({ type: "image_url", image_url: { url: i.dataUrl } });
+        for (const url of payload.inspo) {
+          content.push({ type: "image_url", image_url: { url } });
         }
 
         const upstreamBody = {
