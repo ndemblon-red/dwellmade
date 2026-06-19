@@ -1097,7 +1097,7 @@ function ChipList({
 
 // --- Stage 3: Generate -------------------------------------------------------
 
-function GenerateStage({ onBack }: { onBack: () => void }) {
+function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrief: () => void }) {
   const room = useStore((s) => s.room);
   const inspo = useStore((s) => s.inspo);
   const brief = useStore((s) => s.brief);
