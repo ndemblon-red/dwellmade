@@ -155,6 +155,30 @@ export const useStore = create<State>()(
       generations: [],
       activeGenerationId: null,
       blobError: null,
+      currentRoomId: null,
+
+      setCurrentRoomId: (currentRoomId) => set({ currentRoomId }),
+      replaceWorkspace: ({ room, inspo, brief, generations }) =>
+        set({
+          room,
+          inspo,
+          brief,
+          generations,
+          activeGenerationId: generations.find((g) => g.isFinal)?.id ?? null,
+          stage: "collect",
+        }),
+      resetWorkspace: () =>
+        set({
+          stage: "collect",
+          room: null,
+          inspo: [],
+          brief: { ...EMPTY_BRIEF },
+          generations: [],
+          activeGenerationId: null,
+          notes: "",
+          keepChange: DEFAULT_KEEP_CHANGE,
+          currentRoomId: null,
+        }),
 
       setStage: (stage) => set({ stage }),
 
