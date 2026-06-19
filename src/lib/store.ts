@@ -77,6 +77,9 @@ type State = {
   removeInspo: (id: string) => void;
   setBrief: (b: AestheticBrief) => void;
   patchBrief: (p: Partial<Omit<AestheticBrief, "userEdited">>) => void;
+  togglePaletteColor: (hex: string) => void;
+  addPaletteColor: (hex: string) => void;
+  removePaletteColor: (hex: string) => void;
   resetBriefFromInspo: () => void;
   setKeepChange: (k: keyof KeepChange, v: "keep" | "change") => void;
   setNotes: (s: string) => void;
@@ -113,18 +116,21 @@ async function trySetBlob(
   }
 }
 
-/** Lazy import to avoid a circular type dep at module load. */
+/** Lazy import to avoid a circular type dep at module load.
+ *  Note: palette is NEVER auto-derived — users build it by clicking
+ *  per-image swatches in the moodboard. We only refresh materials,
+ *  furnitureStyle, and vibe (and only if the user has not edited the brief). */
 async function autoDerive(set: (p: Partial<State>) => void, get: () => State) {
   const { brief, inspo } = get();
   if (brief.userEdited) return;
   const ready = inspo.filter((i) => i.status === "ready" && i.aspects);
   if (ready.length === 0) {
-    set({ brief: EMPTY_BRIEF });
+    set({ brief: { ...EMPTY_BRIEF, palette: brief.palette } });
     return;
   }
   const { deriveBrief } = await import("./brief");
   const { brief: derived } = deriveBrief(inspo);
-  set({ brief: { ...derived, userEdited: false } });
+  set({ brief: { ...derived, palette: brief.palette, userEdited: false } });
 }
 
 export const useStore = create<State>()(
@@ -191,8 +197,39 @@ export const useStore = create<State>()(
       setBrief: (brief) => set({ brief: { ...brief, userEdited: true } }),
       patchBrief: (p) =>
         set((s) => ({ brief: { ...s.brief, ...p, userEdited: true } })),
+      togglePaletteColor: async (hex) => {
+        const { colorsMatch } = await import("./brief");
+        set((s) => {
+          const has = s.brief.palette.some((c) => colorsMatch(c, hex));
+          const palette = has
+            ? s.brief.palette.filter((c) => !colorsMatch(c, hex))
+            : [...s.brief.palette, hex.toLowerCase()];
+          return { brief: { ...s.brief, palette } };
+        });
+      },
+      addPaletteColor: (hex) =>
+        set((s) =>
+          s.brief.palette.length >= 12 ||
+          !/^#[0-9a-f]{6}$/i.test(hex)
+            ? s
+            : {
+                brief: {
+                  ...s.brief,
+                  palette: [...s.brief.palette, hex.toLowerCase()],
+                },
+              },
+        ),
+      removePaletteColor: (hex) =>
+        set((s) => ({
+          brief: {
+            ...s.brief,
+            palette: s.brief.palette.filter((c) => c !== hex),
+          },
+        })),
       resetBriefFromInspo: () => {
-        set({ brief: { ...EMPTY_BRIEF } });
+        // Preserve the user's palette selections; only re-derive
+        // materials, furniture style, and vibe.
+        set((s) => ({ brief: { ...EMPTY_BRIEF, palette: s.brief.palette } }));
         void autoDerive((p) => set(p as Partial<State>), get);
       },
 

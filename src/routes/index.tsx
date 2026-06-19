@@ -10,7 +10,7 @@ import {
 import { tagInspoImage } from "@/lib/tagging.functions";
 import { streamImage } from "@/lib/streamImage";
 import { BeforeAfter } from "@/components/BeforeAfter";
-import { deriveBrief } from "@/lib/brief";
+import { deriveBrief, colorsMatch } from "@/lib/brief";
 
 export const Route = createFileRoute("/")({ component: Workspace });
 
@@ -313,9 +313,27 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
   const inspo = useStore((s) => s.inspo);
   const brief = useStore((s) => s.brief);
   const patchBrief = useStore((s) => s.patchBrief);
+  const togglePaletteColor = useStore((s) => s.togglePaletteColor);
+  const addPaletteColor = useStore((s) => s.addPaletteColor);
+  const removePaletteColor = useStore((s) => s.removePaletteColor);
   const resetBriefFromInspo = useStore((s) => s.resetBriefFromInspo);
 
   const { conflicts } = useMemo(() => deriveBrief(inspo), [inspo]);
+
+  // For each selected brief color, count how many image swatches across all
+  // tagged references it matches — used to render the "×N" multiplicity badge.
+  const allInspoSwatches = useMemo(
+    () =>
+      inspo
+        .filter((i) => i.status === "ready" && i.aspects)
+        .flatMap((i) => i.aspects!.palette),
+    [inspo],
+  );
+  const countFor = useCallback(
+    (hex: string) =>
+      allInspoSwatches.reduce((n, c) => (colorsMatch(c, hex) ? n + 1 : n), 0),
+    [allInspoSwatches],
+  );
 
   return (
     <div className="grid grid-cols-12 gap-10">
@@ -325,10 +343,15 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
             Moodboard
           </h2>
           <span className="text-[10px] uppercase tracking-widest text-muted-ink">
-            {inspo.filter((i) => i.status === "ready").length} tagged
+            {inspo.filter((i) => i.status === "ready").length} tagged ·{" "}
+            <span className="text-ink">click swatches to build palette</span>
           </span>
         </div>
-        <Moodboard inspo={inspo} />
+        <Moodboard
+          inspo={inspo}
+          selected={brief.palette}
+          onToggle={togglePaletteColor}
+        />
       </section>
 
       <section className="col-span-12 lg:col-span-5 space-y-6">
@@ -339,11 +362,19 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
           <button
             onClick={resetBriefFromInspo}
             className="text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
+            title="Re-derive materials, furniture style, and vibe from references (palette is kept)"
           >
             Re-derive
           </button>
         </div>
-        <BriefEditor brief={brief} patch={patchBrief} conflicts={conflicts} />
+        <BriefEditor
+          brief={brief}
+          patch={patchBrief}
+          conflicts={conflicts}
+          onAddColor={addPaletteColor}
+          onRemoveColor={removePaletteColor}
+          countFor={countFor}
+        />
       </section>
 
       <div className="col-span-12 flex justify-between items-center pt-4">
@@ -364,8 +395,17 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
   );
 }
 
-function Moodboard({ inspo }: { inspo: InspoImage[] }) {
+function Moodboard({
+  inspo,
+  selected,
+  onToggle,
+}: {
+  inspo: InspoImage[];
+  selected: string[];
+  onToggle: (hex: string) => void;
+}) {
   const ready = inspo.filter((i) => i.dataUrl);
+  const isSelected = (hex: string) => selected.some((c) => colorsMatch(c, hex));
   if (ready.length === 0) {
     return (
       <div className="aspect-[4/3] bg-paper ring-1 ring-black/5 rounded-xl grid place-items-center">
@@ -388,10 +428,30 @@ function Moodboard({ inspo }: { inspo: InspoImage[] }) {
             className={`w-full object-cover ${idx % 3 === 0 ? "aspect-[3/4]" : "aspect-square"}`}
           />
           {i.aspects?.palette?.length ? (
-            <div className="flex gap-0.5 h-3">
-              {i.aspects.palette.slice(0, 6).map((c, n) => (
-                <span key={n} className="flex-1" style={{ backgroundColor: c }} />
-              ))}
+            <div className="flex gap-1 p-1.5 bg-paper">
+              {i.aspects.palette.slice(0, 6).map((c, n) => {
+                const sel = isSelected(c);
+                return (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => onToggle(c)}
+                    title={sel ? `${c} — selected (click to remove)` : `${c} — click to add to brief`}
+                    className={`group relative flex-1 h-6 rounded-sm transition-all ${
+                      sel
+                        ? "ring-2 ring-ink ring-offset-1 ring-offset-paper -translate-y-0.5 shadow-sm"
+                        : "ring-1 ring-black/10 hover:-translate-y-0.5 hover:ring-ink/40"
+                    }`}
+                    style={{ backgroundColor: c }}
+                  >
+                    {sel ? (
+                      <span className="absolute inset-0 grid place-items-center text-[10px] leading-none text-paper drop-shadow-sm">
+                        ✓
+                      </span>
+                    ) : null}
+                  </button>
+                );
+              })}
             </div>
           ) : null}
         </figure>
@@ -404,10 +464,16 @@ function BriefEditor({
   brief,
   patch,
   conflicts,
+  onAddColor,
+  onRemoveColor,
+  countFor,
 }: {
   brief: AestheticBrief;
   patch: (p: Partial<Omit<AestheticBrief, "userEdited">>) => void;
   conflicts: { styles: string[]; paletteDiverges: boolean };
+  onAddColor: (hex: string) => void;
+  onRemoveColor: (hex: string) => void;
+  countFor: (hex: string) => number;
 }) {
   return (
     <div className="bg-paper ring-1 ring-black/5 rounded-xl p-6 space-y-7">
@@ -415,11 +481,13 @@ function BriefEditor({
       <div className="space-y-3">
         <Label
           title="Palette"
-          hint={conflicts.paletteDiverges ? "References diverge — your selection overrides." : null}
+          hint={conflicts.paletteDiverges ? "References diverge — pick deliberately." : null}
         />
-        <PaletteEditor
+        <BriefPalette
           palette={brief.palette}
-          onChange={(palette) => patch({ palette })}
+          onAdd={onAddColor}
+          onRemove={onRemoveColor}
+          countFor={countFor}
         />
       </div>
 
@@ -497,63 +565,72 @@ function Label({ title, hint }: { title: string; hint?: string | null }) {
   );
 }
 
-function PaletteEditor({
+function BriefPalette({
   palette,
-  onChange,
+  onAdd,
+  onRemove,
+  countFor,
 }: {
   palette: string[];
-  onChange: (p: string[]) => void;
+  onAdd: (hex: string) => void;
+  onRemove: (hex: string) => void;
+  countFor: (hex: string) => number;
 }) {
   const [draft, setDraft] = useState("#");
-  const replace = (idx: number, hex: string) => {
-    const next = [...palette];
-    next[idx] = hex;
-    onChange(next);
-  };
-  const remove = (idx: number) => onChange(palette.filter((_, i) => i !== idx));
-  const move = (idx: number, dir: -1 | 1) => {
-    const j = idx + dir;
-    if (j < 0 || j >= palette.length) return;
-    const next = [...palette];
-    [next[idx], next[j]] = [next[j], next[idx]];
-    onChange(next);
-  };
   const add = () => {
     if (!/^#[0-9a-fA-F]{6}$/.test(draft)) return;
-    if (palette.length >= 8) return;
-    onChange([...palette, draft.toLowerCase()]);
+    onAdd(draft.toLowerCase());
     setDraft("#");
   };
 
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
-        {palette.map((c, i) => (
-          <div key={i} className="group relative">
-            <label className="block size-10 rounded-md ring-1 ring-black/10 cursor-pointer overflow-hidden">
-              <span className="block size-full" style={{ backgroundColor: c }} />
-              <input
-                type="color"
-                value={c}
-                onChange={(e) => replace(i, e.target.value)}
-                className="sr-only"
-              />
-            </label>
-            <div className="absolute inset-x-0 -bottom-5 hidden group-hover:flex justify-between text-[10px] text-muted-ink">
-              <button onClick={() => move(i, -1)} title="Move left">‹</button>
-              <button onClick={() => remove(i)} title="Remove" className="text-destructive">×</button>
-              <button onClick={() => move(i, 1)} title="Move right">›</button>
-            </div>
-          </div>
-        ))}
         {palette.length === 0 ? (
-          <span className="text-[11px] italic text-muted-ink">No swatches yet.</span>
-        ) : null}
+          <span className="text-[11px] italic text-muted-ink">
+            Click swatches under the references to build your palette.
+          </span>
+        ) : (
+          palette.map((c) => {
+            const n = countFor(c);
+            return (
+              <div key={c} className="group relative">
+                <div
+                  className="size-10 rounded-md ring-1 ring-black/15 overflow-hidden"
+                  style={{ backgroundColor: c }}
+                  title={c}
+                />
+                {n > 1 ? (
+                  <span
+                    className="absolute -top-1.5 -right-1.5 min-w-4 h-4 px-1 grid place-items-center rounded-full bg-ink text-paper text-[9px] font-medium ring-2 ring-paper"
+                    title={`Appears in ${n} reference swatches`}
+                  >
+                    ×{n}
+                  </span>
+                ) : null}
+                <button
+                  onClick={() => onRemove(c)}
+                  className="absolute inset-0 grid place-items-center bg-paper/0 hover:bg-paper/70 transition-colors text-destructive text-sm opacity-0 hover:opacity-100 rounded-md"
+                  title="Remove from brief"
+                  aria-label={`Remove ${c}`}
+                >
+                  ×
+                </button>
+              </div>
+            );
+          })
+        )}
       </div>
-      <div className="flex gap-2 items-center pt-3">
+      <div className="flex gap-2 items-center pt-1">
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              add();
+            }
+          }}
           placeholder="#hex"
           className="bg-canvas/70 ring-1 ring-black/5 rounded-md px-2 py-1 text-xs w-24 font-mono"
         />
