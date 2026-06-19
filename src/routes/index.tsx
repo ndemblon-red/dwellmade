@@ -41,7 +41,7 @@ function IndexPage() {
   );
 }
 
-function AnonymousBanner() {
+export function AnonymousBanner() {
   return (
     <div className="max-w-7xl mx-auto px-6 pt-4">
       <div className="bg-paper ring-1 ring-black/5 rounded-md px-4 py-2 text-xs text-muted-ink flex items-center justify-between gap-3">
