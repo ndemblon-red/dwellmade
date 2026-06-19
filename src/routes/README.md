@@ -4,7 +4,7 @@
 
 An AI-powered interior design tool that lets you upload inspiration images, build an aesthetic brief, and see it applied to your own room in real time. No design experience required.
 
-**Live:** [dwellmade.co.uk](https://dwellmade.co.uk)  
+**Not Live yet:** [dwellmade.co.uk](https://dwellmade.co.uk)  
 **Stack:** TanStack Start · React 19 · Tailwind · Supabase · Gemini Flash · Zustand
 
 ---
