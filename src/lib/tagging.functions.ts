@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { TAGGING_SYSTEM_PROMPT, TAGGING_USER_MESSAGE } from "@/prompts/tagging.prompt";
 
 const InputSchema = z.object({
   dataUrl: z.string().startsWith("data:"),
@@ -21,24 +22,14 @@ export const tagInspoImage = createServerFn({ method: "POST" })
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("Missing LOVABLE_API_KEY");
 
-    const systemPrompt = `You analyze interior design inspiration images and extract structured aesthetic attributes. Return ONLY a JSON object matching this shape exactly:
-{
-  "palette": ["#RRGGBB", ...]  // 3-5 dominant hex colors
-  "materials": [string, ...]   // 2-5 short material/finish nouns (e.g. "oak", "brass", "linen", "lime wash")
-  "furnitureStyle": string     // short phrase, e.g. "mid-century lounge", "japandi low-slung"
-  "lightingMood": string       // short phrase, e.g. "warm golden hour", "diffuse north light"
-  "vibe": string               // one sentence describing the overall feeling
-}
-No prose, no markdown fences, just the raw JSON object.`;
-
     const body = {
       model: "google/gemini-3-flash-preview",
       messages: [
-        { role: "system", content: systemPrompt },
+        { role: "system", content: TAGGING_SYSTEM_PROMPT },
         {
           role: "user",
           content: [
-            { type: "text", text: "Analyze this inspiration image." },
+            { type: "text", text: TAGGING_USER_MESSAGE },
             { type: "image_url", image_url: { url: data.dataUrl } },
           ],
         },

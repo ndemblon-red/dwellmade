@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { buildPrompt } from "@/prompts/generate.prompt";
 
 const BriefSchema = z.object({
   palette: z.array(z.string()),
   materials: z.array(z.string()),
   furnitureStyle: z.string(),
+  lightingMood: z.string().optional().default(""),
   vibe: z.string(),
 });
 
@@ -20,39 +22,6 @@ const BodySchema = z.object({
   }),
   notes: z.string().optional().default(""),
 });
-
-function buildPrompt(payload: z.infer<typeof BodySchema>): string {
-  const { brief, keepChange, notes } = payload;
-
-  const keepList: string[] = [];
-  const changeList: string[] = [];
-  const labels: Record<keyof typeof keepChange, string> = {
-    walls: "walls & surfaces",
-    flooring: "flooring",
-    furniture: "major furniture",
-    decor: "decor & lighting",
-  };
-  (Object.keys(keepChange) as Array<keyof typeof keepChange>).forEach((k) => {
-    (keepChange[k] === "keep" ? keepList : changeList).push(labels[k]);
-  });
-
-  const paletteStr =
-    brief.palette.length > 0 ? brief.palette.join(", ") : "(no palette set)";
-  const materialsStr =
-    brief.materials.length > 0 ? brief.materials.join(", ") : "(no materials set)";
-  const styleStr = brief.furnitureStyle || "(no style set)";
-  const vibeStr = brief.vibe || "(no vibe set)";
-
-  const lines = [
-    `Redesign this room applying: palette [${paletteStr}], materials [${materialsStr}], furniture style [${styleStr}], vibe [${vibeStr}], keeping [${keepList.join(", ") || "nothing"}] unchanged${changeList.length ? `, while reimagining [${changeList.join(", ")}]` : ""}.`,
-    "Maintain the exact room geometry, camera angle, perspective, and window placement of the source room.",
-    "Use the additional reference images only as visual anchors for the brief above — do not blend their geometry into the room.",
-    notes ? `Additional notes from the user: ${notes}` : "",
-    "Output a single photorealistic interior photograph of the same room, redesigned. No text overlays, no annotations.",
-  ].filter(Boolean);
-
-  return lines.join("\n");
-}
 
 export const Route = createFileRoute("/api/generate")({
   server: {
