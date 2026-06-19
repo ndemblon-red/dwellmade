@@ -69,6 +69,8 @@ type State = {
   generations: Generation[];
   activeGenerationId: string | null;
   blobError: string | null;
+  /** Non-null when this store is mirroring a DB-backed room. */
+  currentRoomId: string | null;
 
   setStage: (s: Stage) => void;
   setRoom: (dataUrl: string | null) => void;
@@ -87,6 +89,14 @@ type State = {
   updateGeneration: (id: string, dataUrl: string, isFinal: boolean) => void;
   removeGeneration: (id: string) => void;
   clearBlobError: () => void;
+  setCurrentRoomId: (id: string | null) => void;
+  replaceWorkspace: (s: {
+    room: Room | null;
+    inspo: InspoImage[];
+    brief: AestheticBrief;
+    generations: Generation[];
+  }) => void;
+  resetWorkspace: () => void;
 };
 
 const DEFAULT_KEEP_CHANGE: KeepChange = {
@@ -145,6 +155,30 @@ export const useStore = create<State>()(
       generations: [],
       activeGenerationId: null,
       blobError: null,
+      currentRoomId: null,
+
+      setCurrentRoomId: (currentRoomId) => set({ currentRoomId }),
+      replaceWorkspace: ({ room, inspo, brief, generations }) =>
+        set({
+          room,
+          inspo,
+          brief,
+          generations,
+          activeGenerationId: generations.find((g) => g.isFinal)?.id ?? null,
+          stage: "collect",
+        }),
+      resetWorkspace: () =>
+        set({
+          stage: "collect",
+          room: null,
+          inspo: [],
+          brief: { ...EMPTY_BRIEF },
+          generations: [],
+          activeGenerationId: null,
+          notes: "",
+          keepChange: DEFAULT_KEEP_CHANGE,
+          currentRoomId: null,
+        }),
 
       setStage: (stage) => set({ stage }),
 

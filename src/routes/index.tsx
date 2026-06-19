@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   useStore,
   type AestheticBrief,
@@ -12,7 +12,53 @@ import { streamImage } from "@/lib/streamImage";
 import { BeforeAfter } from "@/components/BeforeAfter";
 import { deriveBrief, colorsMatch } from "@/lib/brief";
 
-export const Route = createFileRoute("/")({ component: Workspace });
+import { useAuth } from "@/hooks/use-auth";
+import { useNavigate } from "@tanstack/react-router";
+import { AppHeader } from "@/components/AppHeader";
+
+
+export const Route = createFileRoute("/")({ component: IndexPage });
+
+function IndexPage() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user) navigate({ to: "/projects", replace: true });
+  }, [user, navigate]);
+  if (loading || user) {
+    return (
+      <div className="min-h-screen bg-canvas">
+        <AppHeader />
+      </div>
+    );
+  }
+  return (
+    <div>
+      <AppHeader />
+      <AnonymousBanner />
+      <Workspace />
+    </div>
+  );
+}
+
+function AnonymousBanner() {
+  return (
+    <div className="max-w-7xl mx-auto px-6 pt-4">
+      <div className="bg-paper ring-1 ring-black/5 rounded-md px-4 py-2 text-xs text-muted-ink flex items-center justify-between gap-3">
+        <span>
+          You're working anonymously — nothing here will be saved.{" "}
+          <span className="font-mono">↓</span>
+        </span>
+        <a
+          href="/auth"
+          className="text-[10px] uppercase tracking-widest underline underline-offset-4 text-ink"
+        >
+          Sign in to save
+        </a>
+      </div>
+    </div>
+  );
+}
 
 const MAX_IMAGE_DIM = 1600;
 const MAX_INSPO_DIM = 1024;
@@ -48,7 +94,7 @@ const STAGE_LABELS: Record<Stage, { num: string; title: string; sub: string }> =
   generate: { num: "03", title: "Generate", sub: "Apply brief to room" },
 };
 
-function Workspace() {
+export function Workspace() {
   const stage = useStore((s) => s.stage);
   const setStage = useStore((s) => s.setStage);
   const room = useStore((s) => s.room);

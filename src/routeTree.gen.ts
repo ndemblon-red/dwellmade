@@ -9,9 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiGenerateRouteImport } from './routes/api/generate'
+import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects/index'
+import { Route as AuthenticatedProjectsProjectIdRouteImport } from './routes/_authenticated/projects/$projectId'
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -22,35 +35,85 @@ const ApiGenerateRoute = ApiGenerateRouteImport.update({
   path: '/api/generate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProjectsIndexRoute =
+  AuthenticatedProjectsIndexRouteImport.update({
+    id: '/projects/',
+    path: '/projects/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProjectsProjectIdRoute =
+  AuthenticatedProjectsProjectIdRouteImport.update({
+    id: '/projects/$projectId',
+    path: '/projects/$projectId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/api/generate': typeof ApiGenerateRoute
+  '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
+  '/projects/': typeof AuthenticatedProjectsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/api/generate': typeof ApiGenerateRoute
+  '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
+  '/projects': typeof AuthenticatedProjectsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/api/generate': typeof ApiGenerateRoute
+  '/_authenticated/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
+  '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/generate'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/api/generate'
+    | '/projects/$projectId'
+    | '/projects/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/generate'
-  id: '__root__' | '/' | '/api/generate'
+  to: '/' | '/auth' | '/api/generate' | '/projects/$projectId' | '/projects'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/api/generate'
+    | '/_authenticated/projects/$projectId'
+    | '/_authenticated/projects/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   ApiGenerateRoute: typeof ApiGenerateRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -65,23 +128,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiGenerateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/projects/': {
+      id: '/_authenticated/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof AuthenticatedProjectsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/projects/$projectId': {
+      id: '/_authenticated/projects/$projectId'
+      path: '/projects/$projectId'
+      fullPath: '/projects/$projectId'
+      preLoaderRoute: typeof AuthenticatedProjectsProjectIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedProjectsProjectIdRoute: typeof AuthenticatedProjectsProjectIdRoute
+  AuthenticatedProjectsIndexRoute: typeof AuthenticatedProjectsIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedProjectsProjectIdRoute: AuthenticatedProjectsProjectIdRoute,
+  AuthenticatedProjectsIndexRoute: AuthenticatedProjectsIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   ApiGenerateRoute: ApiGenerateRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
