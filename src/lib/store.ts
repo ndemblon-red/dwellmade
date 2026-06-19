@@ -10,22 +10,12 @@ export type ImageAspects = {
   vibe: string;
 };
 
-export type EnabledAspects = {
-  palette: boolean;
-  materials: boolean;
-  furnitureStyle: boolean;
-  lightingMood: boolean;
-};
-
 export type InspoImage = {
   id: string;
   blobId: string;
-  // dataUrl lives in memory only; rehydrated from IndexedDB on load.
   dataUrl: string;
   status: "tagging" | "ready" | "error";
   aspects?: ImageAspects;
-  enabled: EnabledAspects;
-  influence: number; // 0-100
   error?: string;
 };
 
@@ -36,11 +26,23 @@ export type KeepChange = {
   decor: "keep" | "change";
 };
 
+export type AestheticBrief = {
+  palette: string[];
+  materials: string[];
+  furnitureStyle: string;
+  vibe: string;
+  /** True once the user has manually edited any brief field. Prevents
+   *  auto-derivation from overwriting their choices when new inspo lands. */
+  userEdited: boolean;
+};
+
+export type Stage = "collect" | "curate" | "generate";
+
 export type Generation = {
   id: string;
-  blobId?: string; // assigned when isFinal flips true
+  blobId?: string;
   createdAt: number;
-  dataUrl: string; // memory only for in-flight, also memory for finals after rehydrate
+  dataUrl: string;
   isFinal: boolean;
   promptSummary: string;
 };
@@ -49,21 +51,33 @@ type Room = { dataUrl: string; blobId: string; uploadedAt: number };
 
 const MAX_HISTORY = 5;
 
+const EMPTY_BRIEF: AestheticBrief = {
+  palette: [],
+  materials: [],
+  furnitureStyle: "",
+  vibe: "",
+  userEdited: false,
+};
+
 type State = {
+  stage: Stage;
   room: Room | null;
   inspo: InspoImage[];
+  brief: AestheticBrief;
   keepChange: KeepChange;
   notes: string;
   generations: Generation[];
   activeGenerationId: string | null;
   blobError: string | null;
 
+  setStage: (s: Stage) => void;
   setRoom: (dataUrl: string | null) => void;
   addInspo: (image: { dataUrl: string }) => string;
   updateInspo: (id: string, patch: Partial<InspoImage>) => void;
   removeInspo: (id: string) => void;
-  toggleAspect: (id: string, aspect: keyof EnabledAspects) => void;
-  setInfluence: (id: string, influence: number) => void;
+  setBrief: (b: AestheticBrief) => void;
+  patchBrief: (p: Partial<Omit<AestheticBrief, "userEdited">>) => void;
+  resetBriefFromInspo: () => void;
   setKeepChange: (k: keyof KeepChange, v: "keep" | "change") => void;
   setNotes: (s: string) => void;
   startGeneration: (id: string, promptSummary: string) => void;
@@ -99,16 +113,34 @@ async function trySetBlob(
   }
 }
 
+/** Lazy import to avoid a circular type dep at module load. */
+async function autoDerive(set: (p: Partial<State>) => void, get: () => State) {
+  const { brief, inspo } = get();
+  if (brief.userEdited) return;
+  const ready = inspo.filter((i) => i.status === "ready" && i.aspects);
+  if (ready.length === 0) {
+    set({ brief: EMPTY_BRIEF });
+    return;
+  }
+  const { deriveBrief } = await import("./brief");
+  const { brief: derived } = deriveBrief(inspo);
+  set({ brief: { ...derived, userEdited: false } });
+}
+
 export const useStore = create<State>()(
   persist(
     (set, get) => ({
+      stage: "collect",
       room: null,
       inspo: [],
+      brief: EMPTY_BRIEF,
       keepChange: DEFAULT_KEEP_CHANGE,
       notes: "",
       generations: [],
       activeGenerationId: null,
       blobError: null,
+
+      setStage: (stage) => set({ stage }),
 
       setRoom: (dataUrl) => {
         const prev = get().room;
@@ -118,7 +150,6 @@ export const useStore = create<State>()(
           return;
         }
         const blobId = newBlobId();
-        // Optimistically set in memory; persist blob async.
         set({
           room: { dataUrl, blobId, uploadedAt: Date.now() },
           blobError: null,
@@ -132,19 +163,7 @@ export const useStore = create<State>()(
         set((s) => ({
           inspo: [
             ...s.inspo,
-            {
-              id,
-              blobId,
-              dataUrl,
-              status: "tagging",
-              influence: 70,
-              enabled: {
-                palette: true,
-                materials: true,
-                furnitureStyle: true,
-                lightingMood: true,
-              },
-            },
+            { id, blobId, dataUrl, status: "tagging" },
           ],
           blobError: null,
         }));
@@ -152,30 +171,30 @@ export const useStore = create<State>()(
         return id;
       },
 
-      updateInspo: (id, patch) =>
+      updateInspo: (id, patch) => {
         set((s) => ({
           inspo: s.inspo.map((i) => (i.id === id ? { ...i, ...patch } : i)),
-        })),
+        }));
+        // If the patch flips status to "ready", refresh the derived brief.
+        if (patch.status === "ready") {
+          void autoDerive((p) => set(p as Partial<State>), get);
+        }
+      },
 
       removeInspo: (id) => {
         const target = get().inspo.find((i) => i.id === id);
         if (target) void deleteBlob(target.blobId);
         set((s) => ({ inspo: s.inspo.filter((i) => i.id !== id) }));
+        void autoDerive((p) => set(p as Partial<State>), get);
       },
 
-      toggleAspect: (id, aspect) =>
-        set((s) => ({
-          inspo: s.inspo.map((i) =>
-            i.id === id
-              ? { ...i, enabled: { ...i.enabled, [aspect]: !i.enabled[aspect] } }
-              : i,
-          ),
-        })),
-
-      setInfluence: (id, influence) =>
-        set((s) => ({
-          inspo: s.inspo.map((i) => (i.id === id ? { ...i, influence } : i)),
-        })),
+      setBrief: (brief) => set({ brief: { ...brief, userEdited: true } }),
+      patchBrief: (p) =>
+        set((s) => ({ brief: { ...s.brief, ...p, userEdited: true } })),
+      resetBriefFromInspo: () => {
+        set({ brief: { ...EMPTY_BRIEF } });
+        void autoDerive((p) => set(p as Partial<State>), get);
+      },
 
       setKeepChange: (k, v) =>
         set((s) => ({ keepChange: { ...s.keepChange, [k]: v } })),
@@ -192,9 +211,6 @@ export const useStore = create<State>()(
         })),
 
       updateGeneration: (id, dataUrl, isFinal) => {
-        // Intermediate frames: in-memory only. They render via the
-        // partialize filter that excludes non-final generations from
-        // sessionStorage.
         set((s) => ({
           generations: s.generations.map((g) =>
             g.id === id ? { ...g, dataUrl, isFinal } : g,
@@ -205,7 +221,6 @@ export const useStore = create<State>()(
         void trySetBlob(blobId, dataUrl, (msg) => set({ blobError: msg })).then(
           (ok) => {
             if (!ok) return;
-            // Attach blobId, then evict beyond MAX_HISTORY.
             set((s) => {
               const updated = s.generations.map((g) =>
                 g.id === id ? { ...g, blobId } : g,
@@ -228,7 +243,8 @@ export const useStore = create<State>()(
         if (target?.blobId) void deleteBlob(target.blobId);
         set((s) => ({
           generations: s.generations.filter((g) => g.id !== id),
-          activeGenerationId: s.activeGenerationId === id ? null : s.activeGenerationId,
+          activeGenerationId:
+            s.activeGenerationId === id ? null : s.activeGenerationId,
         }));
       },
 
@@ -236,7 +252,7 @@ export const useStore = create<State>()(
     }),
     {
       name: "studio-syn-session",
-      version: 2,
+      version: 3,
       storage: createJSONStorage(() => {
         if (typeof window === "undefined") {
           return {
@@ -250,24 +266,21 @@ export const useStore = create<State>()(
         }
         return window.sessionStorage;
       }),
-      // Strip large dataUrls before writing to sessionStorage. The
-      // dataUrls live in IndexedDB (via blobStore) and are rehydrated
-      // below.
       partialize: (s) => ({
-        room: s.room ? { blobId: s.room.blobId, uploadedAt: s.room.uploadedAt } : null,
+        stage: s.stage,
+        room: s.room
+          ? { blobId: s.room.blobId, uploadedAt: s.room.uploadedAt }
+          : null,
         inspo: s.inspo.map((i) => ({
           id: i.id,
           blobId: i.blobId,
           status: i.status,
           aspects: i.aspects,
-          enabled: i.enabled,
-          influence: i.influence,
           error: i.error,
         })),
+        brief: s.brief,
         keepChange: s.keepChange,
         notes: s.notes,
-        // Only persist finalised generations — partial frames would
-        // otherwise bloat storage and never have a blob written.
         generations: s.generations
           .filter((g) => g.isFinal && g.blobId)
           .map((g) => ({
@@ -281,14 +294,11 @@ export const useStore = create<State>()(
       }),
       onRehydrateStorage: () => (state) => {
         if (!state || typeof window === "undefined") return;
-        // Asynchronously fetch each blob and patch the in-memory state.
         void (async () => {
           const patches: Partial<State> = {};
           if (state.room?.blobId) {
             const dataUrl = await getBlob(state.room.blobId);
-            patches.room = dataUrl
-              ? { ...state.room, dataUrl }
-              : null;
+            patches.room = dataUrl ? { ...state.room, dataUrl } : null;
           }
           const inspoWithBlobs = await Promise.all(
             (state.inspo ?? []).map(async (i) => {
@@ -308,19 +318,17 @@ export const useStore = create<State>()(
           useStore.setState(patches as Partial<State>);
         })();
       },
-      migrate: (_persisted, _version) => {
-        // v1 stored dataUrls directly; the shape is incompatible.
-        // Returning a clean default forces a fresh session.
-        return {
-          room: null,
-          inspo: [],
-          keepChange: DEFAULT_KEEP_CHANGE,
-          notes: "",
-          generations: [],
-          activeGenerationId: null,
-          blobError: null,
-        } as unknown as State;
-      },
+      migrate: () => ({
+        stage: "collect" as Stage,
+        room: null,
+        inspo: [],
+        brief: { ...EMPTY_BRIEF },
+        keepChange: DEFAULT_KEEP_CHANGE,
+        notes: "",
+        generations: [],
+        activeGenerationId: null,
+        blobError: null,
+      }) as unknown as State,
     },
   ),
 );
