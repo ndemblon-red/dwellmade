@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   useStore,
@@ -13,35 +13,384 @@ import { BeforeAfter } from "@/components/BeforeAfter";
 import { deriveBrief, colorsMatch } from "@/lib/brief";
 
 import { useAuth } from "@/hooks/use-auth";
-import { useNavigate } from "@tanstack/react-router";
 import { AppHeader } from "@/components/AppHeader";
 
 
-export const Route = createFileRoute("/")({ component: IndexPage });
+export const Route = createFileRoute("/")({ component: LandingPage });
 
-function IndexPage() {
+// Brand palette
+const CREAM = "#F5F0E8";
+const MUSTARD = "#F0A500";
+const PINK = "#E87FA3";
+const COBALT = "#2B35AF";
+const NEAR_BLACK = "#1A1A2E";
+const MUTED_CREAM = "rgba(245,240,232,0.7)";
+
+const GRID_BG = {
+  backgroundImage:
+    "linear-gradient(#E0D8CC 1px, transparent 1px), linear-gradient(90deg, #E0D8CC 1px, transparent 1px)",
+  backgroundSize: "28px 28px",
+} as const;
+
+const dmSans = { fontFamily: "'DM Sans', ui-sans-serif, system-ui, sans-serif" };
+const serif = { fontFamily: "'Instrument Serif', serif" };
+
+function Wordmark({ size = "text-2xl" }: { size?: string }) {
+  return (
+    <span style={serif} className={`${size} leading-none tracking-tight lowercase`}>
+      <span className="italic" style={{ color: MUSTARD }}>dwell</span>
+      <span style={{ color: PINK }}>made</span>
+    </span>
+  );
+}
+
+function LandingPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
     if (user) navigate({ to: "/projects", replace: true });
   }, [user, navigate]);
   if (loading || user) {
-    return (
-      <div className="min-h-screen bg-canvas">
-        <AppHeader />
-      </div>
-    );
+    return <div className="min-h-screen" style={{ backgroundColor: CREAM }} />;
   }
   return (
-    <div>
-      <AppHeader />
-      <AnonymousBanner />
-      <Workspace />
+    <div style={{ backgroundColor: CREAM, color: NEAR_BLACK, ...dmSans }}>
+      <LandingNav />
+      <Hero />
+      <TickerBand />
+      <HowItWorks />
+      <LandingFooter />
     </div>
   );
 }
 
+function LandingNav() {
+  return (
+    <nav style={{ backgroundColor: NEAR_BLACK }}>
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <Link to="/"><Wordmark /></Link>
+        <div className="flex items-center gap-6 sm:gap-8">
+          <a
+            href="#how-it-works"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="hidden sm:inline text-[10px] uppercase tracking-[0.22em]"
+            style={{ color: MUTED_CREAM, ...dmSans }}
+          >
+            How it works
+          </a>
+          <a
+            href="#examples"
+            className="hidden sm:inline text-[10px] uppercase tracking-[0.22em]"
+            style={{ color: MUTED_CREAM, ...dmSans }}
+          >
+            Examples
+          </a>
+          <Link
+            to="/studio"
+            className="text-[11px] uppercase tracking-[0.18em] font-semibold rounded-full px-4 py-2"
+            style={{ backgroundColor: MUSTARD, color: NEAR_BLACK, ...dmSans }}
+          >
+            Try free
+          </Link>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+function Scribbles() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+      {/* lamp */}
+      <svg className="absolute top-12 right-[6%] opacity-90" width="64" height="80" viewBox="0 0 64 80" fill="none">
+        <path d="M12 28 L52 28 L44 8 L20 8 Z" fill={MUSTARD} />
+        <rect x="30" y="28" width="4" height="38" fill={NEAR_BLACK} />
+        <ellipse cx="32" cy="70" rx="18" ry="4" fill={NEAR_BLACK} />
+      </svg>
+      {/* paint blob */}
+      <svg className="absolute top-[42%] left-[4%]" width="120" height="100" viewBox="0 0 120 100" fill="none">
+        <path d="M20 50 C 10 20, 60 5, 80 20 C 110 30, 115 70, 90 85 C 60 100, 25 90, 20 50 Z" fill={PINK} />
+        <circle cx="56" cy="50" r="14" fill={CREAM} />
+      </svg>
+      {/* sofa */}
+      <svg className="absolute bottom-10 left-[10%]" width="120" height="60" viewBox="0 0 120 60" fill="none">
+        <rect x="6" y="20" width="108" height="28" rx="6" fill={COBALT} />
+        <rect x="6" y="14" width="20" height="22" rx="4" fill={COBALT} />
+        <rect x="94" y="14" width="20" height="22" rx="4" fill={COBALT} />
+        <rect x="14" y="48" width="6" height="10" fill={NEAR_BLACK} />
+        <rect x="100" y="48" width="6" height="10" fill={NEAR_BLACK} />
+      </svg>
+      {/* plant pot */}
+      <svg className="absolute bottom-[18%] right-[12%]" width="80" height="100" viewBox="0 0 80 100" fill="none">
+        <path d="M40 56 C 22 40, 18 18, 30 6 C 36 18, 42 28, 40 56 Z" fill={COBALT} />
+        <path d="M40 60 C 58 44, 66 22, 56 8 C 48 22, 42 32, 40 60 Z" fill={MUSTARD} />
+        <path d="M22 60 L58 60 L52 92 L28 92 Z" fill={NEAR_BLACK} />
+      </svg>
+      {/* circle */}
+      <svg className="absolute top-[18%] left-[42%]" width="48" height="48" viewBox="0 0 48 48">
+        <circle cx="24" cy="24" r="22" fill={MUSTARD} />
+      </svg>
+    </div>
+  );
+}
+
+function Hero() {
+  return (
+    <section className="relative" style={GRID_BG}>
+      <Scribbles />
+      <div className="relative max-w-7xl mx-auto px-6 pt-16 pb-24 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div>
+          <span
+            className="inline-block text-[10px] uppercase tracking-[0.22em] rounded-full px-3 py-1.5 font-semibold"
+            style={{ backgroundColor: MUSTARD, color: NEAR_BLACK }}
+          >
+            Interior design, made personal
+          </span>
+          <h1
+            style={serif}
+            className="mt-6 text-5xl sm:text-6xl lg:text-7xl leading-[1.02] tracking-tight"
+          >
+            From inspiration
+            <br />
+            <span className="italic" style={{ color: PINK }}>to your actual home.</span>
+          </h1>
+          <p className="mt-6 max-w-md text-base leading-relaxed" style={{ color: "#4A4A5A" }}>
+            Drop in a photo of your room and a handful of references. dwellmade pulls a palette,
+            curates a moodboard, and renders the room you actually live in — restyled.
+          </p>
+          <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <Link
+              to="/studio"
+              className="inline-flex items-center text-sm font-semibold rounded-full px-6 py-3.5"
+              style={{ backgroundColor: NEAR_BLACK, color: CREAM, ...dmSans }}
+            >
+              Try it free — no account needed →
+            </Link>
+            <span
+              className="text-[10px] uppercase tracking-[0.2em] font-medium"
+              style={{ color: "#6B6B7A" }}
+            >
+              3 free generations · no card required
+            </span>
+          </div>
+        </div>
+        <div className="relative">
+          <HeroComparison />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HeroComparison() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState(50);
+  const dragging = useRef(false);
+  const update = useCallback((clientX: number) => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const x = ((clientX - r.left) / r.width) * 100;
+    setPos(Math.max(0, Math.min(100, x)));
+  }, []);
+  useEffect(() => {
+    const move = (e: PointerEvent) => dragging.current && update(e.clientX);
+    const up = () => (dragging.current = false);
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+    };
+  }, [update]);
+
+  const before = `repeating-linear-gradient(135deg, #B5A28A 0 28px, #C9B89C 28px 56px)`;
+  const after = `linear-gradient(135deg, ${MUSTARD} 0%, ${PINK} 55%, ${COBALT} 100%)`;
+
+  return (
+    <div
+      ref={ref}
+      onPointerDown={(e) => {
+        dragging.current = true;
+        update(e.clientX);
+      }}
+      className="relative w-full aspect-[4/5] sm:aspect-[5/6] rounded-2xl overflow-hidden select-none cursor-ew-resize shadow-2xl"
+      style={{ background: before, border: `1px solid ${NEAR_BLACK}` }}
+    >
+      <div className="absolute inset-0" style={{ background: after, clipPath: `inset(0 0 0 ${pos}%)` }} />
+      <span
+        className="absolute top-3 left-3 text-[9px] uppercase tracking-[0.2em] font-semibold px-2 py-1 rounded-sm"
+        style={{ backgroundColor: NEAR_BLACK, color: CREAM }}
+      >
+        your room
+      </span>
+      <span
+        className="absolute top-3 right-3 text-[9px] uppercase tracking-[0.2em] font-semibold px-2 py-1 rounded-sm"
+        style={{ backgroundColor: COBALT, color: CREAM }}
+      >
+        Drag to compare
+      </span>
+      <span
+        className="absolute bottom-3 right-3 text-[9px] uppercase tracking-[0.2em] font-semibold px-2 py-1 rounded-sm"
+        style={{ backgroundColor: CREAM, color: NEAR_BLACK }}
+      >
+        dwellmade result
+      </span>
+      <div
+        className="absolute inset-y-0 w-px"
+        style={{ left: `${pos}%`, backgroundColor: CREAM, boxShadow: "0 0 0 1px rgba(0,0,0,0.2)" }}
+      >
+        <div
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 size-10 rounded-full grid place-items-center shadow-lg"
+          style={{ backgroundColor: CREAM, color: NEAR_BLACK }}
+        >
+          <span className="text-xs font-bold">‹›</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TickerBand() {
+  const items = [
+    "Palette extraction",
+    "Moodboard curation",
+    "AI generation",
+    "Before / after compare",
+    "Project rooms",
+  ];
+  return (
+    <div
+      style={{
+        backgroundColor: COBALT,
+        borderTop: `3px solid ${MUSTARD}`,
+        borderBottom: `3px solid ${MUSTARD}`,
+      }}
+    >
+      <div className="max-w-7xl mx-auto px-6 py-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
+        {items.map((label, i) => (
+          <span key={label} className="flex items-center gap-8">
+            <span
+              className="text-[11px] uppercase tracking-[0.22em] font-semibold"
+              style={{ color: CREAM, ...dmSans }}
+            >
+              {label}
+            </span>
+            {i < items.length - 1 && <span style={{ color: MUSTARD }}>·</span>}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function HowItWorks() {
+  const cols = [
+    {
+      n: "1",
+      bg: MUSTARD,
+      label: "Collect",
+      title: "Gather what moves you.",
+      body: "Upload your room photo and drop in inspiration — magazine clippings, Pinterest finds, that hotel lobby you can't forget.",
+    },
+    {
+      n: "2",
+      bg: PINK,
+      label: "Curate",
+      title: "Build the brief.",
+      body: "Pick the swatches, materials, and vibe that should carry through. Your aesthetic brief — resolved on one moodboard.",
+    },
+    {
+      n: "3",
+      bg: COBALT,
+      label: "Generate",
+      title: "See your actual room, restyled.",
+      body: "We apply the brief back to your space, keeping what you want kept. Compare before and after with the slider.",
+    },
+  ];
+  return (
+    <section id="how-it-works" style={{ backgroundColor: NEAR_BLACK }}>
+      <div className="max-w-7xl mx-auto px-6 py-24">
+        <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x" style={{ borderColor: "rgba(245,240,232,0.08)" }}>
+          {cols.map((c, i) => (
+            <div
+              key={c.label}
+              className={`px-2 md:px-8 py-10 md:py-0 ${i === 0 ? "md:pl-0" : ""} ${i === cols.length - 1 ? "md:pr-0" : ""}`}
+              style={{ borderColor: "rgba(245,240,232,0.08)" }}
+            >
+              <div
+                className="size-10 grid place-items-center rounded-md font-bold text-base"
+                style={{ backgroundColor: c.bg, color: NEAR_BLACK, ...dmSans }}
+              >
+                {c.n}
+              </div>
+              <div
+                className="mt-5 text-[10px] uppercase tracking-[0.24em] font-semibold"
+                style={{ color: c.bg, ...dmSans }}
+              >
+                {c.label}
+              </div>
+              <h3
+                style={serif}
+                className="mt-2 text-3xl lg:text-4xl italic leading-tight"
+              >
+                <span style={{ color: CREAM }}>{c.title}</span>
+              </h3>
+              <p className="mt-4 text-sm leading-relaxed" style={{ color: MUTED_CREAM }}>
+                {c.body}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function LandingFooter() {
+  return (
+    <footer style={{ backgroundColor: NEAR_BLACK }}>
+      <div className="max-w-7xl mx-auto px-6 py-10 flex items-center justify-between">
+        <Wordmark size="text-xl" />
+        <span
+          className="italic text-sm hidden sm:inline"
+          style={{ color: MUTED_CREAM, ...serif }}
+        >
+          Made with too much colour
+        </span>
+      </div>
+      <div
+        className="max-w-7xl mx-auto px-6 pb-6 text-[10px] uppercase tracking-[0.24em]"
+        style={{ color: "rgba(245,240,232,0.4)", ...dmSans }}
+      >
+        © 2026 dwellmade
+      </div>
+    </footer>
+  );
+}
+
 export function AnonymousBanner() {
+  return (
+    <div className="max-w-7xl mx-auto px-6 pt-4">
+      <div className="bg-paper ring-1 ring-black/5 rounded-md px-4 py-2 text-xs text-muted-ink flex items-center justify-between gap-3">
+        <span>
+          You're working anonymously — nothing here will be saved.{" "}
+          <span className="font-mono">↓</span>
+        </span>
+        <a
+          href="/auth"
+          className="text-[10px] uppercase tracking-widest underline underline-offset-4 text-ink"
+        >
+          Sign in to save
+        </a>
+      </div>
+    </div>
+  );
+}
+
   return (
     <div className="max-w-7xl mx-auto px-6 pt-4">
       <div className="bg-paper ring-1 ring-black/5 rounded-md px-4 py-2 text-xs text-muted-ink flex items-center justify-between gap-3">
