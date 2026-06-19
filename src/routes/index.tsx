@@ -443,7 +443,6 @@ export function Workspace() {
 
   return (
     <div className="min-h-screen bg-canvas text-ink font-sans">
-      <Header />
       <StageNav
         stage={stage}
         setStage={setStage}
@@ -460,13 +459,17 @@ export function Workspace() {
               onNext={() => setStage("generate")}
             />
           ) : (
-            <GenerateStage onBack={() => setStage("curate")} />
+            <GenerateStage
+              onBack={() => setStage("curate")}
+              onEditBrief={() => setStage("curate")}
+            />
           )}
         </div>
       </main>
     </div>
   );
 }
+
 
 // --- Header / Nav ------------------------------------------------------------
 
