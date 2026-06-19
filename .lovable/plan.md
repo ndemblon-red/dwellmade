@@ -1,45 +1,89 @@
-## Problem
+# Auth + Projects Persistence
 
-`sessionStorage` has a ~5MB quota per origin. We're persisting the entire Zustand store as JSON, including base64 data URLs for:
-- the room photo
-- every inspiration image
-- every generation in history (including in-progress streamed previews)
+This is a substantial migration from session-only state to a fully persisted, multi-user app backed by Lovable Cloud (auth + Postgres + Storage). I'll do it in two phases as you outlined.
 
-A second generation easily pushes total payload past 5MB and the whole `setItem` call fails — which also means nothing further persists for the rest of the session.
+Before I start I'll need to enable **Lovable Cloud** (it provisions the database, auth, and storage automatically — no external accounts).
 
-## Fix
+A few decisions I'm making by default, flag any you want to change:
 
-Move large binary blobs out of `sessionStorage` into **IndexedDB** (via `idb-keyval`, ~tens of MB available), and keep only lightweight metadata in the Zustand persisted state. Also trim generation history.
+- **Auth methods**: email + password and Google sign-in (Lovable Cloud's managed Google broker).
+- **Profiles table**: not creating one yet — we don't need username/avatar/roles for the features described. Email comes from the auth user. Easy to add later.
+- **Anonymous → authenticated handoff**: when an anonymous user signs in mid-flow, we keep the current store contents in memory, then on first save create a project named "Untitled project" with one room "Room 1" seeded from that state. No silent background writes before sign-in.
+- **Image storage**: one private bucket `studio-syn` with per-user folders (`{user_id}/rooms/...`, `.../inspo/...`, `.../generations/...`); access via short-lived signed URLs. RLS scopes everything to `auth.uid()`.
+- **Auto-save cadence**: debounced 500ms for brief edits and tag updates; immediate for image uploads and finished generations.
 
-### Changes
+---
 
-1. **Add `idb-keyval`** as a dependency (tiny, ~600 bytes, Worker-safe — browser-only usage).
+## Phase 1 — Auth
 
-2. **New `src/lib/blobStore.ts`** — thin wrapper around `idb-keyval` with `getBlob(id)`, `setBlob(id, dataUrl)`, `deleteBlob(id)`, SSR-safe (no-op when `window` is undefined).
+1. Enable Lovable Cloud (creates Supabase project, env vars, integration files).
+2. Configure Google as a social provider via the managed broker.
+3. New `/auth` route — minimal editorial-styled page with email/password (sign in + sign up tabs) and a "Continue with Google" button. Uses `lovable.auth.signInWithOAuth("google", ...)`.
+4. Persistent top header in `__root.tsx`:
+   - Left: "Studio Syn" wordmark (Instrument Serif).
+   - Right: when signed out → "Sign in" link; when signed in → email + a small menu with "Sign out".
+5. Anonymous use stays allowed. When an anonymous user hits **Generate**, show a small inline prompt: "Sign in to save and generate" with a Sign in button. Generation itself requires auth (so we can persist the result and bill API correctly).
+6. State preservation: the existing zustand store survives the OAuth round-trip naturally (it's in sessionStorage + IndexedDB on the same origin). On first authenticated save we migrate it into the DB.
 
-3. **Refactor `src/lib/store.ts`**:
-   - Store shape changes so image fields hold a **blob id** (string) instead of the raw `dataUrl`.
-     - `room: { blobId, uploadedAt } | null`
-     - `InspoImage.blobId` instead of `dataUrl`
-     - `Generation.blobId` instead of `dataUrl`
-   - Setters (`setRoom`, `addInspo`, `updateGeneration`) write the data URL to IndexedDB and only put the id in state.
-   - Removers (`removeInspo`, `removeGeneration`, clearing room) delete the corresponding blob.
-   - Use Zustand `persist` `partialize` to be explicit about what's serialised (everything except transient fields).
-   - Cap `generations` to the latest **5** entries; delete blobs for evicted ones.
-   - Skip persisting in-progress generations (`isFinal: false`) so a half-streamed image never bloats storage; only the final frame is saved.
+## Phase 2 — Projects, rooms, persistence
 
-4. **Component updates** — anywhere that currently reads `image.dataUrl` (in `src/routes/index.tsx` and `src/components/BeforeAfter.tsx`) switches to a small `useBlobUrl(blobId)` hook that loads the data URL from IndexedDB and returns it (with a loading fallback). The hook lives in `src/lib/blobStore.ts`.
+### Schema (one migration)
 
-5. **Migration / safety**: on store rehydrate, if the persisted shape still contains `dataUrl` fields from the old version, wipe the store (one-time) so users don't get stuck. Bump persist `version` to `2`.
+```
+projects(id, user_id, name, master_palette jsonb, created_at, updated_at)
+rooms(id, project_id, name, room_photo_url, created_at, updated_at)
+inspiration_images(id, room_id, image_url, tags jsonb, created_at)
+aesthetic_briefs(id, room_id UNIQUE, palette jsonb, materials jsonb,
+                 furniture_style text, vibe text, updated_at)
+generations(id, room_id, result_image_url, prompt_used text, created_at)
+```
 
-6. **Quota guard**: wrap `setBlob` in try/catch; on `QuotaExceededError` surface a toast ("Storage full — clear some inspiration images or history") instead of crashing.
+- All tables get explicit `GRANT`s to `authenticated` + `service_role`.
+- RLS on every table, policies via a single `project_owner(project_id)` security-definer helper so child tables don't need to re-query `auth.uid()`.
+- `updated_at` trigger on `projects`, `rooms`, `aesthetic_briefs`.
+- Storage: private bucket `studio-syn`, RLS policies on `storage.objects` scoped to `auth.uid()::text = (storage.foldername(name))[1]`.
 
-### Out of scope
+### Server functions (TanStack `createServerFn` + `requireSupabaseAuth`)
 
-- No server-side storage, no Lovable Cloud — still session-only, just using the right browser API for binary data.
-- No change to the generation pipeline, tagging, or UI layout.
+In `src/lib/projects.functions.ts`:
+- `listProjects`, `createProject`, `renameProject`, `deleteProject`, `setMasterPalette`
+- `listRooms(projectId)`, `createRoom`, `renameRoom`, `deleteRoom`, `setRoomPhoto`
+- `getRoomDetail(roomId)` → returns brief + inspo + generations (with signed URLs)
+- `upsertBrief(roomId, brief)` — debounced auto-save target
+- `addInspirationImage`, `updateInspirationTags`, `removeInspirationImage`
+- `recordGeneration(roomId, prompt, blobBase64)` — uploads to Storage, inserts row, returns signed URL
+- `signUrl(path)` helper for refreshing expired signed URLs
 
-### Technical notes
+The existing `/api/generate` server route stays as the streaming endpoint; on final frame the client calls `recordGeneration` to persist.
 
-- `idb-keyval` is pure JS, no native deps, works in all modern browsers; SSR guard ensures the TanStack Start server build doesn't touch it.
-- IndexedDB is **persistent across reloads** by default (unlike `sessionStorage`). To preserve "session-only" semantics, we'll namespace the IDB database with a per-tab session id stored in `sessionStorage`, and on store rehydrate purge any blobs whose session id doesn't match — keeping behaviour identical to today.
+### Routes
+
+- `/` — if signed out, marketing-light landing + "Sign in to start"; if signed in, redirect to `/projects`.
+- `/_authenticated/projects` — dashboard grid of project cards (name, latest generation thumbnail, room count, "New project").
+- `/_authenticated/projects/$projectId` — project view with: editable name, **master palette editor** (reuses the existing swatch UI), rooms sidebar/tabs, "New room" button, and the existing Collect → Curate → Generate flow rendered for the active room.
+
+The whole interior flow (uploads, moodboard, brief editor, before/after) stays exactly as is — only its data source changes from the local zustand store to a TanStack Query–backed room hook that reads/writes through the server functions.
+
+### Client data layer
+
+- Add TanStack Query wiring (QueryClient in router context, `defaultPreloadStaleTime: 0`).
+- New `useRoom(roomId)` and `useProject(projectId)` hooks; mutations debounce-saved for brief/tags.
+- IndexedDB `blobStore` stays as a **local cache** keyed by storage path: on first fetch of a signed URL we cache the blob; on upload we write to both Storage and the cache so the active session feels instant. Source of truth = Storage.
+- Master palette: `useRoom` seeds an empty brief's palette from `project.master_palette` on first open; users can still edit per-room.
+
+### What stays untouched
+
+- Collect / Curate / Generate UI, palette swatch interaction, before/after slider, editorial styling, streaming generation pipeline, tagging server fn.
+
+---
+
+## Technical notes
+
+- `client.server` (service role) only used inside handlers, never at module scope of `*.functions.ts` files.
+- Public landing at `/` stays SSR; `/projects/*` lives under `_authenticated/` so the managed auth gate handles redirects.
+- Generation history is no longer capped at 5 — full history per room, ordered by `created_at desc`, with pagination if it grows large.
+- Migration deletes nothing from the user's current sessionStorage; on first sign-in we offer "Save current work as a new project".
+
+---
+
+Shall I go ahead and enable Lovable Cloud and start with Phase 1?
