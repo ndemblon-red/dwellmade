@@ -19,7 +19,7 @@ type Status = "verifying" | "success" | "error";
 
 function ConfirmPage() {
   const navigate = useNavigate();
-  const { token_hash, type, email } = useSearch({ from: "/auth/confirm" });
+  const { token_hash, type, email } = useSearch({ from: "/auth_/confirm" });
   const [status, setStatus] = useState<Status>("verifying");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [resendBusy, setResendBusy] = useState(false);
