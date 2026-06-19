@@ -1180,15 +1180,10 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
 
   return (
     <div className="space-y-10">
-      <div className="grid grid-cols-12 gap-10">
-        <section className="col-span-12 lg:col-span-7 space-y-4">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-ink">
-            The Brief
-          </h2>
-          <BriefSummary brief={brief} />
-        </section>
+      <BriefSummaryStrip brief={brief} onEdit={onEditBrief} />
 
-        <section className="col-span-12 lg:col-span-5 space-y-4">
+      <div className="grid grid-cols-12 gap-10">
+        <section className="col-span-12 space-y-4">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-ink">
             Constraints
           </h2>
@@ -1200,6 +1195,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
           />
         </section>
       </div>
+
 
       <div className="flex flex-col items-center gap-3">
         {error ? <p className="text-[11px] text-destructive">{error}</p> : null}
