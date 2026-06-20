@@ -794,7 +794,7 @@ function Moodboard({
       {ready.map((i, idx) => (
         <figure
           key={i.id}
-          className={`bg-paper ring-1 ring-black/5 rounded-lg overflow-hidden ${
+          className={`bg-paper ring-1 ring-border-card rounded-lg overflow-hidden ${
             idx % 3 === 0 ? "sm:row-span-2" : ""
           }`}
         >
@@ -1444,7 +1444,7 @@ function EmptyInspoState({ onFiles }: { onFiles: (files: FileList) => void }) {
         if (e.dataTransfer.files?.length) onFiles(e.dataTransfer.files);
       }}
       onClick={() => ref.current?.click()}
-      className={`w-full aspect-[3/2] rounded-md ring-1 ring-black/5 bg-paper grid place-items-center cursor-pointer transition-colors ${
+      className={`w-full aspect-[3/2] rounded-md ring-1 ring-border-card bg-paper grid place-items-center cursor-pointer transition-colors ${
         dragging ? "bg-zinc-100" : "hover:bg-zinc-50"
       }`}
     >
