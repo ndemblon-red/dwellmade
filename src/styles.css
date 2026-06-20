@@ -16,6 +16,7 @@
   --color-surface: var(--surface);
   --color-surface-raised: var(--surface-raised);
   --color-border-strong: var(--border-strong);
+  --color-border-card: var(--border-card);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
@@ -97,6 +98,6 @@
     background-image:
       linear-gradient(var(--bg-grid) 1px, transparent 1px),
       linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
-    background-size: 24px 24px;
+    background-size: 32px 32px;
   }
 }

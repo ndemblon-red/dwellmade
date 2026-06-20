@@ -53,7 +53,7 @@ function ProjectsDashboard() {
         {isLoading ? (
           <p className="text-sm text-muted-ink italic">Loading…</p>
         ) : !projects || projects.length === 0 ? (
-          <div className="bg-paper ring-1 ring-black/5 rounded-xl p-12 text-center">
+          <div className="bg-paper ring-1 ring-border-card rounded-xl p-12 text-center">
             <p className="font-serif text-2xl italic mb-2">No projects yet.</p>
             <p className="text-sm text-muted-ink mb-6">
               Start a new one to begin redesigning a room.
@@ -70,7 +70,7 @@ function ProjectsDashboard() {
             {projects.map((p) => (
               <div
                 key={p.id}
-                className="bg-paper ring-1 ring-black/5 rounded-xl p-5 hover:ring-ink/30 transition-shadow group"
+                className="bg-paper ring-1 ring-border-card rounded-xl p-5 hover:ring-ink/30 transition-shadow group"
               >
                 <Link
                   to="/projects/$projectId"
