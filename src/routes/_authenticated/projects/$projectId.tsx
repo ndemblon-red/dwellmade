@@ -116,7 +116,7 @@ function ProjectPage() {
             <button
               onClick={() => createRoomMut.mutate()}
               disabled={createRoomMut.isPending}
-              className="shrink-0 px-3 py-1.5 rounded-full text-xs border border-black/20 text-muted-ink hover:text-ink hover:border-ink/50 transition-colors whitespace-nowrap"
+              className="shrink-0 px-3 py-1.5 rounded-full text-xs border border-[rgba(26,26,46,0.25)] text-muted-ink hover:text-ink hover:border-ink/50 transition-colors whitespace-nowrap"
             >
               + New room
             </button>
@@ -125,23 +125,23 @@ function ProjectPage() {
 
         <div className="mt-6">
           {activeRoom && projectQ.data ? (
-            <SyncedWorkspace
-              room={activeRoom}
-              masterPalette={projectQ.data.master_palette ?? []}
-            />
-          ) : (
-            <div className="bg-paper ring-1 ring-black/5 rounded-xl p-12 text-center">
-              <p className="font-serif text-2xl italic mb-2">
-                Add your first room.
-              </p>
-              <button
-                onClick={() => createRoomMut.mutate()}
-                className="mt-3 bg-ink text-paper px-5 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
-              >
-                + New room
-              </button>
-            </div>
-          )}
+          <SyncedWorkspace
+            room={activeRoom}
+            masterPalette={projectQ.data.master_palette ?? []}
+          />
+        ) : (
+          <div className="bg-paper ring-1 ring-border-card rounded-xl p-12 text-center">
+            <p className="font-serif text-2xl italic mb-2">
+              Add your first room.
+            </p>
+            <button
+              onClick={() => createRoomMut.mutate()}
+              className="mt-3 bg-ink text-paper px-5 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
+            >
+              + New room
+            </button>
+          </div>
+        )}
         </div>
 
       </div>
@@ -160,7 +160,7 @@ function SyncedWorkspace({
   const hydrated = useStore((s) => s.currentRoomId === room.id);
   if (!hydrated) {
     return (
-      <div className="bg-paper ring-1 ring-black/5 rounded-xl p-12 text-center">
+      <div className="bg-paper ring-1 ring-border-card rounded-xl p-12 text-center">
         <p className="text-sm text-muted-ink italic">Loading room…</p>
       </div>
     );
@@ -227,7 +227,7 @@ function MasterPaletteEditor({
   const remove = (hex: string) => onChange(value.filter((c) => c !== hex));
 
   return (
-    <div className="bg-paper ring-1 ring-black/5 rounded-xl p-5">
+    <div className="bg-paper ring-1 ring-border-card rounded-xl p-5">
       <div className="flex items-center justify-between mb-3">
         <span className="text-[10px] uppercase tracking-widest text-muted-ink">
           Master palette
@@ -297,7 +297,7 @@ function RoomPill({
     "shrink-0 inline-flex items-center gap-1 rounded-full pl-3 pr-1 py-1 text-xs transition-colors whitespace-nowrap";
   const activeStyle = "bg-[#1A1A2E] text-[#F5F0E8]";
   const inactiveStyle =
-    "border border-black/15 text-muted-ink hover:text-ink hover:border-ink/40";
+    "border border-[rgba(26,26,46,0.25)] text-muted-ink hover:text-ink hover:border-ink/40";
 
   return (
     <div className={`relative group ${base} ${active ? activeStyle : inactiveStyle}`}>
