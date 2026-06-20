@@ -30,23 +30,39 @@ function ConfirmPage() {
     if (ran.current) return;
     ran.current = true;
     (async () => {
-      if (!token_hash || !type) {
-        setStatus("error");
-        setErrorMsg("Missing verification token.");
+      // Case 1: PKCE / OTP flow — token_hash + type in query string.
+      if (token_hash && type) {
+        const { error } = await supabase.auth.verifyOtp({
+          token_hash,
+          type: type as "signup" | "email" | "recovery" | "invite" | "email_change",
+        });
+        if (error) {
+          setStatus("error");
+          setErrorMsg(error.message);
+          return;
+        }
+        setStatus("success");
+        setTimeout(() => navigate({ to: "/projects" }), 600);
         return;
       }
-      const { error } = await supabase.auth.verifyOtp({
-        token_hash,
-        type: type as "signup" | "email" | "recovery" | "invite" | "email_change",
-      });
-      if (error) {
-        setStatus("error");
-        setErrorMsg(error.message);
-        return;
+
+      // Case 2: Implicit flow — Supabase /verify redirected here with tokens
+      // in the URL hash (#access_token=...). supabase-js auto-consumes the
+      // hash on load and sets the session. Poll briefly for it.
+      for (let i = 0; i < 20; i++) {
+        const { data } = await supabase.auth.getSession();
+        if (data.session) {
+          setStatus("success");
+          setTimeout(() => navigate({ to: "/projects" }), 600);
+          return;
+        }
+        await new Promise((r) => setTimeout(r, 150));
       }
-      setStatus("success");
-      setTimeout(() => navigate({ to: "/projects" }), 600);
+
+      setStatus("error");
+      setErrorMsg("Missing or expired verification token.");
     })();
+
   }, [token_hash, type, navigate]);
 
   const resend = async () => {
