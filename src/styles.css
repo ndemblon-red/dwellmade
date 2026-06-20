@@ -55,15 +55,16 @@
 }
 
 :root {
-  --bg: #f5f5f3;
-  --bg-grid: #ebebea;
+  --bg: #fafaf8;
+  --bg-grid: rgba(26, 26, 46, 0.07);
   --surface: #ffffff;
   --surface-raised: #f9f9f7;
   --border: rgba(26, 26, 46, 0.1);
   --border-strong: rgba(26, 26, 46, 0.2);
+  --border-card: rgba(26, 26, 46, 0.12);
   --text-primary: #1a1a2e;
-  --text-secondary: rgba(26, 26, 46, 0.55);
-  --text-muted: rgba(26, 26, 46, 0.35);
+  --text-secondary: rgba(26, 26, 46, 0.65);
+  --text-muted: rgba(26, 26, 46, 0.5);
   --accent-mustard: #f0a500;
   --accent-pink: #e87fa3;
   --accent-cobalt: #2b35af;
