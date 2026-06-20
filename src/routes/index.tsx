@@ -375,7 +375,7 @@ function LandingFooter() {
 export function AnonymousBanner() {
   return (
     <div className="max-w-7xl mx-auto px-6 pt-4">
-      <div className="bg-paper ring-1 ring-black/5 rounded-md px-4 py-2 text-xs text-muted-ink flex items-center justify-between gap-3">
+      <div className="bg-paper ring-1 ring-border-card rounded-md px-4 py-2 text-xs text-muted-ink flex items-center justify-between gap-3">
         <span>
           You're working anonymously — nothing here will be saved.{" "}
           <span className="font-mono">↓</span>
@@ -653,7 +653,7 @@ function CollectInspoTile({
   onRemove: () => void;
 }) {
   return (
-    <div className="relative bg-paper ring-1 ring-black/5 rounded-lg overflow-hidden">
+    <div className="relative bg-paper ring-1 ring-border-card rounded-lg overflow-hidden">
       <img src={inspo.dataUrl} alt="Inspiration" className="w-full aspect-square object-cover" />
       <button
         onClick={onRemove}
@@ -784,7 +784,7 @@ function Moodboard({
   const isSelected = (hex: string) => selected.some((c) => colorsMatch(c, hex));
   if (ready.length === 0) {
     return (
-      <div className="aspect-[4/3] bg-paper ring-1 ring-black/5 rounded-xl grid place-items-center">
+      <div className="aspect-[4/3] bg-paper ring-1 ring-border-card rounded-xl grid place-items-center">
         <p className="text-muted-ink italic font-serif text-xl">No references yet.</p>
       </div>
     );
@@ -852,7 +852,7 @@ function BriefEditor({
   countFor: (hex: string) => number;
 }) {
   return (
-    <div className="bg-paper ring-1 ring-black/5 rounded-xl p-6 space-y-7">
+    <div className="bg-paper ring-1 ring-border-card rounded-xl p-6 space-y-7">
       {/* Palette */}
       <div className="space-y-3">
         <Label
@@ -1227,7 +1227,7 @@ function BriefSummaryStrip({ brief, onEdit }: { brief: AestheticBrief; onEdit: (
     vibeWords.length > 6 ? vibeWords.slice(0, 6).join(" ") + "…" : brief.vibe;
   const materials = brief.materials.join(", ");
   return (
-    <div className="bg-paper ring-1 ring-black/5 rounded-md px-4 py-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+    <div className="bg-paper ring-1 ring-border-card rounded-md px-4 py-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
       <div className="flex items-center gap-1.5">
         {brief.palette.length ? (
           brief.palette.map((c) => (
@@ -1343,7 +1343,7 @@ function ControlsPanel({
     { key: "decor", label: "Decor & lighting" },
   ];
   return (
-    <div className="bg-paper ring-1 ring-black/5 p-6 rounded-xl space-y-6">
+    <div className="bg-paper ring-1 ring-border-card p-6 rounded-xl space-y-6">
       <div className="space-y-3">
         {rows.map((r) => (
           <div key={r.key} className="flex items-center justify-between text-sm">
