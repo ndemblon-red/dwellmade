@@ -119,46 +119,53 @@ function FloatAnimations() {
 }
 
 function Scribbles() {
+  const stroke = { stroke: NEAR_BLACK, strokeWidth: 2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-      {/* paint roller — top right of left hero column */}
+      {/* paint roller — rotated 10deg right */}
       <svg
-        className="float-a absolute top-8 left-[38%] lg:left-[34%]"
+        className="absolute top-8 left-[38%] lg:left-[34%]"
         width="110"
         height="110"
         viewBox="0 0 110 110"
         fill="none"
+        style={{ transform: "rotate(10deg)" }}
       >
-        <rect x="14" y="22" width="78" height="22" rx="3" fill={MUSTARD} />
-        <rect x="14" y="22" width="78" height="6" fill={NEAR_BLACK} opacity="0.15" />
-        <rect x="50" y="44" width="6" height="22" fill={MUSTARD} />
-        <path d="M44 66 L62 66 L66 96 L40 96 Z" fill={MUSTARD} />
+        <rect x="14" y="22" width="78" height="22" rx="3" fill={MUSTARD} {...stroke} />
+        <line x1="14" y1="30" x2="92" y2="30" {...stroke} />
+        <rect x="50" y="44" width="6" height="22" fill={MUSTARD} {...stroke} />
+        <path d="M44 66 L62 66 L66 96 L40 96 Z" fill={MUSTARD} {...stroke} />
       </svg>
 
-      {/* floor lamp — bottom left of left hero column, partially cropped */}
+      {/* floor lamp */}
       <svg
-        className="float-b absolute -bottom-6 -left-6"
+        className="absolute -bottom-6 -left-6"
         width="140"
         height="200"
         viewBox="0 0 140 200"
         fill="none"
       >
-        <path d="M30 70 L110 70 L92 28 L48 28 Z" fill={PINK} />
-        <rect x="68" y="70" width="4" height="100" fill={PINK} />
-        <ellipse cx="70" cy="178" rx="40" ry="8" fill={PINK} />
+        <path d="M30 70 L110 70 L92 28 L48 28 Z" fill={PINK} {...stroke} />
+        <line x1="70" y1="70" x2="70" y2="170" {...stroke} />
+        <ellipse cx="70" cy="178" rx="40" ry="8" fill={PINK} {...stroke} />
       </svg>
 
-      {/* measuring tape — mid-right near before/after */}
+      {/* measuring tape with tick marks */}
       <svg
-        className="float-c absolute top-[44%] right-[-2%] lg:right-[-1%]"
+        className="absolute top-[44%] right-[-2%] lg:right-[-1%]"
         width="90"
         height="90"
         viewBox="0 0 90 90"
         fill="none"
       >
-        <circle cx="42" cy="46" r="30" fill={COBALT} />
-        <circle cx="42" cy="46" r="10" fill={CREAM} />
-        <path d="M70 38 C 78 30, 84 22, 80 12 L 74 14 C 76 22, 70 28, 64 34 Z" fill={COBALT} />
+        <circle cx="42" cy="46" r="30" fill={COBALT} {...stroke} />
+        <circle cx="42" cy="46" r="10" fill={CREAM} {...stroke} />
+        <path d="M70 38 C 78 30, 84 22, 80 12 L 74 14 C 76 22, 70 28, 64 34 Z" fill={COBALT} {...stroke} />
+        {/* tick marks along the unrolled tape */}
+        <line x1="73" y1="34" x2="76" y2="30" {...stroke} />
+        <line x1="76" y1="29" x2="79" y2="25" {...stroke} />
+        <line x1="78" y1="23" x2="82" y2="20" {...stroke} />
+        <line x1="79" y1="18" x2="83" y2="15" {...stroke} />
       </svg>
     </div>
   );
