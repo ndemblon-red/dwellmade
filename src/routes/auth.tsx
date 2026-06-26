@@ -3,7 +3,105 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
-import { AppHeader } from "@/components/AppHeader";
+const NEAR_BLACK = "#1A1A2E";
+const MUSTARD = "#F0A500";
+const MUSTARD_DARK = "#C47F00";
+const PINK = "#E87FA3";
+const PINK_DARK = "#C45F83";
+const COBALT = "#2B35AF";
+const COBALT_DARK = "#1E2680";
+
+function AuthHeader() {
+  return (
+    <header style={{ backgroundColor: NEAR_BLACK }}>
+      <div className="max-w-7xl mx-auto px-8 py-4 flex items-center">
+        <Link to="/">
+          <span
+            className="leading-none tracking-tight lowercase"
+            style={{ fontFamily: "'Instrument Serif', serif", fontSize: "32px" }}
+          >
+            <span className="italic" style={{ color: MUSTARD }}>dwell</span>
+            <span style={{ color: PINK }}>made</span>
+          </span>
+        </Link>
+      </div>
+    </header>
+  );
+}
+
+function PaintCan() {
+  return (
+    <svg width="110" height="130" viewBox="0 0 110 130" fill="none" style={{ transform: "rotate(-8deg)" }}>
+      {/* shadow body */}
+      <rect x="18" y="42" width="78" height="72" rx="3" fill={MUSTARD_DARK} />
+      {/* body */}
+      <rect x="14" y="38" width="78" height="72" rx="3" fill={MUSTARD} />
+      {/* lid rim */}
+      <ellipse cx="53" cy="38" rx="39" ry="6" fill={MUSTARD_DARK} />
+      <ellipse cx="53" cy="36" rx="39" ry="6" fill={MUSTARD} />
+      {/* handle */}
+      <path d="M20 44 Q53 18 86 44" stroke={MUSTARD_DARK} strokeWidth="3" fill="none" />
+      {/* drips */}
+      <path d="M30 110 Q30 122 33 126 Q36 122 36 110 Z" fill={MUSTARD} />
+      <path d="M62 110 Q62 118 65 121 Q68 118 68 110 Z" fill={MUSTARD} />
+    </svg>
+  );
+}
+
+function PantoneFan() {
+  const tones = ["#F4A8C2", "#E87FA3", "#D86A91", "#C45F83"];
+  return (
+    <svg width="160" height="120" viewBox="0 0 160 120" fill="none">
+      {tones.map((c, i) => (
+        <g key={i} transform={`rotate(${(i - 1.5) * 12} 80 110)`}>
+          <rect x="70" y="14" width="22" height="88" rx="2" fill={PINK_DARK} />
+          <rect x="68" y="12" width="22" height="84" rx="2" fill={c} />
+        </g>
+      ))}
+      <circle cx="80" cy="110" r="5" fill={PINK_DARK} />
+    </svg>
+  );
+}
+
+function Sofa() {
+  return (
+    <svg width="240" height="140" viewBox="0 0 240 140" fill="none">
+      {/* shadow */}
+      <rect x="14" y="58" width="216" height="60" rx="14" fill={COBALT_DARK} />
+      {/* base */}
+      <rect x="10" y="54" width="216" height="56" rx="14" fill={COBALT} />
+      {/* cushions */}
+      <rect x="22" y="34" width="92" height="44" rx="8" fill={COBALT} />
+      <rect x="122" y="34" width="92" height="44" rx="8" fill={COBALT} />
+      <rect x="22" y="36" width="92" height="6" rx="3" fill={COBALT_DARK} />
+      <rect x="122" y="36" width="92" height="6" rx="3" fill={COBALT_DARK} />
+      {/* arms */}
+      <rect x="0" y="40" width="22" height="70" rx="8" fill={COBALT_DARK} />
+      <rect x="218" y="40" width="22" height="70" rx="8" fill={COBALT_DARK} />
+      {/* legs */}
+      <rect x="28" y="110" width="8" height="16" fill={COBALT_DARK} />
+      <rect x="204" y="110" width="8" height="16" fill={COBALT_DARK} />
+    </svg>
+  );
+}
+
+function PaintRoller() {
+  return (
+    <svg width="90" height="200" viewBox="0 0 90 200" fill="none" style={{ transform: "rotate(12deg)" }}>
+      {/* roller shadow */}
+      <rect x="14" y="14" width="64" height="26" rx="6" fill={MUSTARD_DARK} />
+      {/* roller */}
+      <rect x="10" y="10" width="64" height="26" rx="6" fill={MUSTARD} />
+      {/* frame */}
+      <path d="M44 36 L44 60 L36 60 L36 90" stroke={MUSTARD_DARK} strokeWidth="4" fill="none" />
+      {/* handle */}
+      <rect x="30" y="88" width="14" height="100" rx="6" fill={MUSTARD_DARK} />
+      <rect x="28" y="86" width="14" height="100" rx="6" fill={MUSTARD} />
+      {/* grip cap */}
+      <rect x="26" y="180" width="18" height="10" rx="4" fill={MUSTARD_DARK} />
+    </svg>
+  );
+}
 
 const searchSchema = z.object({
   redirect: z.string().optional(),
