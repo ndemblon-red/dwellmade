@@ -110,6 +110,29 @@ function PaintRoller() {
   );
 }
 
+function Decorations() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 hidden md:block">
+      <div className="absolute" style={{ top: "110px", left: "6%" }}>
+        <PaintCan />
+      </div>
+      <div className="absolute" style={{ top: "100px", right: "6%" }}>
+        <PantoneFan />
+      </div>
+      <div className="absolute" style={{ bottom: "-10px", left: "-20px" }}>
+        <Plant />
+      </div>
+      <div className="absolute" style={{ bottom: "-20px", right: "4%" }}>
+        <PaintRoller />
+      </div>
+      <span className="absolute rounded-full" style={{ top: "260px", left: "28%", width: "16px", height: "16px", background: MUSTARD }} />
+      <span className="absolute rounded-full" style={{ top: "320px", right: "26%", width: "18px", height: "18px", background: PINK }} />
+      <span className="absolute rounded-full" style={{ bottom: "180px", left: "30%", width: "14px", height: "14px", background: COBALT }} />
+      <span className="absolute rounded-full" style={{ bottom: "240px", right: "30%", width: "16px", height: "16px", background: MUSTARD }} />
+    </div>
+  );
+}
+
 const searchSchema = z.object({
   redirect: z.string().optional(),
 });
