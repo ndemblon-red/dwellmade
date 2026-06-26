@@ -286,7 +286,7 @@ function TickerBand() {
     "Palette extraction",
     "Moodboard curation",
     "AI generation",
-    "Before / after compare",
+    "Before / after comparison",
     "Project rooms",
   ];
   return (
