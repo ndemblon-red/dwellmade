@@ -29,58 +29,46 @@ function AuthHeader() {
   );
 }
 
-function PaintCan() {
+const stroke = {
+  stroke: NEAR_BLACK,
+  strokeWidth: 2,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+};
+
+function PaintCan({ color = MUSTARD, rotate = -8 }: { color?: string; rotate?: number }) {
   return (
-    <svg width="110" height="130" viewBox="0 0 110 130" fill="none" style={{ transform: "rotate(-8deg)" }}>
-      {/* shadow body */}
-      <rect x="18" y="42" width="78" height="72" rx="3" fill={MUSTARD_DARK} />
+    <svg width="110" height="130" viewBox="0 0 110 130" fill="none" style={{ transform: `rotate(${rotate}deg)` }}>
       {/* body */}
-      <rect x="14" y="38" width="78" height="72" rx="3" fill={MUSTARD} />
-      {/* lid rim */}
-      <ellipse cx="53" cy="38" rx="39" ry="6" fill={MUSTARD_DARK} />
-      <ellipse cx="53" cy="36" rx="39" ry="6" fill={MUSTARD} />
+      <rect x="14" y="38" width="78" height="72" rx="3" fill={color} {...stroke} />
+      {/* lid */}
+      <ellipse cx="53" cy="36" rx="39" ry="6" fill={color} {...stroke} />
       {/* handle */}
-      <path d="M20 44 Q53 18 86 44" stroke={MUSTARD_DARK} strokeWidth="3" fill="none" />
+      <path d="M20 44 Q53 18 86 44" fill="none" {...stroke} />
+      {/* label band */}
+      <line x1="14" y1="74" x2="92" y2="74" {...stroke} />
       {/* drips */}
-      <path d="M30 110 Q30 122 33 126 Q36 122 36 110 Z" fill={MUSTARD} />
-      <path d="M62 110 Q62 118 65 121 Q68 118 68 110 Z" fill={MUSTARD} />
+      <path d="M30 110 Q30 122 33 126 Q36 122 36 110 Z" fill={color} {...stroke} />
+      <path d="M62 110 Q62 118 65 121 Q68 118 68 110 Z" fill={color} {...stroke} />
     </svg>
   );
 }
 
-function PantoneFan() {
-  const tones = ["#F4A8C2", "#E87FA3", "#D86A91", "#C45F83"];
+function Plant() {
   return (
-    <svg width="160" height="120" viewBox="0 0 160 120" fill="none">
-      {tones.map((c, i) => (
-        <g key={i} transform={`rotate(${(i - 1.5) * 12} 80 110)`}>
-          <rect x="70" y="14" width="22" height="88" rx="2" fill={PINK_DARK} />
-          <rect x="68" y="12" width="22" height="84" rx="2" fill={c} />
-        </g>
-      ))}
-      <circle cx="80" cy="110" r="5" fill={PINK_DARK} />
-    </svg>
-  );
-}
-
-function Sofa() {
-  return (
-    <svg width="240" height="140" viewBox="0 0 240 140" fill="none">
-      {/* shadow */}
-      <rect x="14" y="58" width="216" height="60" rx="14" fill={COBALT_DARK} />
-      {/* base */}
-      <rect x="10" y="54" width="216" height="56" rx="14" fill={COBALT} />
-      {/* cushions */}
-      <rect x="22" y="34" width="92" height="44" rx="8" fill={COBALT} />
-      <rect x="122" y="34" width="92" height="44" rx="8" fill={COBALT} />
-      <rect x="22" y="36" width="92" height="6" rx="3" fill={COBALT_DARK} />
-      <rect x="122" y="36" width="92" height="6" rx="3" fill={COBALT_DARK} />
-      {/* arms */}
-      <rect x="0" y="40" width="22" height="70" rx="8" fill={COBALT_DARK} />
-      <rect x="218" y="40" width="22" height="70" rx="8" fill={COBALT_DARK} />
-      {/* legs */}
-      <rect x="28" y="110" width="8" height="16" fill={COBALT_DARK} />
-      <rect x="204" y="110" width="8" height="16" fill={COBALT_DARK} />
+    <svg width="180" height="220" viewBox="0 0 180 220" fill="none">
+      {/* pot */}
+      <path d="M40 140 L140 140 L128 210 L52 210 Z" fill={COBALT} {...stroke} />
+      <rect x="36" y="130" width="108" height="14" rx="2" fill={COBALT} {...stroke} />
+      {/* stems */}
+      <path d="M90 138 Q88 100 70 70" fill="none" {...stroke} />
+      <path d="M90 138 Q92 100 110 60" fill="none" {...stroke} />
+      <path d="M90 138 Q90 110 90 80" fill="none" {...stroke} />
+      {/* leaves */}
+      <path d="M70 70 Q40 60 38 30 Q60 28 72 56 Z" fill={COBALT} {...stroke} />
+      <path d="M110 60 Q140 50 144 22 Q120 22 110 48 Z" fill={COBALT} {...stroke} />
+      <path d="M90 80 Q70 50 82 20 Q104 36 96 70 Z" fill={COBALT} {...stroke} />
+      <path d="M90 80 Q112 60 130 70 Q120 92 96 88 Z" fill={COBALT} {...stroke} />
     </svg>
   );
 }
@@ -88,17 +76,14 @@ function Sofa() {
 function PaintRoller() {
   return (
     <svg width="90" height="200" viewBox="0 0 90 200" fill="none" style={{ transform: "rotate(12deg)" }}>
-      {/* roller shadow */}
-      <rect x="14" y="14" width="64" height="26" rx="6" fill={MUSTARD_DARK} />
       {/* roller */}
-      <rect x="10" y="10" width="64" height="26" rx="6" fill={MUSTARD} />
+      <rect x="10" y="10" width="64" height="26" rx="6" fill={MUSTARD} {...stroke} />
       {/* frame */}
-      <path d="M44 36 L44 60 L36 60 L36 90" stroke={MUSTARD_DARK} strokeWidth="4" fill="none" />
+      <path d="M44 36 L44 60 L36 60 L36 90" fill="none" {...stroke} />
       {/* handle */}
-      <rect x="30" y="88" width="14" height="100" rx="6" fill={MUSTARD_DARK} />
-      <rect x="28" y="86" width="14" height="100" rx="6" fill={MUSTARD} />
+      <rect x="28" y="86" width="14" height="100" rx="6" fill={MUSTARD} {...stroke} />
       {/* grip cap */}
-      <rect x="26" y="180" width="18" height="10" rx="4" fill={MUSTARD_DARK} />
+      <rect x="26" y="180" width="18" height="10" rx="4" fill={MUSTARD_DARK} {...stroke} />
     </svg>
   );
 }
@@ -246,10 +231,10 @@ function AuthPage() {
           <PaintCan />
         </div>
         <div className="absolute" style={{ top: "100px", right: "6%" }}>
-          <PantoneFan />
+          <PaintCan color={PINK} rotate={10} />
         </div>
-        <div className="absolute" style={{ bottom: "-30px", left: "-40px" }}>
-          <Sofa />
+        <div className="absolute" style={{ bottom: "-10px", left: "-20px" }}>
+          <Plant />
         </div>
         <div className="absolute" style={{ bottom: "-20px", right: "4%" }}>
           <PaintRoller />
