@@ -75,6 +75,7 @@ function ProjectsDashboard() {
                   backgroundColor: "#FCE8EF",
                   border: "1px solid rgba(26, 26, 46, 0.08)",
                   borderRadius: 4,
+                  boxShadow: "0 1px 2px rgba(26,26,46,0.04), 0 4px 12px rgba(26,26,46,0.06)",
                 }}
               >
                 <Link
