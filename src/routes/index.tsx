@@ -152,7 +152,7 @@ function Scribbles() {
 
       {/* measuring tape with tick marks */}
       <svg
-        className="absolute top-[44%] right-[-2%] lg:right-[-1%]"
+        className="absolute top-[44%] left-[-2%] lg:left-[-1%]"
         width="90"
         height="90"
         viewBox="0 0 90 90"
