@@ -237,9 +237,31 @@ function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-canvas text-ink font-sans">
-      <AppHeader />
-      <main className="max-w-md mx-auto px-6 py-16">
+    <div className="min-h-screen bg-canvas text-ink font-sans relative overflow-hidden">
+      <AuthHeader />
+
+      {/* Decorative illustrated objects */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 hidden md:block">
+        <div className="absolute" style={{ top: "110px", left: "6%" }}>
+          <PaintCan />
+        </div>
+        <div className="absolute" style={{ top: "100px", right: "6%" }}>
+          <PantoneFan />
+        </div>
+        <div className="absolute" style={{ bottom: "-30px", left: "-40px" }}>
+          <Sofa />
+        </div>
+        <div className="absolute" style={{ bottom: "-20px", right: "4%" }}>
+          <PaintRoller />
+        </div>
+        {/* colour chip dots */}
+        <span className="absolute rounded-full" style={{ top: "260px", left: "28%", width: "16px", height: "16px", background: MUSTARD }} />
+        <span className="absolute rounded-full" style={{ top: "320px", right: "26%", width: "18px", height: "18px", background: PINK }} />
+        <span className="absolute rounded-full" style={{ bottom: "180px", left: "30%", width: "14px", height: "14px", background: COBALT }} />
+        <span className="absolute rounded-full" style={{ bottom: "240px", right: "30%", width: "16px", height: "16px", background: MUSTARD }} />
+      </div>
+
+      <main className="max-w-md mx-auto px-6 py-16 relative z-10">
         <h1 className="font-serif text-4xl mb-2">
           {mode === "signin" ? "Sign in" : (
             <>
@@ -296,7 +318,7 @@ function AuthPage() {
         </form>
 
         <p className="text-xs text-muted-ink mt-6 text-center">
-          {mode === "signin" ? "New to Studio Syn?" : "Already have an account?"}{" "}
+          {mode === "signin" ? "New to dwellmade?" : "Already have an account?"}{" "}
           <button
             onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
             className="underline underline-offset-4 text-ink"
