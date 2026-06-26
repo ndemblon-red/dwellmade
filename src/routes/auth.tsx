@@ -199,7 +199,7 @@ function AuthPage() {
   if (pendingEmail) {
     return (
       <div className="min-h-screen bg-canvas text-ink font-sans">
-        <AppHeader />
+        <AuthHeader />
         <main className="max-w-md mx-auto px-6 py-16">
           <h1 className="font-serif text-4xl mb-2">
             Check your <span className="italic">inbox</span>
