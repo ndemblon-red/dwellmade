@@ -70,7 +70,12 @@ function ProjectsDashboard() {
             {projects.map((p) => (
               <div
                 key={p.id}
-                className="bg-paper ring-1 ring-border-card rounded-xl p-5 hover:ring-ink/30 transition-shadow group"
+                className="p-5 hover:ring-ink/30 transition-shadow group"
+                style={{
+                  backgroundColor: "#F5F0E4",
+                  border: "1px solid rgba(26, 26, 46, 0.08)",
+                  borderRadius: 4,
+                }}
               >
                 <Link
                   to="/projects/$projectId"

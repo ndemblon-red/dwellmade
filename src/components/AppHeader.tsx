@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -5,17 +6,82 @@ import { supabase } from "@/integrations/supabase/client";
 const NEAR_BLACK = "#1A1A2E";
 const MUSTARD = "#F0A500";
 const PINK = "#E87FA3";
+const CREAM = "#F5F0E8";
 const MUTED_CREAM = "rgba(245,240,232,0.7)";
 
 function Wordmark() {
   return (
     <span
-      className="text-2xl leading-none tracking-tight lowercase"
-      style={{ fontFamily: "'Instrument Serif', serif" }}
+      className="leading-none tracking-tight lowercase"
+      style={{ fontFamily: "'Instrument Serif', serif", fontSize: "32px" }}
     >
       <span className="italic" style={{ color: MUSTARD }}>dwell</span>
       <span style={{ color: PINK }}>made</span>
     </span>
+  );
+}
+
+function UserMenu({ email, onSignOut }: { email: string; onSignOut: () => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const initial = (email[0] ?? "?").toUpperCase();
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        aria-label="Account menu"
+        className="flex items-center justify-center rounded-full"
+        style={{
+          width: 28,
+          height: 28,
+          backgroundColor: "rgba(245, 240, 232, 0.15)",
+          color: CREAM,
+          fontSize: 12,
+        }}
+      >
+        {initial}
+      </button>
+      {open && (
+        <div
+          className="absolute right-0 mt-2 min-w-[140px] z-50"
+          style={{
+            backgroundColor: NEAR_BLACK,
+            border: "1px solid rgba(245,240,232,0.1)",
+            borderRadius: 4,
+            padding: "8px 0",
+          }}
+        >
+          <button
+            onClick={() => {
+              setOpen(false);
+              onSignOut();
+            }}
+            className="w-full text-left normal-case tracking-normal"
+            style={{
+              color: CREAM,
+              fontSize: 13,
+              padding: "8px 16px",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "rgba(245,240,232,0.08)")
+            }
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+          >
+            Sign out
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -36,17 +102,7 @@ export function AppHeader() {
         </Link>
         <div className="text-[10px] uppercase tracking-[0.22em]" style={{ color: MUTED_CREAM }}>
           {loading ? null : user ? (
-            <div className="flex items-center gap-5">
-              <Link to="/projects" className="hover:opacity-100 opacity-80">
-                Projects
-              </Link>
-              <span className="hidden sm:inline normal-case tracking-normal text-[11px]">
-                {user.email}
-              </span>
-              <button onClick={signOut} className="underline underline-offset-4 hover:opacity-100 opacity-80">
-                Sign out
-              </button>
-            </div>
+            <UserMenu email={user.email ?? ""} onSignOut={signOut} />
           ) : (
             <Link to="/auth" className="hover:opacity-100 opacity-80">
               Sign in
