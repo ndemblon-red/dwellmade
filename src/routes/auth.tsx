@@ -36,20 +36,42 @@ const stroke = {
   strokeLinejoin: "round" as const,
 };
 
-function PaintCan({ color = MUSTARD, rotate = -8 }: { color?: string; rotate?: number }) {
+function PaintCan() {
   return (
-    <svg width="110" height="130" viewBox="0 0 110 130" fill="none" style={{ transform: `rotate(${rotate}deg)` }}>
-      {/* body */}
-      <rect x="14" y="38" width="78" height="72" rx="3" fill={color} {...stroke} />
-      {/* lid */}
-      <ellipse cx="53" cy="36" rx="39" ry="6" fill={color} {...stroke} />
-      {/* handle */}
-      <path d="M20 44 Q53 18 86 44" fill="none" {...stroke} />
-      {/* label band */}
-      <line x1="14" y1="74" x2="92" y2="74" {...stroke} />
-      {/* drips */}
-      <path d="M30 110 Q30 122 33 126 Q36 122 36 110 Z" fill={color} {...stroke} />
-      <path d="M62 110 Q62 118 65 121 Q68 118 68 110 Z" fill={color} {...stroke} />
+    <svg width="130" height="150" viewBox="0 0 130 150" fill="none" style={{ transform: "rotate(-6deg)" }}>
+      {/* lid disc (top ellipse) */}
+      <ellipse cx="65" cy="22" rx="44" ry="8" fill={MUSTARD_DARK} {...stroke} />
+      {/* can body */}
+      <path d="M21 22 L21 118 Q21 126 30 128 L100 128 Q109 126 109 118 L109 22 Z" fill={MUSTARD} {...stroke} />
+      {/* top rim line */}
+      <ellipse cx="65" cy="22" rx="44" ry="8" fill="none" {...stroke} />
+      {/* label rectangle */}
+      <rect x="28" y="50" width="74" height="46" rx="2" fill="#F5F0E8" {...stroke} />
+      {/* label inner lines */}
+      <line x1="36" y1="62" x2="94" y2="62" {...stroke} />
+      <rect x="36" y="70" width="58" height="18" rx="1" fill={MUSTARD} {...stroke} />
+      {/* handle (wire bail) */}
+      <path d="M22 26 Q65 -4 108 26" fill="none" {...stroke} />
+      <circle cx="22" cy="26" r="3" fill={NEAR_BLACK} />
+      <circle cx="108" cy="26" r="3" fill={NEAR_BLACK} />
+      {/* drip down side */}
+      <path d="M101 30 Q103 60 100 80 Q97 60 99 30 Z" fill={MUSTARD} {...stroke} />
+    </svg>
+  );
+}
+
+function PantoneFan() {
+  const tones = ["#F4A8C2", "#EC91B3", "#E87FA3", "#C45F83"];
+  return (
+    <svg width="180" height="140" viewBox="0 0 180 140" fill="none">
+      {tones.map((c, i) => (
+        <g key={i} transform={`rotate(${(i - 1.5) * 14} 90 128)`}>
+          <rect x="78" y="14" width="24" height="100" rx="2" fill={c} {...stroke} />
+          <line x1="78" y1="34" x2="102" y2="34" {...stroke} />
+        </g>
+      ))}
+      <circle cx="90" cy="128" r="7" fill={PINK_DARK} {...stroke} />
+      <circle cx="90" cy="128" r="2" fill={NEAR_BLACK} />
     </svg>
   );
 }
