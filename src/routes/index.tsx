@@ -55,6 +55,7 @@ function LandingPage() {
   }
   return (
     <div style={{ backgroundColor: CREAM, color: NEAR_BLACK, ...dmSans }}>
+      <FloatAnimations />
       <LandingNav />
       <Hero />
       <TickerBand />
@@ -67,26 +68,27 @@ function LandingPage() {
 function LandingNav() {
   return (
     <nav style={{ backgroundColor: NEAR_BLACK }}>
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link to="/"><Wordmark /></Link>
+      <div className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
+        <Link to="/"><Wordmark size="text-[32px]" /></Link>
         <div className="flex items-center gap-6 sm:gap-8">
           <a
-            href="#how-it-works"
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="hidden sm:inline text-[10px] uppercase tracking-[0.22em]"
-            style={{ color: MUTED_CREAM, ...dmSans }}
-          >
-            How it works
-          </a>
-          <a
             href="#examples"
-            className="hidden sm:inline text-[10px] uppercase tracking-[0.22em]"
+            className="hidden sm:inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.22em]"
             style={{ color: MUTED_CREAM, ...dmSans }}
           >
             Examples
+            <span
+              className="rounded-full px-2 py-0.5 normal-case"
+              style={{
+                fontSize: "10px",
+                letterSpacing: "0.08em",
+                backgroundColor: "rgba(240, 165, 0, 0.15)",
+                color: MUSTARD,
+                border: "1px solid rgba(240, 165, 0, 0.3)",
+              }}
+            >
+              Coming soon
+            </span>
           </a>
           <Link
             to="/studio"
@@ -101,37 +103,62 @@ function LandingNav() {
   );
 }
 
+function FloatAnimations() {
+  return (
+    <style>{`
+      @media (prefers-reduced-motion: no-preference) {
+        @keyframes float-a { 0%,100% { transform: translateY(0px);} 50% { transform: translateY(-8px);} }
+        @keyframes float-b { 0%,100% { transform: translateY(0px);} 50% { transform: translateY(-6px);} }
+        @keyframes float-c { 0%,100% { transform: translateY(0px);} 50% { transform: translateY(-10px);} }
+        .float-a { animation: float-a 4s ease-in-out 0s infinite; }
+        .float-b { animation: float-b 3.5s ease-in-out 1.2s infinite; }
+        .float-c { animation: float-c 5s ease-in-out 2.1s infinite; }
+      }
+    `}</style>
+  );
+}
+
 function Scribbles() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-      {/* lamp */}
-      <svg className="absolute top-12 right-[6%] opacity-90" width="64" height="80" viewBox="0 0 64 80" fill="none">
-        <path d="M12 28 L52 28 L44 8 L20 8 Z" fill={MUSTARD} />
-        <rect x="30" y="28" width="4" height="38" fill={NEAR_BLACK} />
-        <ellipse cx="32" cy="70" rx="18" ry="4" fill={NEAR_BLACK} />
+      {/* paint roller — top right of left hero column */}
+      <svg
+        className="float-a absolute top-8 left-[38%] lg:left-[34%]"
+        width="110"
+        height="110"
+        viewBox="0 0 110 110"
+        fill="none"
+      >
+        <rect x="14" y="22" width="78" height="22" rx="3" fill={MUSTARD} />
+        <rect x="14" y="22" width="78" height="6" fill={NEAR_BLACK} opacity="0.15" />
+        <rect x="50" y="44" width="6" height="22" fill={MUSTARD} />
+        <path d="M44 66 L62 66 L66 96 L40 96 Z" fill={MUSTARD} />
       </svg>
-      {/* paint blob */}
-      <svg className="absolute top-[42%] left-[4%]" width="120" height="100" viewBox="0 0 120 100" fill="none">
-        <path d="M20 50 C 10 20, 60 5, 80 20 C 110 30, 115 70, 90 85 C 60 100, 25 90, 20 50 Z" fill={PINK} />
-        <circle cx="56" cy="50" r="14" fill={CREAM} />
+
+      {/* floor lamp — bottom left of left hero column, partially cropped */}
+      <svg
+        className="float-b absolute -bottom-6 -left-6"
+        width="140"
+        height="200"
+        viewBox="0 0 140 200"
+        fill="none"
+      >
+        <path d="M30 70 L110 70 L92 28 L48 28 Z" fill={PINK} />
+        <rect x="68" y="70" width="4" height="100" fill={PINK} />
+        <ellipse cx="70" cy="178" rx="40" ry="8" fill={PINK} />
       </svg>
-      {/* sofa */}
-      <svg className="absolute bottom-10 left-[10%]" width="120" height="60" viewBox="0 0 120 60" fill="none">
-        <rect x="6" y="20" width="108" height="28" rx="6" fill={COBALT} />
-        <rect x="6" y="14" width="20" height="22" rx="4" fill={COBALT} />
-        <rect x="94" y="14" width="20" height="22" rx="4" fill={COBALT} />
-        <rect x="14" y="48" width="6" height="10" fill={NEAR_BLACK} />
-        <rect x="100" y="48" width="6" height="10" fill={NEAR_BLACK} />
-      </svg>
-      {/* plant pot */}
-      <svg className="absolute bottom-[18%] right-[12%]" width="80" height="100" viewBox="0 0 80 100" fill="none">
-        <path d="M40 56 C 22 40, 18 18, 30 6 C 36 18, 42 28, 40 56 Z" fill={COBALT} />
-        <path d="M40 60 C 58 44, 66 22, 56 8 C 48 22, 42 32, 40 60 Z" fill={MUSTARD} />
-        <path d="M22 60 L58 60 L52 92 L28 92 Z" fill={NEAR_BLACK} />
-      </svg>
-      {/* circle */}
-      <svg className="absolute top-[18%] left-[42%]" width="48" height="48" viewBox="0 0 48 48">
-        <circle cx="24" cy="24" r="22" fill={MUSTARD} />
+
+      {/* measuring tape — mid-right near before/after */}
+      <svg
+        className="float-c absolute top-[44%] right-[-2%] lg:right-[-1%]"
+        width="90"
+        height="90"
+        viewBox="0 0 90 90"
+        fill="none"
+      >
+        <circle cx="42" cy="46" r="30" fill={COBALT} />
+        <circle cx="42" cy="46" r="10" fill={CREAM} />
+        <path d="M70 38 C 78 30, 84 22, 80 12 L 74 14 C 76 22, 70 28, 64 34 Z" fill={COBALT} />
       </svg>
     </div>
   );
@@ -161,13 +188,13 @@ function Hero() {
             Drop in a photo of your room and a handful of references. dwellmade pulls a palette,
             curates a moodboard, and renders the room you actually live in — restyled.
           </p>
-          <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="mt-8 flex flex-col items-start gap-3">
             <Link
               to="/studio"
               className="inline-flex items-center text-sm font-semibold rounded-full px-6 py-3.5"
               style={{ backgroundColor: NEAR_BLACK, color: CREAM, ...dmSans }}
             >
-              Try it free — no account needed →
+              Try it free
             </Link>
             <span
               className="text-[10px] uppercase tracking-[0.2em] font-medium"
@@ -259,7 +286,7 @@ function TickerBand() {
     "Palette extraction",
     "Moodboard curation",
     "AI generation",
-    "Before / after compare",
+    "Before / after comparison",
     "Project rooms",
   ];
   return (
