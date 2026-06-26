@@ -187,13 +187,13 @@ function Hero() {
             Drop in a photo of your room and a handful of references. dwellmade pulls a palette,
             curates a moodboard, and renders the room you actually live in — restyled.
           </p>
-          <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="mt-8 flex flex-col items-start gap-3">
             <Link
               to="/studio"
               className="inline-flex items-center text-sm font-semibold rounded-full px-6 py-3.5"
               style={{ backgroundColor: NEAR_BLACK, color: CREAM, ...dmSans }}
             >
-              Try it free — no account needed →
+              Try it free
             </Link>
             <span
               className="text-[10px] uppercase tracking-[0.2em] font-medium"
