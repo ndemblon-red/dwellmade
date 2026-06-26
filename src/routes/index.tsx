@@ -91,11 +91,19 @@ function LandingNav() {
             </span>
           </a>
           <Link
-            to="/studio"
-            className="text-[11px] uppercase tracking-[0.18em] font-semibold rounded-full px-4 py-2"
-            style={{ backgroundColor: MUSTARD, color: NEAR_BLACK, ...dmSans }}
+            to="/auth"
+            className="transition-colors"
+            style={{
+              fontSize: "12px",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "rgba(245, 240, 232, 0.7)",
+              ...dmSans,
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(245, 240, 232, 1)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(245, 240, 232, 0.7)")}
           >
-            Try free
+            Sign in
           </Link>
         </div>
       </div>
