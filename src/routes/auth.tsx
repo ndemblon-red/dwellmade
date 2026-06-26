@@ -231,10 +231,10 @@ function AuthPage() {
           <PaintCan />
         </div>
         <div className="absolute" style={{ top: "100px", right: "6%" }}>
-          <PantoneFan />
+          <PaintCan color={PINK} rotate={10} />
         </div>
-        <div className="absolute" style={{ bottom: "-30px", left: "-40px" }}>
-          <Sofa />
+        <div className="absolute" style={{ bottom: "-10px", left: "-20px" }}>
+          <Plant />
         </div>
         <div className="absolute" style={{ bottom: "-20px", right: "4%" }}>
           <PaintRoller />
