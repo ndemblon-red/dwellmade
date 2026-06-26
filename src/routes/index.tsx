@@ -149,24 +149,6 @@ function Scribbles() {
         <line x1="70" y1="70" x2="70" y2="170" {...stroke} />
         <ellipse cx="70" cy="178" rx="40" ry="8" fill={PINK} {...stroke} />
       </svg>
-
-      {/* measuring tape with tick marks */}
-      <svg
-        className="absolute top-[44%] left-[-2%] lg:left-[-1%]"
-        width="90"
-        height="90"
-        viewBox="0 0 90 90"
-        fill="none"
-      >
-        <circle cx="42" cy="46" r="30" fill={COBALT} {...stroke} />
-        <circle cx="42" cy="46" r="10" fill={CREAM} {...stroke} />
-        <path d="M70 38 C 78 30, 84 22, 80 12 L 74 14 C 76 22, 70 28, 64 34 Z" fill={COBALT} {...stroke} />
-        {/* tick marks along the unrolled tape */}
-        <line x1="73" y1="34" x2="76" y2="30" {...stroke} />
-        <line x1="76" y1="29" x2="79" y2="25" {...stroke} />
-        <line x1="78" y1="23" x2="82" y2="20" {...stroke} />
-        <line x1="79" y1="18" x2="83" y2="15" {...stroke} />
-      </svg>
     </div>
   );
 }
