@@ -67,26 +67,27 @@ function LandingPage() {
 function LandingNav() {
   return (
     <nav style={{ backgroundColor: NEAR_BLACK }}>
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link to="/"><Wordmark /></Link>
+      <div className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
+        <Link to="/"><Wordmark size="text-[32px]" /></Link>
         <div className="flex items-center gap-6 sm:gap-8">
           <a
-            href="#how-it-works"
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="hidden sm:inline text-[10px] uppercase tracking-[0.22em]"
-            style={{ color: MUTED_CREAM, ...dmSans }}
-          >
-            How it works
-          </a>
-          <a
             href="#examples"
-            className="hidden sm:inline text-[10px] uppercase tracking-[0.22em]"
+            className="hidden sm:inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.22em]"
             style={{ color: MUTED_CREAM, ...dmSans }}
           >
             Examples
+            <span
+              className="rounded-full px-2 py-0.5 normal-case"
+              style={{
+                fontSize: "10px",
+                letterSpacing: "0.08em",
+                backgroundColor: "rgba(240, 165, 0, 0.15)",
+                color: MUSTARD,
+                border: "1px solid rgba(240, 165, 0, 0.3)",
+              }}
+            >
+              Coming soon
+            </span>
           </a>
           <Link
             to="/studio"
@@ -98,6 +99,21 @@ function LandingNav() {
         </div>
       </div>
     </nav>
+  );
+}
+
+function FloatAnimations() {
+  return (
+    <style>{`
+      @media (prefers-reduced-motion: no-preference) {
+        @keyframes float-a { 0%,100% { transform: translateY(0px);} 50% { transform: translateY(-8px);} }
+        @keyframes float-b { 0%,100% { transform: translateY(0px);} 50% { transform: translateY(-6px);} }
+        @keyframes float-c { 0%,100% { transform: translateY(0px);} 50% { transform: translateY(-10px);} }
+        .float-a { animation: float-a 4s ease-in-out 0s infinite; }
+        .float-b { animation: float-b 3.5s ease-in-out 1.2s infinite; }
+        .float-c { animation: float-c 5s ease-in-out 2.1s infinite; }
+      }
+    `}</style>
   );
 }
 
