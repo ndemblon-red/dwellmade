@@ -55,6 +55,7 @@ function LandingPage() {
   }
   return (
     <div style={{ backgroundColor: CREAM, color: NEAR_BLACK, ...dmSans }}>
+      <FloatAnimations />
       <LandingNav />
       <Hero />
       <TickerBand />
