@@ -1249,7 +1249,20 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
             {generating ? "Synthesizing…" : "Generate Synthesis"}
           </button>
         </div>
+        {usage ? (
+          <p className="text-[11px] text-muted-ink">
+            {usage.kind === "paid"
+              ? `${usage.used} of ${usage.limit} generations used this month`
+              : `${usage.used} of ${usage.limit} free generations used`}
+          </p>
+        ) : null}
       </div>
+
+      <UpgradeModal
+        open={upgradeReason !== null}
+        onClose={() => setUpgradeReason(null)}
+        reason={upgradeReason ?? "anonymous_used_free"}
+      />
 
       {activeGen ? (
         <ResultSection
