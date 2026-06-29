@@ -52,6 +52,30 @@ export type Database = {
           },
         ]
       }
+      anonymous_generations: {
+        Row: {
+          count: number
+          created_at: string
+          fingerprint: string
+          id: string
+          last_used_at: string
+        }
+        Insert: {
+          count?: number
+          created_at?: string
+          fingerprint: string
+          id?: string
+          last_used_at?: string
+        }
+        Update: {
+          count?: number
+          created_at?: string
+          fingerprint?: string
+          id?: string
+          last_used_at?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -286,6 +310,36 @@ export type Database = {
           id?: string
           metadata?: Json | null
           reason?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          billing_period_start: string | null
+          created_at: string
+          generations_used_this_month: number
+          id: string
+          plan: string
+          plan_active: boolean
+          updated_at: string
+        }
+        Insert: {
+          billing_period_start?: string | null
+          created_at?: string
+          generations_used_this_month?: number
+          id: string
+          plan?: string
+          plan_active?: boolean
+          updated_at?: string
+        }
+        Update: {
+          billing_period_start?: string | null
+          created_at?: string
+          generations_used_this_month?: number
+          id?: string
+          plan?: string
+          plan_active?: boolean
+          updated_at?: string
         }
         Relationships: []
       }
