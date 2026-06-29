@@ -1,38 +1,29 @@
-# Fix: signup confirmation emails never trigger
+# Why no row appeared in email_send_log
 
-## What's actually going on
+## What the data shows
 
-I checked the email pipeline end-to-end:
+- Your auth Redirect URLs (the screenshot) are fine. Those settings only control where the **confirm link** is allowed to redirect to after the user clicks it. They have nothing to do with whether the email gets sent.
+- Cloud → Emails status: **"Setting up"** (it was "No auth emails yet" before the re-scaffold). The hook registration is in progress, not active yet.
+- `auth.users` shows the signup did happen: `ndemblon@gmail.com` at 13:22:14, unconfirmed.
+- `email_send_log` is empty because that signup hit Supabase Auth while the hook was still in "Setting up" state. During that window, Auth falls back to default behaviour and doesn't call your webhook, so nothing gets enqueued and nothing is logged.
 
-- Domain `notify.dwellmade.co.uk` — verified, ready to send.
-- Branded templates — in place at `src/lib/email-templates/`.
-- Webhook route `/lovable/email/auth/webhook` — exists, enqueues into `auth_emails`.
-- Queue + cron — `pgmq` and the `process-email-queue` cron job (every 5s) are live and pointed at the preview URL, so sending works (which is why your manual test from Cloud → Emails succeeds).
-- `email_send_log` — **completely empty**. Zero rows.
-- Cloud → Emails — still reports "No authentication emails yet".
-
-An empty log plus that dashboard state means Supabase Auth is **not** calling your webhook on signup at all. Nothing is being enqueued, so nothing gets sent. The manual test bypasses Supabase Auth entirely and goes straight into the queue, which is why that path works.
-
-The webhook file is correct, but the hook registration on the Auth side never got wired to it. That registration happens through the scaffold tool, not by writing files manually.
+The re-scaffold worked — it just hasn't finished registering on the Auth side. This usually completes within a minute or two.
 
 ## Plan
 
-1. Back up `src/lib/email-templates/_brand.tsx` and the 6 branded templates (`signup`, `magic-link`, `recovery`, `invite`, `email-change`, `reauthentication`) to `/tmp/email-backup/`.
-2. Re-run the auth scaffold with `confirm_overwrite: true`. This is the step that registers the Supabase Auth "send email" hook against `/lovable/email/auth/webhook` and flips Cloud → Emails out of the "No auth emails yet" state.
-3. Restore the branded templates from the backup so your dwellmade styling is preserved.
-4. Verify the webhook route still uses `enqueue_email` into `auth_emails` (no changes expected).
-5. Trigger a real signup against the preview URL and confirm:
-   - a row appears in `email_send_log` with `template_name = 'signup'`,
-   - status transitions `pending → sent`,
-   - the email lands from `noreply@notify.dwellmade.co.uk`.
+1. **Wait ~1–2 minutes**, then re-check Cloud → Emails. It should flip from "Setting up" to showing your 6 templates listed.
+2. **Trigger a fresh signup** with a different email (existing ones won't re-send a confirmation). I'll watch `email_send_log` and `auth.users` for the new row.
+3. **Confirm the flow end-to-end**:
+   - new row in `email_send_log` with `template_name = 'signup'`, status `pending → sent`
+   - email arrives from `noreply@notify.dwellmade.co.uk` with your branded template
+4. **If status is still "Setting up" after a few minutes** or the new signup still doesn't enqueue, I'll inspect the Go API auth logs for the webhook call attempt and report what Supabase Auth is actually doing (network error, 4xx from the webhook, hook disabled, etc.) before changing anything.
 
-## On publishing
+## What I'm NOT touching
 
-You don't need to publish to test. The cron is already pointed at your **preview** URL (`project--…-dev.lovable.app/lovable/email/queue/process`), and the Supabase Auth hook the scaffold registers also targets the preview deployment. Signup emails will flow on the preview URL once the hook is registered.
+- Your Redirect URLs / Site URL — already correct.
+- Branded templates, domain, queue, cron — all in place.
+- Auto-confirm stays off.
 
-## What this does not touch
+## One small note about the Redirect URLs (optional, separate issue)
 
-- The verified domain and NS delegation.
-- The branded template styling (backed up and restored).
-- Queue tables, cron schedule, or `email_send_state` config.
-- Auto-confirm stays off, as you have it.
+Your allowed list only has `https://dwellmade.lovable.app/**` (the published URL). The Site URL is set to your preview URL. If you want confirm links sent **from the preview** to work for testers before you publish, add `https://id-preview--b9f0be19-caae-4d23-8bf5-c0b64fdfb863.lovable.app/**` to the allowed Redirect URLs. Not required for the email to send — only for the link to be honoured when clicked.
