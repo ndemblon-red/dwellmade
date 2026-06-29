@@ -1125,6 +1125,10 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
 
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { usage, refresh: refreshUsage } = useGenerationUsage();
+  const [upgradeReason, setUpgradeReason] = useState<
+    "anonymous_used_free" | "paid_limit_reached" | null
+  >(null);
 
   const activeGen =
     generations.find((g) => g.id === activeGenerationId) ?? generations[0];
@@ -1150,6 +1154,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
     startGeneration(id, parts.join(" · "));
 
     try {
+      const headers = await authHeaders();
       await streamImage(
         "/api/generate",
         {
@@ -1168,9 +1173,20 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
           notes,
         },
         (dataUrl, isFinal) => updateGeneration(id, dataUrl, isFinal),
+        { headers },
       );
+      refreshUsage();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Generation failed");
+      if (e instanceof GenerationLimitError) {
+        setUpgradeReason(
+          e.kind === "anonymous" || e.kind === "free"
+            ? "anonymous_used_free"
+            : "paid_limit_reached",
+        );
+        refreshUsage();
+      } else {
+        setError(e instanceof Error ? e.message : "Generation failed");
+      }
       removeGeneration(id);
     } finally {
       setGenerating(false);
@@ -1186,6 +1202,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
     startGeneration,
     updateGeneration,
     removeGeneration,
+    refreshUsage,
   ]);
 
   return (
