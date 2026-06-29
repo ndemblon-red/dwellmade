@@ -8,12 +8,14 @@ import {
   type Stage,
 } from "@/lib/store";
 import { tagInspoImage } from "@/lib/tagging.functions";
-import { streamImage } from "@/lib/streamImage";
+import { streamImage, GenerationLimitError } from "@/lib/streamImage";
 import { BeforeAfter } from "@/components/BeforeAfter";
 import { deriveBrief, colorsMatch } from "@/lib/brief";
 
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
+import { useGenerationUsage, authHeaders } from "@/hooks/use-generation-usage";
+import { UpgradeModal } from "@/components/UpgradeModal";
 
 
 export const Route = createFileRoute("/")({ component: LandingPage });
