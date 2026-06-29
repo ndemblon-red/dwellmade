@@ -14,18 +14,57 @@ type ImageEventPayload =
       created_at: number;
     };
 
+export class GenerationLimitError extends Error {
+  status: number;
+  code: "limit_reached" | "upgrade_required";
+  kind: "anonymous" | "paid" | "free";
+  used: number;
+  limit: number;
+  constructor(payload: {
+    status: number;
+    code: "limit_reached" | "upgrade_required";
+    kind: "anonymous" | "paid" | "free";
+    used: number;
+    limit: number;
+  }) {
+    super(payload.code);
+    this.name = "GenerationLimitError";
+    this.status = payload.status;
+    this.code = payload.code;
+    this.kind = payload.kind;
+    this.used = payload.used;
+    this.limit = payload.limit;
+  }
+}
+
 export async function streamImage(
   endpoint: string,
   body: unknown,
   onFrame: (dataUrl: string, isFinal: boolean) => void,
+  init?: { headers?: Record<string, string> },
 ): Promise<void> {
   const res = await fetch(endpoint, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
     body: JSON.stringify(body),
+    credentials: "include",
   });
   if (!res.ok || !res.body) {
     const text = await res.text().catch(() => "");
+    if (res.status === 402) {
+      try {
+        const parsed = JSON.parse(text);
+        throw new GenerationLimitError({
+          status: 402,
+          code: parsed.error,
+          kind: parsed.kind,
+          used: parsed.used ?? 0,
+          limit: parsed.limit ?? 0,
+        });
+      } catch (e) {
+        if (e instanceof GenerationLimitError) throw e;
+      }
+    }
     throw new Error(`Generation failed: ${res.status} ${text}`);
   }
 
