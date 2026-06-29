@@ -95,13 +95,13 @@ export const Route = createFileRoute("/api/generate")({
           return new Response(text || "Upstream error", { status: upstream.status });
         }
 
-        return new Response(upstream.body, {
-          headers: {
-            "Content-Type": "text/event-stream",
-            "Cache-Control": "no-cache",
-            Connection: "keep-alive",
-          },
-        });
+        const streamHeaders: Record<string, string> = {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        };
+        if (gate.ok && gate.setCookie) streamHeaders["Set-Cookie"] = gate.setCookie;
+        return new Response(upstream.body, { headers: streamHeaders });
       },
     },
   },
