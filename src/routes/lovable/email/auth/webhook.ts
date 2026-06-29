@@ -31,7 +31,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "room-vibe-creator"
+const SITE_NAME = "dwellmade"
 const SENDER_DOMAIN = "notify.dwellmade.co.uk"
 const ROOT_DOMAIN = "dwellmade.co.uk"
 const FROM_DOMAIN = "notify.dwellmade.co.uk"

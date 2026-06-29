@@ -1,25 +1,38 @@
-# Fix "No authentication emails yet"
+# Fix: signup confirmation emails never trigger
 
-Your branded templates, webhook route, and verified domain (`notify.dwellmade.co.uk`) are all in place — but the Cloud → Emails panel still shows "No authentication emails yet". That means the backend hasn't registered your custom auth hook against the webhook route. This usually happens when the templates were created manually instead of through the official scaffolding tool, which is what wires the auth hook up.
+## What's actually going on
 
-## Steps
+I checked the email pipeline end-to-end:
 
-1. **Back up the branded styling.** Copy `src/lib/email-templates/_brand.tsx` and the 6 template files (`signup.tsx`, `magic-link.tsx`, `recovery.tsx`, `invite.tsx`, `email-change.tsx`, `reauthentication.tsx`) to a temp location so the brand work isn't lost if the scaffold overwrites them.
+- Domain `notify.dwellmade.co.uk` — verified, ready to send.
+- Branded templates — in place at `src/lib/email-templates/`.
+- Webhook route `/lovable/email/auth/webhook` — exists, enqueues into `auth_emails`.
+- Queue + cron — `pgmq` and the `process-email-queue` cron job (every 5s) are live and pointed at the preview URL, so sending works (which is why your manual test from Cloud → Emails succeeds).
+- `email_send_log` — **completely empty**. Zero rows.
+- Cloud → Emails — still reports "No authentication emails yet".
 
-2. **Re-run the auth scaffold tool with `confirm_overwrite: true`.** This is what registers the Supabase auth hook to point at `/lovable/email/auth/webhook` and flips the Cloud dashboard out of the "No auth emails yet" state. It will also normalize the webhook route to the current canonical shape.
+An empty log plus that dashboard state means Supabase Auth is **not** calling your webhook on signup at all. Nothing is being enqueued, so nothing gets sent. The manual test bypasses Supabase Auth entirely and goes straight into the queue, which is why that path works.
 
-3. **Restore the branded templates.** After scaffolding completes, put the branded `_brand.tsx` and the 6 templates back in place so the visual styling (dwellmade wordmark, Instrument Serif headings, cream/mustard/pink palette, near-black CTA at 4px radius) is preserved.
+The webhook file is correct, but the hook registration on the Auth side never got wired to it. That registration happens through the scaffold tool, not by writing files manually.
 
-4. **Verify the webhook route still uses `enqueue_email`** (it currently does) — no changes needed if the scaffold output matches.
+## Plan
 
-5. **Publish the app.** Modern-stack server routes only go live on publish, and the auth hook registration targets the published URL. Without a publish, Supabase has nowhere to deliver events.
+1. Back up `src/lib/email-templates/_brand.tsx` and the 6 branded templates (`signup`, `magic-link`, `recovery`, `invite`, `email-change`, `reauthentication`) to `/tmp/email-backup/`.
+2. Re-run the auth scaffold with `confirm_overwrite: true`. This is the step that registers the Supabase Auth "send email" hook against `/lovable/email/auth/webhook` and flips Cloud → Emails out of the "No auth emails yet" state.
+3. Restore the branded templates from the backup so your dwellmade styling is preserved.
+4. Verify the webhook route still uses `enqueue_email` into `auth_emails` (no changes expected).
+5. Trigger a real signup against the preview URL and confirm:
+   - a row appears in `email_send_log` with `template_name = 'signup'`,
+   - status transitions `pending → sent`,
+   - the email lands from `noreply@notify.dwellmade.co.uk`.
 
-6. **Confirm in Cloud → Emails** that the "No auth emails yet" panel is gone and the 6 templates appear. Trigger a real signup/magic link to confirm delivery; check `email_send_log` if anything looks off.
+## On publishing
 
-## What this does not change
+You don't need to publish to test. The cron is already pointed at your **preview** URL (`project--…-dev.lovable.app/lovable/email/queue/process`), and the Supabase Auth hook the scaffold registers also targets the preview deployment. Signup emails will flow on the preview URL once the hook is registered.
 
-- Domain (`notify.dwellmade.co.uk`) — already verified, untouched.
-- Branded styling — preserved via the backup/restore step.
-- Email infrastructure tables and queue — already set up.
+## What this does not touch
 
-After the plan runs, you should see your branded confirm-signup, magic-link, recovery, invite, email-change, and reauthentication emails listed in Cloud → Emails, and they'll send from `noreply@notify.dwellmade.co.uk`.
+- The verified domain and NS delegation.
+- The branded template styling (backed up and restored).
+- Queue tables, cron schedule, or `email_send_state` config.
+- Auto-confirm stays off, as you have it.
