@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { buildPrompt } from "@/prompts/generate.prompt";
+import { checkAndIncrement } from "@/lib/generation-gate.server";
 
 const BriefSchema = z.object({
   palette: z.array(z.string()),
@@ -41,6 +42,22 @@ export const Route = createFileRoute("/api/generate")({
           );
         }
 
+        // Server-side generation gate — must run before any upstream call.
+        const gate = await checkAndIncrement(request);
+        if (!gate.ok) {
+          const gateHeaders: Record<string, string> = { "Content-Type": "application/json" };
+          if (gate.setCookie) gateHeaders["Set-Cookie"] = gate.setCookie;
+          return new Response(
+            JSON.stringify({
+              error: gate.code,
+              kind: gate.kind,
+              used: gate.used,
+              limit: gate.limit,
+            }),
+            { status: gate.status, headers: gateHeaders },
+          );
+        }
+
         const prompt = buildPrompt(payload);
 
         const content: Array<
@@ -78,13 +95,13 @@ export const Route = createFileRoute("/api/generate")({
           return new Response(text || "Upstream error", { status: upstream.status });
         }
 
-        return new Response(upstream.body, {
-          headers: {
-            "Content-Type": "text/event-stream",
-            "Cache-Control": "no-cache",
-            Connection: "keep-alive",
-          },
-        });
+        const streamHeaders: Record<string, string> = {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        };
+        if (gate.ok && gate.setCookie) streamHeaders["Set-Cookie"] = gate.setCookie;
+        return new Response(upstream.body, { headers: streamHeaders });
       },
     },
   },

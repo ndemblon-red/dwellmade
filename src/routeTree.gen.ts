@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthConfirmRouteImport } from './routes/auth_.confirm'
+import { Route as ApiUsageRouteImport } from './routes/api/usage'
 import { Route as ApiGenerateRouteImport } from './routes/api/generate'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects/index'
 import { Route as AuthenticatedProjectsProjectIdRouteImport } from './routes/_authenticated/projects/$projectId'
@@ -43,6 +44,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthConfirmRoute = AuthConfirmRouteImport.update({
   id: '/auth_/confirm',
   path: '/auth/confirm',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiUsageRoute = ApiUsageRouteImport.update({
+  id: '/api/usage',
+  path: '/api/usage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiGenerateRoute = ApiGenerateRouteImport.update({
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/studio': typeof StudioRoute
   '/api/generate': typeof ApiGenerateRoute
+  '/api/usage': typeof ApiUsageRoute
   '/auth/confirm': typeof AuthConfirmRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/projects/': typeof AuthenticatedProjectsIndexRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/studio': typeof StudioRoute
   '/api/generate': typeof ApiGenerateRoute
+  '/api/usage': typeof ApiUsageRoute
   '/auth/confirm': typeof AuthConfirmRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/studio': typeof StudioRoute
   '/api/generate': typeof ApiGenerateRoute
+  '/api/usage': typeof ApiUsageRoute
   '/auth_/confirm': typeof AuthConfirmRoute
   '/_authenticated/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/studio'
     | '/api/generate'
+    | '/api/usage'
     | '/auth/confirm'
     | '/projects/$projectId'
     | '/projects/'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/studio'
     | '/api/generate'
+    | '/api/usage'
     | '/auth/confirm'
     | '/projects/$projectId'
     | '/projects'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/studio'
     | '/api/generate'
+    | '/api/usage'
     | '/auth_/confirm'
     | '/_authenticated/projects/$projectId'
     | '/_authenticated/projects/'
@@ -163,6 +175,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   StudioRoute: typeof StudioRoute
   ApiGenerateRoute: typeof ApiGenerateRoute
+  ApiUsageRoute: typeof ApiUsageRoute
   AuthConfirmRoute: typeof AuthConfirmRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -204,6 +217,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/confirm'
       fullPath: '/auth/confirm'
       preLoaderRoute: typeof AuthConfirmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/usage': {
+      id: '/api/usage'
+      path: '/api/usage'
+      fullPath: '/api/usage'
+      preLoaderRoute: typeof ApiUsageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/generate': {
@@ -270,6 +290,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   StudioRoute: StudioRoute,
   ApiGenerateRoute: ApiGenerateRoute,
+  ApiUsageRoute: ApiUsageRoute,
   AuthConfirmRoute: AuthConfirmRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,

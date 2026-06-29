@@ -8,12 +8,14 @@ import {
   type Stage,
 } from "@/lib/store";
 import { tagInspoImage } from "@/lib/tagging.functions";
-import { streamImage } from "@/lib/streamImage";
+import { streamImage, GenerationLimitError } from "@/lib/streamImage";
 import { BeforeAfter } from "@/components/BeforeAfter";
 import { deriveBrief, colorsMatch } from "@/lib/brief";
 
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
+import { useGenerationUsage, authHeaders } from "@/hooks/use-generation-usage";
+import { UpgradeModal } from "@/components/UpgradeModal";
 
 
 export const Route = createFileRoute("/")({ component: LandingPage });
@@ -1123,6 +1125,10 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
 
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { usage, refresh: refreshUsage } = useGenerationUsage();
+  const [upgradeReason, setUpgradeReason] = useState<
+    "anonymous_used_free" | "paid_limit_reached" | null
+  >(null);
 
   const activeGen =
     generations.find((g) => g.id === activeGenerationId) ?? generations[0];
@@ -1148,6 +1154,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
     startGeneration(id, parts.join(" · "));
 
     try {
+      const headers = await authHeaders();
       await streamImage(
         "/api/generate",
         {
@@ -1166,9 +1173,20 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
           notes,
         },
         (dataUrl, isFinal) => updateGeneration(id, dataUrl, isFinal),
+        { headers },
       );
+      refreshUsage();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Generation failed");
+      if (e instanceof GenerationLimitError) {
+        setUpgradeReason(
+          e.kind === "anonymous" || e.kind === "free"
+            ? "anonymous_used_free"
+            : "paid_limit_reached",
+        );
+        refreshUsage();
+      } else {
+        setError(e instanceof Error ? e.message : "Generation failed");
+      }
       removeGeneration(id);
     } finally {
       setGenerating(false);
@@ -1184,6 +1202,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
     startGeneration,
     updateGeneration,
     removeGeneration,
+    refreshUsage,
   ]);
 
   return (
@@ -1230,7 +1249,20 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
             {generating ? "Synthesizing…" : "Generate Synthesis"}
           </button>
         </div>
+        {usage ? (
+          <p className="text-[11px] text-muted-ink">
+            {usage.kind === "paid"
+              ? `${usage.used} of ${usage.limit} generations used this month`
+              : `${usage.used} of ${usage.limit} free generations used`}
+          </p>
+        ) : null}
       </div>
+
+      <UpgradeModal
+        open={upgradeReason !== null}
+        onClose={() => setUpgradeReason(null)}
+        reason={upgradeReason ?? "anonymous_used_free"}
+      />
 
       {activeGen ? (
         <ResultSection
