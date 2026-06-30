@@ -1125,6 +1125,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
 
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notesError, setNotesError] = useState<string | null>(null);
   const { usage, refresh: refreshUsage } = useGenerationUsage();
   const [upgradeReason, setUpgradeReason] = useState<
     "anonymous_used_free" | "paid_limit_reached" | null
