@@ -1,5 +1,25 @@
 import type { InspoImage, AestheticBrief } from "./store";
 
+export const NOTES_MAX_LENGTH = 280;
+
+const INJECTION_PATTERNS: RegExp[] = [
+  /ignore previous instructions/i,
+  /ignore the above/i,
+  /disregard/i,
+  /system prompt/i,
+  /you are now/i,
+  /new instructions/i,
+  /act as/i,
+  /pretend you are/i,
+];
+
+export function notesLookSuspicious(notes: string): boolean {
+  if (!notes) return false;
+  return INJECTION_PATTERNS.some((re) => re.test(notes));
+}
+
+
+
 // --- Color utilities ---------------------------------------------------------
 
 function hexToRgb(hex: string): [number, number, number] | null {
