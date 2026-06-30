@@ -50,21 +50,17 @@ export function BeforeAfter({
         className="absolute inset-0 size-full object-cover"
         draggable={false}
       />
-      <div
-        className="absolute inset-y-0 left-0 overflow-hidden"
-        style={{ width: `${pos}%` }}
-      >
-        <img
-          src={afterSrc}
-          alt="Redesigned room"
-          className="absolute inset-0 h-full object-cover transition-[filter] duration-300"
-          style={{
-            width: containerRef.current?.clientWidth ?? "100%",
-            filter: afterBlurred ? "blur(16px)" : "none",
-          }}
-          draggable={false}
-        />
-      </div>
+      <img
+        src={afterSrc}
+        alt="Redesigned room"
+        className="absolute inset-0 size-full object-cover transition-[filter] duration-300"
+        style={{
+          clipPath: `inset(0 ${100 - pos}% 0 0)`,
+          filter: afterBlurred ? "blur(16px)" : "none",
+        }}
+        draggable={false}
+      />
+
       <div
         className="absolute inset-y-0 w-px bg-paper shadow-[0_0_0_1px_rgba(0,0,0,0.15)]"
         style={{ left: `${pos}%` }}
