@@ -1396,11 +1396,13 @@ function ControlsPanel({
   setKeepChange,
   notes,
   setNotes,
+  notesError,
 }: {
   keepChange: KeepChange;
   setKeepChange: (k: keyof KeepChange, v: "keep" | "change") => void;
   notes: string;
   setNotes: (s: string) => void;
+  notesError?: string | null;
 }) {
   const rows: Array<{ key: keyof KeepChange; label: string }> = [
     { key: "walls", label: "Walls & surfaces" },
@@ -1427,15 +1429,27 @@ function ControlsPanel({
         </label>
         <textarea
           value={notes}
-          onChange={(e) => setNotes(e.target.value)}
+          onChange={(e) => setNotes(e.target.value.slice(0, NOTES_MAX_LENGTH))}
+          maxLength={NOTES_MAX_LENGTH}
           placeholder="e.g. keep the kids' play corner; lean cosier than the references."
           rows={4}
           className="w-full bg-canvas/70 ring-1 ring-black/5 rounded-md p-3 text-sm font-sans resize-none focus:outline-none focus:ring-ink/40"
         />
+        <div className="flex items-center justify-between gap-3 min-h-[1rem]">
+          {notesError ? (
+            <p className="text-[11px] text-destructive">{notesError}</p>
+          ) : (
+            <span />
+          )}
+          <span className="text-[11px] text-muted-ink tabular-nums">
+            {notes.length} / {NOTES_MAX_LENGTH}
+          </span>
+        </div>
       </div>
     </div>
   );
 }
+
 
 function KeepChangeToggle({
   value,
