@@ -1142,6 +1142,11 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
 
   const handleGenerate = useCallback(async () => {
     if (!room || generating || briefIsEmpty) return;
+    if (notesLookSuspicious(notes)) {
+      setNotesError("Please rephrase your notes — they couldn't be processed.");
+      return;
+    }
+    setNotesError(null);
     setError(null);
     setGenerating(true);
     const id = crypto.randomUUID();
