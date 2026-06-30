@@ -1224,7 +1224,11 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
             keepChange={keepChange}
             setKeepChange={setKeepChange}
             notes={notes}
-            setNotes={setNotes}
+            setNotes={(s) => {
+              if (notesError) setNotesError(null);
+              setNotes(s);
+            }}
+            notesError={notesError}
           />
         </section>
       </div>
