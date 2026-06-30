@@ -10,7 +10,7 @@ import {
 import { tagInspoImage } from "@/lib/tagging.functions";
 import { streamImage, GenerationLimitError } from "@/lib/streamImage";
 import { BeforeAfter } from "@/components/BeforeAfter";
-import { deriveBrief, colorsMatch } from "@/lib/brief";
+import { deriveBrief, colorsMatch, notesLookSuspicious, NOTES_MAX_LENGTH } from "@/lib/brief";
 
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
