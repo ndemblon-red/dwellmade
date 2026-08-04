@@ -72,7 +72,7 @@ function ProjectPage() {
           <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-baseline sm:gap-3">
             <Link
               to="/projects"
-              className="text-[10px] uppercase tracking-widest text-muted-ink hover:text-ink"
+               className="inline-flex min-h-11 items-center text-[10px] uppercase tracking-widest text-muted-ink hover:text-ink"
             >
               ← Projects
             </Link>
@@ -114,7 +114,7 @@ function ProjectPage() {
             <button
               onClick={() => createRoomMut.mutate()}
               disabled={createRoomMut.isPending}
-              className="shrink-0 px-3 py-1.5 rounded-full text-xs border border-[rgba(26,26,46,0.25)] text-muted-ink hover:text-ink hover:border-ink/50 transition-colors whitespace-nowrap"
+               className="min-h-11 shrink-0 px-3 py-1.5 rounded-full text-xs border border-[rgba(26,26,46,0.25)] text-muted-ink hover:text-ink hover:border-ink/50 transition-colors whitespace-nowrap"
             >
               + New room
             </button>
@@ -129,7 +129,7 @@ function ProjectPage() {
               <p className="font-serif text-2xl italic mb-2">Add your first room.</p>
               <button
                 onClick={() => createRoomMut.mutate()}
-                className="mt-3 bg-ink text-paper px-5 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
+                 className="mt-3 min-h-11 bg-ink text-paper px-5 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
               >
                 + New room
               </button>
@@ -219,7 +219,7 @@ function MasterPaletteEditor({
           <button
             key={c}
             onClick={() => remove(c)}
-            className="size-9 rounded-md ring-1 ring-black/15 hover:ring-destructive transition-shadow relative group"
+             className="size-11 rounded-md ring-1 ring-black/15 hover:ring-destructive transition-shadow relative group"
             style={{ backgroundColor: c }}
             title={`${c} — click to remove`}
           >
@@ -243,7 +243,7 @@ function MasterPaletteEditor({
           />
           <button
             onClick={add}
-            className="text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
+             className="inline-flex min-h-11 items-center text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
           >
             Add
           </button>
@@ -272,7 +272,7 @@ function RoomPill({
   useEffect(() => setDraft(room.name), [room.name]);
 
   const base =
-    "shrink-0 inline-flex items-center gap-1 rounded-full pl-3 pr-1 py-1 text-xs transition-colors whitespace-nowrap";
+     "min-h-11 shrink-0 inline-flex items-center gap-1 rounded-full pl-3 pr-1 py-1 text-xs transition-colors whitespace-nowrap";
   const activeStyle = "bg-[#1A1A2E] text-[#F5F0E8]";
   const inactiveStyle =
     "border border-[rgba(26,26,46,0.25)] text-muted-ink hover:text-ink hover:border-ink/40";
@@ -295,13 +295,13 @@ function RoomPill({
           className="bg-transparent border-b border-current focus:outline-none text-xs min-w-0 w-28"
         />
       ) : (
-        <button onClick={onSelect} className="text-xs">
+         <button onClick={onSelect} className="self-stretch text-xs">
           {room.name}
         </button>
       )}
       <button
         onClick={() => setMenuOpen((v) => !v)}
-        className={`ml-1 size-7 sm:size-5 grid place-items-center rounded-full text-[11px] leading-none sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity ${
+         className={`ml-1 size-9 grid place-items-center rounded-full text-[11px] leading-none sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity ${
           active ? "hover:bg-white/10" : "hover:bg-black/5"
         }`}
         aria-label="Room actions"
@@ -319,7 +319,7 @@ function RoomPill({
               setEditing(true);
               setMenuOpen(false);
             }}
-            className="block w-full text-left px-3 py-1.5 text-xs text-ink hover:bg-black/5"
+             className="block min-h-11 w-full px-3 py-1.5 text-left text-xs text-ink hover:bg-black/5"
           >
             Rename
           </button>
@@ -328,7 +328,7 @@ function RoomPill({
               setMenuOpen(false);
               onDelete();
             }}
-            className="block w-full text-left px-3 py-1.5 text-xs text-destructive hover:bg-black/5"
+             className="block min-h-11 w-full px-3 py-1.5 text-left text-xs text-destructive hover:bg-black/5"
           >
             Delete
           </button>

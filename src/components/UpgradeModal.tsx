@@ -10,15 +10,20 @@ const dmSans = { fontFamily: "'DM Sans', ui-sans-serif, system-ui, sans-serif" }
 export type UpgradeModalProps = {
   open: boolean;
   onClose: () => void;
-  reason: "anonymous_used_free" | "paid_limit_reached";
+  reason: "anonymous_used_free" | "free_account" | "paid_limit_reached";
 };
 
 export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
   if (!open) return null;
-  const eyebrow =
-    reason === "anonymous_used_free"
-      ? "YOU'VE USED YOUR 3 FREE GENERATIONS"
-      : "YOU'VE REACHED YOUR MONTHLY LIMIT";
+  const eyebrow = {
+    anonymous_used_free: "YOU'VE USED YOUR 3 FREE GENERATIONS",
+    free_account: "YOUR FREE VISITOR ALLOWANCE HAS ENDED",
+    paid_limit_reached: "YOU'VE REACHED YOUR MONTHLY LIMIT",
+  }[reason];
+  const description =
+    reason === "free_account"
+      ? "Your free generations are available before signup and don't reset when you create an account. Subscribe for 50 generations a month."
+      : "Subscribe to dwellmade for 50 generations a month — enough to redesign every room in your home.";
 
   return (
     <div
@@ -41,7 +46,7 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
         <button
           onClick={onClose}
           aria-label="Close"
-          className="absolute top-3 right-3 size-8 grid place-items-center text-lg"
+          className="absolute right-2 top-2 size-11 grid place-items-center text-lg"
           style={{ color: MUTED_CREAM }}
         >
           ✕
@@ -56,8 +61,7 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
         </h2>
 
         <p className="mt-4 text-sm leading-relaxed" style={{ color: MUTED_CREAM }}>
-          Subscribe to dwellmade for 50 generations a month — enough to redesign every room in your
-          home.
+          {description}
         </p>
 
         <div className="mt-6">
