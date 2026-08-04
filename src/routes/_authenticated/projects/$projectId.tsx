@@ -316,6 +316,7 @@ function RoomPill({
     <div className={`relative group ${base} ${active ? activeStyle : inactiveStyle}`}>
       {editing ? (
         <input
+          type="text"
           autoFocus
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
