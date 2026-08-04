@@ -11,6 +11,15 @@ import { RecoveryEmail } from '@/lib/email-templates/recovery'
 import { EmailChangeEmail } from '@/lib/email-templates/email-change'
 import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
 
+interface AuthEmailData extends Record<string, unknown> {
+  action_type: string
+  email: string
+  url?: string
+  token?: string
+  old_email?: string
+  new_email?: string
+}
+
 const EMAIL_SUBJECTS: Record<string, string> = {
   signup: 'Confirm your email',
   invite: "You've been invited",
@@ -67,7 +76,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
             parser: parseEmailWebhookPayload,
           })
           payload = verified.payload
-          run_id = payload.run_id
+          run_id = payload.run_id ?? ''
         } catch (error) {
           if (error instanceof WebhookError) {
             switch (error.code) {
@@ -113,12 +122,25 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
           )
         }
 
+        const data = payload.data
+        if (
+          !data ||
+          typeof data.action_type !== 'string' ||
+          typeof data.email !== 'string'
+        ) {
+          return Response.json(
+            { error: 'Invalid webhook payload' },
+            { status: 400 }
+          )
+        }
+        const emailData = data as AuthEmailData
+
         // The email action type is in payload.data.action_type (e.g., "signup", "recovery")
         // payload.type is the hook event type ("auth")
-        const emailType = payload.data.action_type
+        const emailType = emailData.action_type
         console.log('Received auth event', {
           emailType,
-          email_redacted: redactEmail(payload.data.email),
+          email_redacted: redactEmail(emailData.email),
           run_id,
         })
 
@@ -135,12 +157,12 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
         const templateProps = {
           siteName: SITE_NAME,
           siteUrl: `https://${ROOT_DOMAIN}`,
-          recipient: payload.data.email,
-          confirmationUrl: payload.data.url,
-          token: payload.data.token,
-          email: payload.data.email,
-          oldEmail: payload.data.old_email,
-          newEmail: payload.data.new_email,
+          recipient: emailData.email,
+          confirmationUrl: emailData.url,
+          token: emailData.token,
+          email: emailData.email,
+          oldEmail: emailData.old_email,
+          newEmail: emailData.new_email,
         }
 
         // Render React Email to HTML and plain text
@@ -167,7 +189,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
         await supabase.from('email_send_log').insert({
           message_id: messageId,
           template_name: emailType,
-          recipient_email: payload.data.email,
+          recipient_email: emailData.email,
           status: 'pending',
         })
 
@@ -176,7 +198,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
           payload: {
             run_id,
             message_id: messageId,
-            to: payload.data.email,
+            to: emailData.email,
             from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
             sender_domain: SENDER_DOMAIN,
             subject: EMAIL_SUBJECTS[emailType] || 'Notification',
@@ -193,7 +215,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
           await supabase.from('email_send_log').insert({
             message_id: messageId,
             template_name: emailType,
-            recipient_email: payload.data.email,
+            recipient_email: emailData.email,
             status: 'failed',
             error_message: 'Failed to enqueue email',
           })
@@ -205,7 +227,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
 
         console.log('Auth email enqueued', {
           emailType,
-          email_redacted: redactEmail(payload.data.email),
+          email_redacted: redactEmail(emailData.email),
           run_id,
         })
 
