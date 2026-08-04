@@ -103,6 +103,8 @@ export function useRoomSync(room: DBRoom, masterPalette: string[]) {
 
       const palette = brief?.palette ?? (masterPalette.length > 0 ? [...masterPalette] : []);
 
+      const hasCompletedGeneration = generationItems.length > 0;
+
       replace({
         room: roomDataUrl
           ? {
@@ -122,6 +124,8 @@ export function useRoomSync(room: DBRoom, masterPalette: string[]) {
         generations: generationItems,
       });
       setCurrentRoomId(room.id);
+      // Completed rooms open in preview mode; unfinished rooms start at Collect.
+      setStage(hasCompletedGeneration ? "preview" : "collect");
       hydrated.current = true;
     })();
 
