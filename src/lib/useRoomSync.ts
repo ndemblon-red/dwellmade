@@ -281,8 +281,7 @@ export function useRoomSync(room: DBRoom, masterPalette: string[]) {
     return () => {
       unsub();
       if (briefTimer) clearTimeout(briefTimer);
-      for (const t of tagTimers.values()) clearTimeout(t);
+    for (const t of tagTimers.values()) clearTimeout(t);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [room.id]);
 }
