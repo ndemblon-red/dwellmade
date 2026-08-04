@@ -1115,7 +1115,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
   const [notesError, setNotesError] = useState<string | null>(null);
   const { usage, refresh: refreshUsage } = useGenerationUsage();
   const [upgradeReason, setUpgradeReason] = useState<
-    "anonymous_used_free" | "paid_limit_reached" | null
+    "anonymous_used_free" | "free_account" | "paid_limit_reached" | null
   >(null);
 
   const activeGen = generations.find((g) => g.id === activeGenerationId) ?? generations[0];
@@ -1169,9 +1169,11 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
     } catch (e) {
       if (e instanceof GenerationLimitError) {
         setUpgradeReason(
-          e.kind === "anonymous" || e.kind === "free"
+          e.kind === "anonymous"
             ? "anonymous_used_free"
-            : "paid_limit_reached",
+            : e.kind === "free"
+              ? "free_account"
+              : "paid_limit_reached",
         );
         refreshUsage();
       } else {
@@ -1246,7 +1248,9 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
           <p className="text-[11px] text-muted-ink">
             {usage.kind === "paid"
               ? `${usage.used} of ${usage.limit} generations used this month`
-              : `${usage.used} of ${usage.limit} free generations used`}
+              : usage.kind === "anonymous"
+                ? `${usage.used} of ${usage.limit} free generations used`
+                : "Subscription required to generate"}
           </p>
         ) : null}
       </div>
