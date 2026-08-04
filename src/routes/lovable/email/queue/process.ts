@@ -2,6 +2,15 @@ import { sendLovableEmail } from '@lovable.dev/email-js'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { createFileRoute } from '@tanstack/react-router'
 
+type EmailQueueClient = ReturnType<typeof createClient>
+
+interface EmailQueueMessage {
+  msg_id: number
+  read_ct?: number
+  enqueued_at?: string
+  message: Record<string, unknown>
+}
+
 const MAX_RETRIES = 5
 const DEFAULT_BATCH_SIZE = 10
 const DEFAULT_SEND_DELAY_MS = 200
@@ -36,7 +45,7 @@ function getRetryAfterSeconds(error: unknown): number {
 }
 
 async function moveToDlq(
-  supabase: SupabaseClient<any, any>,
+  supabase: EmailQueueClient,
   queue: string,
   msg: { msg_id: number; message: Record<string, unknown> },
   reason: string
@@ -88,7 +97,7 @@ export const Route = createFileRoute("/lovable/email/queue/process")({
           return Response.json({ error: 'Forbidden' }, { status: 403 })
         }
 
-        const supabase: SupabaseClient<any, any> = createClient(supabaseUrl, supabaseServiceKey)
+        const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
         // 1. Check rate-limit cooldown and read queue config
         const { data: state } = await supabase
@@ -128,7 +137,7 @@ export const Route = createFileRoute("/lovable/email/queue/process")({
           const messageIds = Array.from(
             new Set(
               messages
-                .map((msg: any) =>
+                .map((msg: EmailQueueMessage) =>
                   msg?.message?.message_id && typeof msg.message.message_id === 'string'
                     ? msg.message.message_id
                     : null

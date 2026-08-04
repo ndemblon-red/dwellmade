@@ -17,7 +17,7 @@ const AspectsSchema = z.object({
 export type TaggingResult = z.infer<typeof AspectsSchema>;
 
 export const tagInspoImage = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => InputSchema.parse(d))
+  .validator((d: unknown) => InputSchema.parse(d))
   .handler(async ({ data }): Promise<TaggingResult> => {
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("Missing LOVABLE_API_KEY");
