@@ -105,6 +105,9 @@ export function useRoomSync(room: DBRoom, masterPalette: string[]) {
 
       const hasCompletedGeneration = generationItems.length > 0;
 
+      // Guard against stale async writes after room switch / unmount.
+      if (cancelled) return;
+
       replace({
         room: roomDataUrl
           ? {
@@ -123,9 +126,12 @@ export function useRoomSync(room: DBRoom, masterPalette: string[]) {
         },
         generations: generationItems,
       });
+      if (cancelled) return;
       setCurrentRoomId(room.id);
+      if (cancelled) return;
       // Completed rooms open in preview mode; unfinished rooms start at Collect.
       setStage(hasCompletedGeneration ? "preview" : "collect");
+      if (cancelled) return;
       hydrated.current = true;
     })();
 
