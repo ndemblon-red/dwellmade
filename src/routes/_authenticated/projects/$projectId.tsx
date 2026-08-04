@@ -73,7 +73,7 @@ function ProjectPage() {
           <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-baseline sm:gap-3">
             <Link
               to="/projects"
-               className="inline-flex min-h-11 items-center text-[10px] uppercase tracking-widest text-muted-ink hover:text-ink"
+              className="inline-flex min-h-11 items-center text-[10px] uppercase tracking-widest text-muted-ink hover:text-ink"
             >
               ← Projects
             </Link>
@@ -115,7 +115,7 @@ function ProjectPage() {
             <button
               onClick={() => createRoomMut.mutate()}
               disabled={createRoomMut.isPending}
-               className="min-h-11 shrink-0 px-3 py-1.5 rounded-full text-xs border border-[rgba(26,26,46,0.25)] text-muted-ink hover:text-ink hover:border-ink/50 transition-colors whitespace-nowrap"
+              className="min-h-11 shrink-0 px-3 py-1.5 rounded-full text-xs border border-[rgba(26,26,46,0.25)] text-muted-ink hover:text-ink hover:border-ink/50 transition-colors whitespace-nowrap"
             >
               + New room
             </button>
@@ -130,7 +130,7 @@ function ProjectPage() {
               <p className="font-serif text-2xl italic mb-2">Add your first room.</p>
               <button
                 onClick={() => createRoomMut.mutate()}
-                 className="mt-3 min-h-11 bg-ink text-paper px-5 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
+                className="mt-3 min-h-11 bg-ink text-paper px-5 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
               >
                 + New room
               </button>
@@ -213,14 +213,16 @@ function MasterPaletteEditor({
     <div className="bg-paper ring-1 ring-border-card rounded-xl p-4 sm:p-5">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 mb-3">
         <span className="text-[10px] uppercase tracking-widest text-muted-ink">Master palette</span>
-        <span className="text-right text-[10px] text-muted-ink italic">Pre-fills each new room's brief.</span>
+        <span className="text-right text-[10px] text-muted-ink italic">
+          Pre-fills each new room's brief.
+        </span>
       </div>
       <div className="flex flex-wrap gap-2 items-center">
         {value.map((c) => (
           <button
             key={c}
             onClick={() => remove(c)}
-             className="size-11 rounded-md ring-1 ring-black/15 hover:ring-destructive transition-shadow relative group"
+            className="size-11 rounded-md ring-1 ring-black/15 hover:ring-destructive transition-shadow relative group"
             style={{ backgroundColor: c }}
             title={`${c} — click to remove`}
           >
@@ -244,7 +246,7 @@ function MasterPaletteEditor({
           />
           <button
             onClick={add}
-             className="inline-flex min-h-11 items-center text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
+            className="inline-flex min-h-11 items-center text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
           >
             Add
           </button>

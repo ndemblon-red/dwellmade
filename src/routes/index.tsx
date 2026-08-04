@@ -557,7 +557,9 @@ function StageNav({
                 >
                   {meta.num}
                 </span>
-                <span className="min-w-0 truncate font-serif text-base sm:text-xl">{meta.title}</span>
+                <span className="min-w-0 truncate font-serif text-base sm:text-xl">
+                  {meta.title}
+                </span>
               </div>
               <p
                 className="hidden sm:block text-[11px] uppercase tracking-[0.12em] mt-1"
@@ -709,7 +711,7 @@ function CollectStage({ onNext, canNext }: { onNext: () => void; canNext: boolea
           {room ? (
             <button
               onClick={() => setRoom(null)}
-               className="inline-flex min-h-11 items-center text-[10px] uppercase tracking-widest font-medium underline underline-offset-4 text-muted-ink hover:text-ink"
+              className="inline-flex min-h-11 items-center text-[10px] uppercase tracking-widest font-medium underline underline-offset-4 text-muted-ink hover:text-ink"
             >
               Replace
             </button>
@@ -771,7 +773,7 @@ function CollectInspoTile({ inspo, onRemove }: { inspo: InspoImage; onRemove: ()
       <img src={inspo.dataUrl} alt="Inspiration" className="w-full aspect-square object-cover" />
       <button
         onClick={onRemove}
-         className="absolute right-1 top-1 size-11 grid place-items-center rounded-full bg-paper/90 text-xs sm:right-2 sm:top-2"
+        className="absolute right-1 top-1 size-11 grid place-items-center rounded-full bg-paper/90 text-xs sm:right-2 sm:top-2"
         aria-label="Remove"
       >
         ×
@@ -1494,7 +1496,10 @@ function ControlsPanel({
     <div className="bg-paper ring-1 ring-border-card p-4 sm:p-6 rounded-xl space-y-6">
       <div className="space-y-3">
         {rows.map((r) => (
-          <div key={r.key} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 text-sm">
+          <div
+            key={r.key}
+            className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 text-sm"
+          >
             <span>{r.label}</span>
             <KeepChangeToggle value={keepChange[r.key]} onChange={(v) => setKeepChange(r.key, v)} />
           </div>
@@ -1561,7 +1566,7 @@ function UploadButton({
     <>
       <button
         onClick={() => ref.current?.click()}
-         className="inline-flex min-h-11 items-center text-xs font-medium underline underline-offset-4 hover:text-ink"
+        className="inline-flex min-h-11 items-center text-xs font-medium underline underline-offset-4 hover:text-ink"
       >
         {children}
       </button>
