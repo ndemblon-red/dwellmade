@@ -459,6 +459,7 @@ const STAGE_LABELS: Record<Stage, { num: string; title: string; sub: string }> =
   collect: { num: "01", title: "Collect", sub: "Room photo & references" },
   curate: { num: "02", title: "Curate", sub: "Build the aesthetic brief" },
   generate: { num: "03", title: "Generate", sub: "Apply brief to room" },
+  preview: { num: "", title: "Preview", sub: "Latest completed design" },
 };
 
 export function Workspace() {
