@@ -865,7 +865,7 @@ function BriefEditor({
   countFor: (hex: string) => number;
 }) {
   return (
-    <div className="bg-paper ring-1 ring-border-card rounded-xl p-6 space-y-7">
+    <div className="bg-paper ring-1 ring-border-card rounded-xl p-4 sm:p-6 space-y-7">
       {/* Palette */}
       <div className="space-y-3">
         <Label
@@ -1227,7 +1227,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
             </button>
           </p>
         ) : null}
-        <div className="flex gap-3">
+        <div className="flex w-full flex-col-reverse gap-3 sm:w-auto sm:flex-row">
           <button
             onClick={onBack}
             className="text-[11px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
@@ -1275,7 +1275,7 @@ function BriefSummaryStrip({ brief, onEdit }: { brief: AestheticBrief; onEdit: (
   const vibeShort = vibeWords.length > 6 ? vibeWords.slice(0, 6).join(" ") + "…" : brief.vibe;
   const materials = brief.materials.join(", ");
   return (
-    <div className="bg-paper ring-1 ring-border-card rounded-md px-4 py-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+    <div className="bg-paper ring-1 ring-border-card rounded-md px-4 py-3 flex flex-wrap items-center gap-x-3 sm:gap-x-5 gap-y-2 text-sm">
       <div className="flex items-center gap-1.5">
         {brief.palette.length ? (
           brief.palette.map((c) => (
@@ -1300,7 +1300,7 @@ function BriefSummaryStrip({ brief, onEdit }: { brief: AestheticBrief; onEdit: (
       </span>
       <button
         onClick={onEdit}
-        className="ml-auto text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
+        className="w-full pt-1 text-left text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink sm:ml-auto sm:w-auto sm:pt-0 sm:text-right"
       >
         Edit brief →
       </button>
@@ -1392,10 +1392,10 @@ function ControlsPanel({
     { key: "decor", label: "Decor & lighting" },
   ];
   return (
-    <div className="bg-paper ring-1 ring-border-card p-6 rounded-xl space-y-6">
+    <div className="bg-paper ring-1 ring-border-card p-4 sm:p-6 rounded-xl space-y-6">
       <div className="space-y-3">
         {rows.map((r) => (
-          <div key={r.key} className="flex items-center justify-between text-sm">
+          <div key={r.key} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 text-sm">
             <span>{r.label}</span>
             <KeepChangeToggle value={keepChange[r.key]} onChange={(v) => setKeepChange(r.key, v)} />
           </div>
