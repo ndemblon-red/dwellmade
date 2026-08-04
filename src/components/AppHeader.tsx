@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -86,10 +87,13 @@ function UserMenu({ email, onSignOut }: { email: string; onSignOut: () => void }
 export function AppHeader() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const signOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
     await supabase.auth.signOut();
-    router.navigate({ to: "/" });
+    await router.navigate({ to: "/auth", replace: true });
   };
 
   return (
