@@ -157,9 +157,7 @@ export async function checkAndIncrement(request: Request): Promise<GateResult> {
 /**
  * Read-only usage lookup (no increment). Used by the /api/usage endpoint.
  */
-export async function readUsage(
-  request: Request,
-): Promise<{
+export async function readUsage(request: Request): Promise<{
   kind: "anonymous" | "paid" | "free";
   used: number;
   limit: number;
