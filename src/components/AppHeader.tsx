@@ -42,10 +42,8 @@ function UserMenu({ email, onSignOut }: { email: string; onSignOut: () => void }
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label="Account menu"
-        className="flex items-center justify-center rounded-full"
+        className="flex size-9 items-center justify-center rounded-full sm:size-7"
         style={{
-          width: 28,
-          height: 28,
           backgroundColor: "rgba(245, 240, 232, 0.15)",
           color: CREAM,
           fontSize: 12,
@@ -96,7 +94,7 @@ export function AppHeader() {
 
   return (
     <header style={{ backgroundColor: NEAR_BLACK }}>
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
         <Link to={user ? "/projects" : "/"}>
           <Wordmark />
         </Link>

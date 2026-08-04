@@ -410,15 +410,15 @@ function LandingFooter() {
 
 export function AnonymousBanner() {
   return (
-    <div className="max-w-7xl mx-auto px-6 pt-4">
-      <div className="bg-paper ring-1 ring-border-card rounded-md px-4 py-2 text-xs text-muted-ink flex items-center justify-between gap-3">
-        <span>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-4">
+      <div className="bg-paper ring-1 ring-border-card rounded-md px-4 py-2 text-xs text-muted-ink grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+        <span className="min-w-0">
           You're working anonymously — nothing here will be saved.{" "}
           <span className="font-mono">↓</span>
         </span>
         <a
           href="/auth"
-          className="text-[10px] uppercase tracking-widest underline underline-offset-4 text-ink"
+          className="shrink-0 text-[10px] uppercase tracking-widest underline underline-offset-4 text-ink"
         >
           Sign in to save
         </a>
@@ -481,7 +481,7 @@ export function Workspace() {
         canCurate={canCurate}
         canGenerate={!!canGenerate}
       />
-      <main className="py-10 px-6">
+      <main className="py-8 px-4 sm:py-10 sm:px-6">
         <div className="max-w-7xl mx-auto">
           {stage === "collect" ? (
             <CollectStage onNext={() => canCurate && setStage("curate")} canNext={canCurate} />
@@ -513,8 +513,8 @@ function StageNav({
   canGenerate: boolean;
 }) {
   return (
-    <div className="px-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-3 gap-2 sm:gap-6 pt-2 pb-6 border-b border-zinc-950/5">
+    <div className="px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-3 gap-2 sm:gap-6 pt-2 pb-4 sm:pb-6 border-b border-zinc-950/5">
         {STAGE_ORDER.map((s) => {
           const active = stage === s;
           const enabled =
@@ -525,7 +525,7 @@ function StageNav({
               key={s}
               onClick={() => enabled && setStage(s)}
               disabled={!enabled}
-              className={`text-left pt-3 transition-colors border-t-2 ${
+              className={`min-w-0 text-left pt-3 transition-colors border-t-2 ${
                 active
                   ? "text-ink"
                   : enabled
@@ -534,17 +534,17 @@ function StageNav({
               }`}
               style={active ? { borderTopColor: "#F0A500" } : undefined}
             >
-              <div className="flex items-baseline gap-3">
+              <div className="flex min-w-0 items-baseline gap-1.5 sm:gap-3">
                 <span
                   className="font-mono text-[10px]"
                   style={active ? { color: "#F0A500" } : undefined}
                 >
                   {meta.num}
                 </span>
-                <span className="font-serif text-xl">{meta.title}</span>
+                <span className="min-w-0 truncate font-serif text-base sm:text-xl">{meta.title}</span>
               </div>
               <p
-                className="text-[11px] uppercase tracking-[0.12em] mt-1"
+                className="hidden sm:block text-[11px] uppercase tracking-[0.12em] mt-1"
                 style={active ? { color: "#F0A500" } : undefined}
               >
                 {meta.sub}
@@ -605,9 +605,9 @@ function CollectStage({ onNext, canNext }: { onNext: () => void; canNext: boolea
   );
 
   return (
-    <div className="grid grid-cols-12 gap-10">
-      <section className="col-span-12 lg:col-span-6 space-y-4">
-        <div className="flex items-center justify-between">
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+      <section className="min-w-0 lg:col-span-6 space-y-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-ink">
             Subject Room
           </h2>
@@ -623,8 +623,8 @@ function CollectStage({ onNext, canNext }: { onNext: () => void; canNext: boolea
         <RoomPanel room={room} onUpload={handleRoomUpload} />
       </section>
 
-      <section className="col-span-12 lg:col-span-6 space-y-4">
-        <div className="flex items-center justify-between">
+      <section className="min-w-0 lg:col-span-6 space-y-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-ink">
             Inspiration
           </h2>
@@ -643,7 +643,7 @@ function CollectStage({ onNext, canNext }: { onNext: () => void; canNext: boolea
         )}
       </section>
 
-      <div className="col-span-12 flex flex-col items-center pt-6 gap-3">
+      <div className="min-w-0 lg:col-span-12 flex flex-col items-center pt-6 gap-3">
         {error ? <p className="text-[11px] text-destructive">{error}</p> : null}
         {blobError ? (
           <p className="text-[11px] text-destructive">
@@ -727,13 +727,13 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
   );
 
   return (
-    <div className="grid grid-cols-12 gap-10">
-      <section className="col-span-12 lg:col-span-7 space-y-4">
-        <div className="flex items-center justify-between">
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+      <section className="min-w-0 lg:col-span-7 space-y-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-ink">
             Moodboard
           </h2>
-          <span className="text-[10px] uppercase tracking-widest text-muted-ink">
+          <span className="min-w-0 text-right text-[10px] uppercase tracking-widest text-muted-ink">
             {inspo.filter((i) => i.status === "ready").length} tagged ·{" "}
             <span className="text-ink">click swatches to build palette</span>
           </span>
@@ -741,8 +741,8 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
         <Moodboard inspo={inspo} selected={brief.palette} onToggle={togglePaletteColor} />
       </section>
 
-      <section className="col-span-12 lg:col-span-5 space-y-6">
-        <div className="flex items-center justify-between">
+      <section className="min-w-0 lg:col-span-5 space-y-6">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-ink">
             Aesthetic Brief
           </h2>
@@ -764,16 +764,16 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
         />
       </section>
 
-      <div className="col-span-12 flex justify-between items-center pt-4">
+      <div className="min-w-0 lg:col-span-12 flex flex-col-reverse items-stretch gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
         <button
           onClick={onBack}
-          className="text-[11px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
+          className="text-center text-[11px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink sm:text-left"
         >
           ← Back to Collect
         </button>
         <button
           onClick={onNext}
-          className="bg-ink text-paper py-3 px-8 rounded-lg font-medium text-sm hover:bg-accent"
+          className="bg-ink text-paper py-3 px-5 sm:px-8 rounded-lg font-medium text-sm hover:bg-accent"
         >
           Continue to Generate →
         </button>
@@ -865,7 +865,7 @@ function BriefEditor({
   countFor: (hex: string) => number;
 }) {
   return (
-    <div className="bg-paper ring-1 ring-border-card rounded-xl p-6 space-y-7">
+    <div className="bg-paper ring-1 ring-border-card rounded-xl p-4 sm:p-6 space-y-7">
       {/* Palette */}
       <div className="space-y-3">
         <Label
@@ -1227,7 +1227,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
             </button>
           </p>
         ) : null}
-        <div className="flex gap-3">
+        <div className="flex w-full flex-col-reverse gap-3 sm:w-auto sm:flex-row">
           <button
             onClick={onBack}
             className="text-[11px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
@@ -1275,7 +1275,7 @@ function BriefSummaryStrip({ brief, onEdit }: { brief: AestheticBrief; onEdit: (
   const vibeShort = vibeWords.length > 6 ? vibeWords.slice(0, 6).join(" ") + "…" : brief.vibe;
   const materials = brief.materials.join(", ");
   return (
-    <div className="bg-paper ring-1 ring-border-card rounded-md px-4 py-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+    <div className="bg-paper ring-1 ring-border-card rounded-md px-4 py-3 flex flex-wrap items-center gap-x-3 sm:gap-x-5 gap-y-2 text-sm">
       <div className="flex items-center gap-1.5">
         {brief.palette.length ? (
           brief.palette.map((c) => (
@@ -1300,7 +1300,7 @@ function BriefSummaryStrip({ brief, onEdit }: { brief: AestheticBrief; onEdit: (
       </span>
       <button
         onClick={onEdit}
-        className="ml-auto text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
+        className="w-full pt-1 text-left text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink sm:ml-auto sm:w-auto sm:pt-0 sm:text-right"
       >
         Edit brief →
       </button>
@@ -1392,10 +1392,10 @@ function ControlsPanel({
     { key: "decor", label: "Decor & lighting" },
   ];
   return (
-    <div className="bg-paper ring-1 ring-border-card p-6 rounded-xl space-y-6">
+    <div className="bg-paper ring-1 ring-border-card p-4 sm:p-6 rounded-xl space-y-6">
       <div className="space-y-3">
         {rows.map((r) => (
-          <div key={r.key} className="flex items-center justify-between text-sm">
+          <div key={r.key} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 text-sm">
             <span>{r.label}</span>
             <KeepChangeToggle value={keepChange[r.key]} onChange={(v) => setKeepChange(r.key, v)} />
           </div>
