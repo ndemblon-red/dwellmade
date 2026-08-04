@@ -474,6 +474,21 @@ export function Workspace() {
     canCurate &&
     (brief.palette.length > 0 || brief.materials.length > 0 || brief.furnitureStyle || brief.vibe);
 
+  if (stage === "preview") {
+    return (
+      <div className="min-h-screen bg-canvas text-ink font-sans">
+        <main className="py-8 px-4 sm:py-10 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            <PreviewStage
+              onEdit={() => setStage("collect")}
+              onCreateVersion={() => setStage("generate")}
+            />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-canvas text-ink font-sans">
       <StageNav
