@@ -18,8 +18,6 @@ export function notesLookSuspicious(notes: string): boolean {
   return INJECTION_PATTERNS.some((re) => re.test(notes));
 }
 
-
-
 // --- Color utilities ---------------------------------------------------------
 
 function hexToRgb(hex: string): [number, number, number] | null {
@@ -30,9 +28,7 @@ function hexToRgb(hex: string): [number, number, number] | null {
 }
 
 function rgbDist(a: [number, number, number], b: [number, number, number]): number {
-  return Math.sqrt(
-    (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2,
-  );
+  return Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2);
 }
 
 function normalizeHex(hex: string): string | null {
@@ -114,13 +110,7 @@ export function deriveBrief(inspo: InspoImage[]): {
     ready.flatMap((i) => i.aspects!.materials),
     8,
   );
-  const styles = [
-    ...new Set(
-      ready
-        .map((i) => i.aspects!.furnitureStyle.trim())
-        .filter(Boolean),
-    ),
-  ];
+  const styles = [...new Set(ready.map((i) => i.aspects!.furnitureStyle.trim()).filter(Boolean))];
   const furnitureStyle =
     styles.length === 0
       ? ""
@@ -130,11 +120,7 @@ export function deriveBrief(inspo: InspoImage[]): {
 
   const vibes = ready.map((i) => i.aspects!.vibe.trim()).filter(Boolean);
   const vibe =
-    vibes.length === 0
-      ? ""
-      : vibes.length === 1
-        ? vibes[0]
-        : vibes.join(" Combined with: ");
+    vibes.length === 0 ? "" : vibes.length === 1 ? vibes[0] : vibes.join(" Combined with: ");
 
   const conflicts: BriefConflicts = {
     styles: styles.length > 1 ? styles : [],

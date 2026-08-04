@@ -47,10 +47,7 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
           ✕
         </button>
 
-        <div
-          className="text-[10px] font-semibold tracking-[0.22em]"
-          style={{ color: MUSTARD }}
-        >
+        <div className="text-[10px] font-semibold tracking-[0.22em]" style={{ color: MUSTARD }}>
           {eyebrow}
         </div>
 
@@ -59,12 +56,16 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
         </h2>
 
         <p className="mt-4 text-sm leading-relaxed" style={{ color: MUTED_CREAM }}>
-          Subscribe to dwellmade for 50 generations a month — enough to redesign every room in your home.
+          Subscribe to dwellmade for 50 generations a month — enough to redesign every room in your
+          home.
         </p>
 
         <div className="mt-6">
           <div style={serif} className="text-5xl leading-none">
-            £12 <span className="text-2xl" style={{ color: MUTED_CREAM }}>/ month</span>
+            £12{" "}
+            <span className="text-2xl" style={{ color: MUTED_CREAM }}>
+              / month
+            </span>
           </div>
           <div className="mt-1 text-xs" style={{ color: MUTED_CREAM }}>
             Cancel anytime.
@@ -81,11 +82,7 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
 
         <div className="mt-4 text-center text-xs" style={{ color: MUTED_CREAM }}>
           Already subscribed?{" "}
-          <Link
-            to="/auth"
-            className="underline underline-offset-4"
-            style={{ color: CREAM }}
-          >
+          <Link to="/auth" className="underline underline-offset-4" style={{ color: CREAM }}>
             Sign in
           </Link>
         </div>

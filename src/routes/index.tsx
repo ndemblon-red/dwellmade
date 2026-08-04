@@ -17,7 +17,6 @@ import { AppHeader } from "@/components/AppHeader";
 import { useGenerationUsage, authHeaders } from "@/hooks/use-generation-usage";
 import { UpgradeModal } from "@/components/UpgradeModal";
 
-
 export const Route = createFileRoute("/")({ component: LandingPage });
 
 // Brand palette
@@ -40,7 +39,9 @@ const serif = { fontFamily: "'Instrument Serif', serif" };
 function Wordmark({ size = "text-2xl" }: { size?: string }) {
   return (
     <span style={serif} className={`${size} leading-none tracking-tight lowercase`}>
-      <span className="italic" style={{ color: MUSTARD }}>dwell</span>
+      <span className="italic" style={{ color: MUSTARD }}>
+        dwell
+      </span>
       <span style={{ color: PINK }}>made</span>
     </span>
   );
@@ -71,7 +72,9 @@ function LandingNav() {
   return (
     <nav style={{ backgroundColor: NEAR_BLACK }}>
       <div className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
-        <Link to="/"><Wordmark size="text-[32px]" /></Link>
+        <Link to="/">
+          <Wordmark size="text-[32px]" />
+        </Link>
         <div className="flex items-center gap-6 sm:gap-8">
           <a
             href="#examples"
@@ -129,7 +132,12 @@ function FloatAnimations() {
 }
 
 function Scribbles() {
-  const stroke = { stroke: NEAR_BLACK, strokeWidth: 2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+  const stroke = {
+    stroke: NEAR_BLACK,
+    strokeWidth: 2,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
       {/* paint roller — rotated 10deg right */}
@@ -181,7 +189,9 @@ function Hero() {
           >
             From inspiration
             <br />
-            <span className="italic" style={{ color: PINK }}>to your actual home.</span>
+            <span className="italic" style={{ color: PINK }}>
+              to your actual home.
+            </span>
           </h1>
           <p className="mt-6 max-w-md text-base leading-relaxed" style={{ color: "#4A4A5A" }}>
             Drop in a photo of your room and a handful of references. dwellmade pulls a palette,
@@ -246,7 +256,10 @@ function HeroComparison() {
       className="relative w-full aspect-[4/5] sm:aspect-[5/6] rounded-2xl overflow-hidden select-none cursor-ew-resize shadow-2xl"
       style={{ background: before, border: `1px solid ${NEAR_BLACK}` }}
     >
-      <div className="absolute inset-0" style={{ background: after, clipPath: `inset(0 0 0 ${pos}%)` }} />
+      <div
+        className="absolute inset-0"
+        style={{ background: after, clipPath: `inset(0 0 0 ${pos}%)` }}
+      />
       <span
         className="absolute top-3 left-3 text-[9px] uppercase tracking-[0.2em] font-semibold px-2 py-1 rounded-sm"
         style={{ backgroundColor: NEAR_BLACK, color: CREAM }}
@@ -340,7 +353,10 @@ function HowItWorks() {
   return (
     <section id="how-it-works" style={{ backgroundColor: NEAR_BLACK }}>
       <div className="max-w-7xl mx-auto px-6 py-24">
-        <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x" style={{ borderColor: "rgba(245,240,232,0.08)" }}>
+        <div
+          className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x"
+          style={{ borderColor: "rgba(245,240,232,0.08)" }}
+        >
           {cols.map((c, i) => (
             <div
               key={c.label}
@@ -359,10 +375,7 @@ function HowItWorks() {
               >
                 {c.label}
               </div>
-              <h3
-                style={serif}
-                className="mt-2 text-3xl lg:text-4xl italic leading-tight"
-              >
+              <h3 style={serif} className="mt-2 text-3xl lg:text-4xl italic leading-tight">
                 <span style={{ color: CREAM }}>{c.title}</span>
               </h3>
               <p className="mt-4 text-sm leading-relaxed" style={{ color: MUTED_CREAM }}>
@@ -381,10 +394,7 @@ function LandingFooter() {
     <footer style={{ backgroundColor: NEAR_BLACK }}>
       <div className="max-w-7xl mx-auto px-6 py-10 flex items-center justify-between">
         <Wordmark size="text-xl" />
-        <span
-          className="italic text-sm hidden sm:inline"
-          style={{ color: MUTED_CREAM, ...serif }}
-        >
+        <span className="italic text-sm hidden sm:inline" style={{ color: MUTED_CREAM, ...serif }}>
           Made with too much colour
         </span>
       </div>
@@ -416,7 +426,6 @@ export function AnonymousBanner() {
     </div>
   );
 }
-
 
 const MAX_IMAGE_DIM = 1600;
 const MAX_INSPO_DIM = 1024;
@@ -462,10 +471,7 @@ export function Workspace() {
   const canCurate = !!room && inspo.some((i) => i.status === "ready");
   const canGenerate =
     canCurate &&
-    (brief.palette.length > 0 ||
-      brief.materials.length > 0 ||
-      brief.furnitureStyle ||
-      brief.vibe);
+    (brief.palette.length > 0 || brief.materials.length > 0 || brief.furnitureStyle || brief.vibe);
 
   return (
     <div className="min-h-screen bg-canvas text-ink font-sans">
@@ -480,10 +486,7 @@ export function Workspace() {
           {stage === "collect" ? (
             <CollectStage onNext={() => canCurate && setStage("curate")} canNext={canCurate} />
           ) : stage === "curate" ? (
-            <CurateStage
-              onBack={() => setStage("collect")}
-              onNext={() => setStage("generate")}
-            />
+            <CurateStage onBack={() => setStage("collect")} onNext={() => setStage("generate")} />
           ) : (
             <GenerateStage
               onBack={() => setStage("curate")}
@@ -496,9 +499,7 @@ export function Workspace() {
   );
 }
 
-
 // --- Header / Nav ------------------------------------------------------------
-
 
 function StageNav({
   stage,
@@ -517,9 +518,7 @@ function StageNav({
         {STAGE_ORDER.map((s) => {
           const active = stage === s;
           const enabled =
-            s === "collect" ||
-            (s === "curate" && canCurate) ||
-            (s === "generate" && canGenerate);
+            s === "collect" || (s === "curate" && canCurate) || (s === "generate" && canGenerate);
           const meta = STAGE_LABELS[s];
           return (
             <button
@@ -671,13 +670,7 @@ function CollectStage({ onNext, canNext }: { onNext: () => void; canNext: boolea
   );
 }
 
-function CollectInspoTile({
-  inspo,
-  onRemove,
-}: {
-  inspo: InspoImage;
-  onRemove: () => void;
-}) {
+function CollectInspoTile({ inspo, onRemove }: { inspo: InspoImage; onRemove: () => void }) {
   return (
     <div className="relative bg-paper ring-1 ring-border-card rounded-lg overflow-hidden">
       <img src={inspo.dataUrl} alt="Inspiration" className="w-full aspect-square object-cover" />
@@ -725,15 +718,11 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
   // For each selected brief color, count how many image swatches across all
   // tagged references it matches — used to render the "×N" multiplicity badge.
   const allInspoSwatches = useMemo(
-    () =>
-      inspo
-        .filter((i) => i.status === "ready" && i.aspects)
-        .flatMap((i) => i.aspects!.palette),
+    () => inspo.filter((i) => i.status === "ready" && i.aspects).flatMap((i) => i.aspects!.palette),
     [inspo],
   );
   const countFor = useCallback(
-    (hex: string) =>
-      allInspoSwatches.reduce((n, c) => (colorsMatch(c, hex) ? n + 1 : n), 0),
+    (hex: string) => allInspoSwatches.reduce((n, c) => (colorsMatch(c, hex) ? n + 1 : n), 0),
     [allInspoSwatches],
   );
 
@@ -749,11 +738,7 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
             <span className="text-ink">click swatches to build palette</span>
           </span>
         </div>
-        <Moodboard
-          inspo={inspo}
-          selected={brief.palette}
-          onToggle={togglePaletteColor}
-        />
+        <Moodboard inspo={inspo} selected={brief.palette} onToggle={togglePaletteColor} />
       </section>
 
       <section className="col-span-12 lg:col-span-5 space-y-6">
@@ -838,7 +823,9 @@ function Moodboard({
                     key={n}
                     type="button"
                     onClick={() => onToggle(c)}
-                    title={sel ? `${c} — selected (click to remove)` : `${c} — click to add to brief`}
+                    title={
+                      sel ? `${c} — selected (click to remove)` : `${c} — click to add to brief`
+                    }
                     className={`group relative flex-1 h-6 rounded-sm transition-all ${
                       sel
                         ? "ring-2 ring-ink ring-offset-1 ring-offset-paper -translate-y-0.5 shadow-sm"
@@ -1131,8 +1118,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
     "anonymous_used_free" | "paid_limit_reached" | null
   >(null);
 
-  const activeGen =
-    generations.find((g) => g.id === activeGenerationId) ?? generations[0];
+  const activeGen = generations.find((g) => g.id === activeGenerationId) ?? generations[0];
 
   const briefIsEmpty =
     brief.palette.length === 0 &&
@@ -1154,9 +1140,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
     if (brief.furnitureStyle) parts.push(brief.furnitureStyle);
     if (brief.palette.length) parts.push(`${brief.palette.length} swatches`);
     if (brief.materials.length) parts.push(`${brief.materials.length} materials`);
-    parts.push(
-      `${Object.values(keepChange).filter((v) => v === "keep").length} preserved`,
-    );
+    parts.push(`${Object.values(keepChange).filter((v) => v === "keep").length} preserved`);
     startGeneration(id, parts.join(" · "));
 
     try {
@@ -1233,7 +1217,6 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
         </section>
       </div>
 
-
       <div className="flex flex-col items-center gap-3">
         {error ? <p className="text-[11px] text-destructive">{error}</p> : null}
         {blobError ? (
@@ -1289,8 +1272,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
 
 function BriefSummaryStrip({ brief, onEdit }: { brief: AestheticBrief; onEdit: () => void }) {
   const vibeWords = brief.vibe.trim().split(/\s+/).filter(Boolean);
-  const vibeShort =
-    vibeWords.length > 6 ? vibeWords.slice(0, 6).join(" ") + "…" : brief.vibe;
+  const vibeShort = vibeWords.length > 6 ? vibeWords.slice(0, 6).join(" ") + "…" : brief.vibe;
   const materials = brief.materials.join(", ");
   return (
     <div className="bg-paper ring-1 ring-border-card rounded-md px-4 py-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
@@ -1325,7 +1307,6 @@ function BriefSummaryStrip({ brief, onEdit }: { brief: AestheticBrief; onEdit: (
     </div>
   );
 }
-
 
 // --- Reused atoms ------------------------------------------------------------
 
@@ -1416,10 +1397,7 @@ function ControlsPanel({
         {rows.map((r) => (
           <div key={r.key} className="flex items-center justify-between text-sm">
             <span>{r.label}</span>
-            <KeepChangeToggle
-              value={keepChange[r.key]}
-              onChange={(v) => setKeepChange(r.key, v)}
-            />
+            <KeepChangeToggle value={keepChange[r.key]} onChange={(v) => setKeepChange(r.key, v)} />
           </div>
         ))}
       </div>
@@ -1436,11 +1414,7 @@ function ControlsPanel({
           className="w-full bg-canvas/70 ring-1 ring-black/5 rounded-md p-3 text-sm font-sans resize-none focus:outline-none focus:ring-ink/40"
         />
         <div className="flex items-center justify-between gap-3 min-h-[1rem]">
-          {notesError ? (
-            <p className="text-[11px] text-destructive">{notesError}</p>
-          ) : (
-            <span />
-          )}
+          {notesError ? <p className="text-[11px] text-destructive">{notesError}</p> : <span />}
           <span className="text-[11px] text-muted-ink tabular-nums">
             {notes.length} / {NOTES_MAX_LENGTH}
           </span>
@@ -1449,7 +1423,6 @@ function ControlsPanel({
     </div>
   );
 }
-
 
 function KeepChangeToggle({
   value,
@@ -1585,11 +1558,7 @@ function ResultSection({
         </div>
 
         {gen.dataUrl ? (
-          <BeforeAfter
-            beforeSrc={before}
-            afterSrc={gen.dataUrl}
-            afterBlurred={!gen.isFinal}
-          />
+          <BeforeAfter beforeSrc={before} afterSrc={gen.dataUrl} afterBlurred={!gen.isFinal} />
         ) : (
           <div className="w-full aspect-[3/2] bg-zinc-200 rounded-md grid place-items-center">
             <p className="text-[11px] uppercase tracking-widest text-muted-ink animate-pulse">
@@ -1600,9 +1569,7 @@ function ResultSection({
 
         {history.length > 1 ? (
           <div className="space-y-3">
-            <h3 className="text-xs uppercase tracking-widest text-muted-ink">
-              Session history
-            </h3>
+            <h3 className="text-xs uppercase tracking-widest text-muted-ink">Session history</h3>
             <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 gap-3">
               {history.map((h) => (
                 <button
@@ -1618,11 +1585,7 @@ function ResultSection({
                   title="Click to view, right-click to remove"
                 >
                   {h.dataUrl ? (
-                    <img
-                      src={h.dataUrl}
-                      alt="Generation"
-                      className="size-full object-cover"
-                    />
+                    <img src={h.dataUrl} alt="Generation" className="size-full object-cover" />
                   ) : (
                     <div className="size-full animate-pulse bg-zinc-300" />
                   )}

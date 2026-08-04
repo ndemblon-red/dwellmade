@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from "react";
 
 import {
   Body,
@@ -10,15 +10,15 @@ import {
   Link,
   Preview,
   Text,
-} from '@react-email/components'
-import { Footer, Wordmark, styles } from './_brand'
+} from "@react-email/components";
+import { Footer, Wordmark, styles } from "./_brand";
 
 interface EmailChangeEmailProps {
-  siteName: string
-  oldEmail: string
-  email: string
-  newEmail: string
-  confirmationUrl: string
+  siteName: string;
+  oldEmail: string;
+  email: string;
+  newEmail: string;
+  confirmationUrl: string;
 }
 
 export const EmailChangeEmail = ({
@@ -37,11 +37,11 @@ export const EmailChangeEmail = ({
           Confirm your <span style={styles.italic}>email change</span>
         </Heading>
         <Text style={styles.text}>
-          You requested to change your email address for {siteName} from{' '}
+          You requested to change your email address for {siteName} from{" "}
           <Link href={`mailto:${oldEmail}`} style={styles.link}>
             {oldEmail}
-          </Link>{' '}
-          to{' '}
+          </Link>{" "}
+          to{" "}
           <Link href={`mailto:${newEmail}`} style={styles.link}>
             {newEmail}
           </Link>
@@ -51,12 +51,12 @@ export const EmailChangeEmail = ({
           Confirm email change
         </Button>
         <Footer siteName={siteName} />
-        <Text style={{ ...styles.footer, marginTop: '12px' }}>
+        <Text style={{ ...styles.footer, marginTop: "12px" }}>
           If you didn't request this change, please secure your account immediately.
         </Text>
       </Container>
     </Body>
   </Html>
-)
+);
 
-export default EmailChangeEmail
+export default EmailChangeEmail;

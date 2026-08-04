@@ -62,7 +62,6 @@ function ConfirmPage() {
       setStatus("error");
       setErrorMsg("Missing or expired verification token.");
     })();
-
   }, [token_hash, type, navigate]);
 
   const resend = async () => {
@@ -119,9 +118,7 @@ function ConfirmPage() {
               >
                 {resendBusy ? "Sending…" : "Resend verification email"}
               </button>
-              {resendMsg ? (
-                <p className="text-xs text-muted-ink">{resendMsg}</p>
-              ) : null}
+              {resendMsg ? <p className="text-xs text-muted-ink">{resendMsg}</p> : null}
               <Link
                 to="/auth"
                 className="block text-center text-xs underline underline-offset-4 text-muted-ink hover:text-ink"

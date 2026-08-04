@@ -61,8 +61,7 @@ export const Route = createFileRoute("/api/generate")({
         const prompt = buildPrompt(payload);
 
         const content: Array<
-          | { type: "text"; text: string }
-          | { type: "image_url"; image_url: { url: string } }
+          { type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }
         > = [
           { type: "text", text: prompt },
           { type: "image_url", image_url: { url: payload.room } },
@@ -78,17 +77,14 @@ export const Route = createFileRoute("/api/generate")({
           stream: true,
         };
 
-        const upstream = await fetch(
-          "https://ai.gateway.lovable.dev/v1/images/generations",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${key}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(upstreamBody),
+        const upstream = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${key}`,
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify(upstreamBody),
+        });
 
         if (!upstream.ok || !upstream.body) {
           const text = await upstream.text().catch(() => "");

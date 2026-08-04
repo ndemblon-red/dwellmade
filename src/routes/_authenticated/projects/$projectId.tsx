@@ -76,9 +76,7 @@ function ProjectPage() {
             >
               ← Projects
             </Link>
-            {projectQ.data ? (
-              <ProjectNameEditor project={projectQ.data} />
-            ) : null}
+            {projectQ.data ? <ProjectNameEditor project={projectQ.data} /> : null}
           </div>
         </div>
 
@@ -125,37 +123,25 @@ function ProjectPage() {
 
         <div className="mt-6">
           {activeRoom && projectQ.data ? (
-          <SyncedWorkspace
-            room={activeRoom}
-            masterPalette={projectQ.data.master_palette ?? []}
-          />
-        ) : (
-          <div className="bg-paper ring-1 ring-border-card rounded-xl p-12 text-center">
-            <p className="font-serif text-2xl italic mb-2">
-              Add your first room.
-            </p>
-            <button
-              onClick={() => createRoomMut.mutate()}
-              className="mt-3 bg-ink text-paper px-5 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
-            >
-              + New room
-            </button>
-          </div>
-        )}
+            <SyncedWorkspace room={activeRoom} masterPalette={projectQ.data.master_palette ?? []} />
+          ) : (
+            <div className="bg-paper ring-1 ring-border-card rounded-xl p-12 text-center">
+              <p className="font-serif text-2xl italic mb-2">Add your first room.</p>
+              <button
+                onClick={() => createRoomMut.mutate()}
+                className="mt-3 bg-ink text-paper px-5 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
+              >
+                + New room
+              </button>
+            </div>
+          )}
         </div>
-
       </div>
     </div>
   );
 }
 
-function SyncedWorkspace({
-  room,
-  masterPalette,
-}: {
-  room: Room;
-  masterPalette: string[];
-}) {
+function SyncedWorkspace({ room, masterPalette }: { room: Room; masterPalette: string[] }) {
   useRoomSync(room, masterPalette);
   const hydrated = useStore((s) => s.currentRoomId === room.id);
   if (!hydrated) {
@@ -168,11 +154,7 @@ function SyncedWorkspace({
   return <Workspace />;
 }
 
-function ProjectNameEditor({
-  project,
-}: {
-  project: { id: string; name: string };
-}) {
+function ProjectNameEditor({ project }: { project: { id: string; name: string } }) {
   const qc = useQueryClient();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(project.name);
@@ -229,12 +211,8 @@ function MasterPaletteEditor({
   return (
     <div className="bg-paper ring-1 ring-border-card rounded-xl p-5">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[10px] uppercase tracking-widest text-muted-ink">
-          Master palette
-        </span>
-        <span className="text-[10px] text-muted-ink italic">
-          Pre-fills each new room's brief.
-        </span>
+        <span className="text-[10px] uppercase tracking-widest text-muted-ink">Master palette</span>
+        <span className="text-[10px] text-muted-ink italic">Pre-fills each new room's brief.</span>
       </div>
       <div className="flex flex-wrap gap-2 items-center">
         {value.map((c) => (

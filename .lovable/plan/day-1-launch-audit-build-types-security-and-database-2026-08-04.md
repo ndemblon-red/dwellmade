@@ -39,13 +39,13 @@ Run a reproducible technical launch gate, capture every result, and separate lau
 
 Provide one launch report with:
 
-| Gate | Result | Launch impact | Follow-up |
-|---|---|---|---|
-| Production build | Pass/fail | Blocker or clear | Exact failing stage |
-| Type check | Pass/fail | Blocker or clear | Error count and affected files |
-| Lint | Pass/fail | Blocker/advisory | Correctness vs formatting |
-| Dependencies/security | Pass/fail | Blocker or clear | Severity and affected packages |
-| Database lint | Pass/fail | Blocker/advisory | Confirmed risks only |
-| Slow queries | Pass/advisory | Performance risk | Evidence-based candidates |
+| Gate                  | Result        | Launch impact    | Follow-up                      |
+| --------------------- | ------------- | ---------------- | ------------------------------ |
+| Production build      | Pass/fail     | Blocker or clear | Exact failing stage            |
+| Type check            | Pass/fail     | Blocker or clear | Error count and affected files |
+| Lint                  | Pass/fail     | Blocker/advisory | Correctness vs formatting      |
+| Dependencies/security | Pass/fail     | Blocker or clear | Severity and affected packages |
+| Database lint         | Pass/fail     | Blocker/advisory | Confirmed risks only           |
+| Slow queries          | Pass/advisory | Performance risk | Evidence-based candidates      |
 
 End with a short, ordered remediation list: **must fix before launch**, **fix this week**, and **monitor after launch**. Re-run each failed gate after its fix and only mark it passed when the relevant tool confirms it.

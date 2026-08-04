@@ -28,8 +28,7 @@ export function buildPrompt(payload: GeneratePromptPayload): string {
     (keepChange[k] === "keep" ? keepList : changeList).push(ELEMENT_LABELS[k]);
   });
 
-  const paletteStr =
-    brief.palette.length > 0 ? brief.palette.join(", ") : "(no palette set)";
+  const paletteStr = brief.palette.length > 0 ? brief.palette.join(", ") : "(no palette set)";
   const materialsStr =
     brief.materials.length > 0 ? brief.materials.join(", ") : "(no materials set)";
   const styleStr = brief.furnitureStyle || "(no style set)";
