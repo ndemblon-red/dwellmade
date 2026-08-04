@@ -67,9 +67,9 @@ function ProjectPage() {
   return (
     <div className="min-h-screen bg-canvas text-ink font-sans">
       <AppHeader />
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-baseline gap-3">
+      <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 sm:py-8">
+        <div className="mb-6 grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+          <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-baseline sm:gap-3">
             <Link
               to="/projects"
               className="text-[10px] uppercase tracking-widest text-muted-ink hover:text-ink"
@@ -125,7 +125,7 @@ function ProjectPage() {
           {activeRoom && projectQ.data ? (
             <SyncedWorkspace room={activeRoom} masterPalette={projectQ.data.master_palette ?? []} />
           ) : (
-            <div className="bg-paper ring-1 ring-border-card rounded-xl p-12 text-center">
+            <div className="bg-paper ring-1 ring-border-card rounded-xl p-6 sm:p-12 text-center">
               <p className="font-serif text-2xl italic mb-2">Add your first room.</p>
               <button
                 onClick={() => createRoomMut.mutate()}
@@ -179,11 +179,11 @@ function ProjectNameEditor({ project }: { project: { id: string; name: string } 
         if (e.key === "Enter") save();
         if (e.key === "Escape") setEditing(false);
       }}
-      className="font-serif text-3xl bg-transparent border-b border-ink focus:outline-none"
+      className="min-w-0 w-full font-serif text-3xl bg-transparent border-b border-ink focus:outline-none"
     />
   ) : (
     <h1
-      className="font-serif text-3xl cursor-text"
+      className="min-w-0 break-words font-serif text-3xl cursor-text"
       onClick={() => setEditing(true)}
       title="Click to rename"
     >
@@ -209,10 +209,10 @@ function MasterPaletteEditor({
   const remove = (hex: string) => onChange(value.filter((c) => c !== hex));
 
   return (
-    <div className="bg-paper ring-1 ring-border-card rounded-xl p-5">
-      <div className="flex items-center justify-between mb-3">
+    <div className="bg-paper ring-1 ring-border-card rounded-xl p-4 sm:p-5">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 mb-3">
         <span className="text-[10px] uppercase tracking-widest text-muted-ink">Master palette</span>
-        <span className="text-[10px] text-muted-ink italic">Pre-fills each new room's brief.</span>
+        <span className="text-right text-[10px] text-muted-ink italic">Pre-fills each new room's brief.</span>
       </div>
       <div className="flex flex-wrap gap-2 items-center">
         {value.map((c) => (
@@ -301,7 +301,7 @@ function RoomPill({
       )}
       <button
         onClick={() => setMenuOpen((v) => !v)}
-        className={`ml-1 size-5 grid place-items-center rounded-full text-[11px] leading-none opacity-0 group-hover:opacity-100 transition-opacity ${
+        className={`ml-1 size-7 sm:size-5 grid place-items-center rounded-full text-[11px] leading-none sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity ${
           active ? "hover:bg-white/10" : "hover:bg-black/5"
         }`}
         aria-label="Room actions"

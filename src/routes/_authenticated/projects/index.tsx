@@ -31,9 +31,9 @@ function ProjectsDashboard() {
   return (
     <div className="min-h-screen bg-canvas text-ink font-sans">
       <AppHeader />
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="flex items-end justify-between border-b border-zinc-950/5 pb-6 mb-8">
-          <div>
+      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 sm:py-12">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 border-b border-zinc-950/5 pb-6 mb-8">
+          <div className="min-w-0">
             <h1 className="font-serif text-4xl">
               Your <span className="italic">projects</span>
             </h1>
@@ -44,7 +44,7 @@ function ProjectsDashboard() {
           <button
             onClick={() => create.mutate()}
             disabled={create.isPending}
-            className="bg-ink text-paper px-5 py-2.5 rounded-md text-sm font-medium hover:bg-accent disabled:opacity-50"
+            className="shrink-0 bg-ink text-paper px-4 py-2.5 sm:px-5 rounded-md text-sm font-medium hover:bg-accent disabled:opacity-50"
           >
             + New project
           </button>
@@ -53,7 +53,7 @@ function ProjectsDashboard() {
         {isLoading ? (
           <p className="text-sm text-muted-ink italic">Loading…</p>
         ) : !projects || projects.length === 0 ? (
-          <div className="bg-paper ring-1 ring-border-card rounded-xl p-12 text-center">
+          <div className="bg-paper ring-1 ring-border-card rounded-xl p-6 sm:p-12 text-center">
             <p className="font-serif text-2xl italic mb-2">No projects yet.</p>
             <p className="text-sm text-muted-ink mb-6">
               Start a new one to begin redesigning a room.
@@ -103,7 +103,7 @@ function ProjectsDashboard() {
                     if (confirm(`Delete "${p.name}"? This removes all its rooms.`))
                       del.mutate(p.id);
                   }}
-                  className="mt-3 text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-destructive opacity-0 group-hover:opacity-100"
+                  className="mt-3 text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
                 >
                   Delete
                 </button>
