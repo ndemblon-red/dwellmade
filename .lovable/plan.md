@@ -16,8 +16,9 @@ Make projects work naturally as collections of rooms: users can reliably manage 
 - For completed rooms, open a compact **Room preview** by default rather than resetting to Collect.
 - Show the original room and latest finished design in the existing interactive before/after comparison, sized as a restrained project summary rather than a full-page feature.
 - Include the room name, latest-generation context, and clear actions:
-  - **Edit room** — enter the existing Collect → Curate → Generate workflow.
-  - **Create another version** — open Generate with the current brief and generation history intact.
+  - **Edit room** — enter the existing Collect → Curate → Generate workflow with the room photo, inspiration images, and brief preserved. This lets the user tweak inputs or generate a new result from the same setup.
+  - **Create another version** — jump straight to Generate using the current room photo and brief to produce a new design iteration. Existing finished generations remain in the history so the user can compare versions.
+  - (A true “start from scratch” for a room is not needed here; the existing **New room** button already covers that.)
 - Rooms without a completed generation continue to open at the beginning of the workflow.
 
 ### 3. Preserve the multi-room project experience
