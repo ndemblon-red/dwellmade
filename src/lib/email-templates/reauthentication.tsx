@@ -1,18 +1,10 @@
-import * as React from 'react'
+import * as React from "react";
 
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Html,
-  Preview,
-  Text,
-} from '@react-email/components'
-import { Footer, Wordmark, styles } from './_brand'
+import { Body, Container, Head, Heading, Html, Preview, Text } from "@react-email/components";
+import { Footer, Wordmark, styles } from "./_brand";
 
 interface ReauthenticationEmailProps {
-  token: string
+  token: string;
 }
 
 export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => (
@@ -28,13 +20,13 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
         <Text style={styles.text}>Use the code below to confirm your identity:</Text>
         <Text style={styles.code}>{token}</Text>
         <Footer />
-        <Text style={{ ...styles.footer, marginTop: '12px' }}>
-          This code will expire shortly. If you didn't request this, you can safely
-          ignore this email.
+        <Text style={{ ...styles.footer, marginTop: "12px" }}>
+          This code will expire shortly. If you didn't request this, you can safely ignore this
+          email.
         </Text>
       </Container>
     </Body>
   </Html>
-)
+);
 
-export default ReauthenticationEmail
+export default ReauthenticationEmail;

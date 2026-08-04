@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from "react";
 
 import {
   Body,
@@ -10,13 +10,13 @@ import {
   Link,
   Preview,
   Text,
-} from '@react-email/components'
-import { Footer, Wordmark, styles } from './_brand'
+} from "@react-email/components";
+import { Footer, Wordmark, styles } from "./_brand";
 
 interface InviteEmailProps {
-  siteName: string
-  siteUrl: string
-  confirmationUrl: string
+  siteName: string;
+  siteUrl: string;
+  confirmationUrl: string;
 }
 
 export const InviteEmail = ({ siteName, siteUrl, confirmationUrl }: InviteEmailProps) => (
@@ -30,7 +30,7 @@ export const InviteEmail = ({ siteName, siteUrl, confirmationUrl }: InviteEmailP
           You've been <span style={styles.italic}>invited</span>
         </Heading>
         <Text style={styles.text}>
-          You've been invited to join{' '}
+          You've been invited to join{" "}
           <Link href={siteUrl} style={styles.link}>
             <strong>{siteName}</strong>
           </Link>
@@ -40,12 +40,12 @@ export const InviteEmail = ({ siteName, siteUrl, confirmationUrl }: InviteEmailP
           Accept invitation
         </Button>
         <Footer siteName={siteName} />
-        <Text style={{ ...styles.footer, marginTop: '12px' }}>
+        <Text style={{ ...styles.footer, marginTop: "12px" }}>
           If you weren't expecting this invitation, you can safely ignore this email.
         </Text>
       </Container>
     </Body>
   </Html>
-)
+);
 
-export default InviteEmail
+export default InviteEmail;

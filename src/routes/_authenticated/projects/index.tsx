@@ -78,11 +78,7 @@ function ProjectsDashboard() {
                   boxShadow: "0 1px 2px rgba(26,26,46,0.04), 0 4px 12px rgba(26,26,46,0.06)",
                 }}
               >
-                <Link
-                  to="/projects/$projectId"
-                  params={{ projectId: p.id }}
-                  className="block"
-                >
+                <Link to="/projects/$projectId" params={{ projectId: p.id }} className="block">
                   <h3 className="font-serif text-2xl mb-2">{p.name}</h3>
                   <div className="flex gap-1 mb-3 h-3">
                     {(p.master_palette ?? []).slice(0, 8).map((c, i) => (

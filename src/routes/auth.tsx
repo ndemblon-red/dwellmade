@@ -20,7 +20,9 @@ function AuthHeader() {
             className="leading-none tracking-tight lowercase"
             style={{ fontFamily: "'Instrument Serif', serif", fontSize: "32px" }}
           >
-            <span className="italic" style={{ color: MUSTARD }}>dwell</span>
+            <span className="italic" style={{ color: MUSTARD }}>
+              dwell
+            </span>
             <span style={{ color: PINK }}>made</span>
           </span>
         </Link>
@@ -38,11 +40,21 @@ const stroke = {
 
 function PaintCan() {
   return (
-    <svg width="130" height="150" viewBox="0 0 130 150" fill="none" style={{ transform: "rotate(-6deg)" }}>
+    <svg
+      width="130"
+      height="150"
+      viewBox="0 0 130 150"
+      fill="none"
+      style={{ transform: "rotate(-6deg)" }}
+    >
       {/* lid disc (top ellipse) */}
       <ellipse cx="65" cy="22" rx="44" ry="8" fill={MUSTARD_DARK} {...stroke} />
       {/* can body */}
-      <path d="M21 22 L21 118 Q21 126 30 128 L100 128 Q109 126 109 118 L109 22 Z" fill={MUSTARD} {...stroke} />
+      <path
+        d="M21 22 L21 118 Q21 126 30 128 L100 128 Q109 126 109 118 L109 22 Z"
+        fill={MUSTARD}
+        {...stroke}
+      />
       {/* top rim line */}
       <ellipse cx="65" cy="22" rx="44" ry="8" fill="none" {...stroke} />
       {/* label rectangle */}
@@ -97,7 +109,13 @@ function Plant() {
 
 function PaintRoller() {
   return (
-    <svg width="90" height="200" viewBox="0 0 90 200" fill="none" style={{ transform: "rotate(12deg)" }}>
+    <svg
+      width="90"
+      height="200"
+      viewBox="0 0 90 200"
+      fill="none"
+      style={{ transform: "rotate(12deg)" }}
+    >
       {/* roller */}
       <rect x="10" y="10" width="64" height="26" rx="6" fill={MUSTARD} {...stroke} />
       {/* frame */}
@@ -125,10 +143,28 @@ function Decorations() {
       <div className="absolute" style={{ bottom: "-20px", right: "4%" }}>
         <PaintRoller />
       </div>
-      <span className="absolute rounded-full" style={{ top: "260px", left: "28%", width: "16px", height: "16px", background: MUSTARD }} />
-      <span className="absolute rounded-full" style={{ top: "320px", right: "26%", width: "18px", height: "18px", background: PINK }} />
-      <span className="absolute rounded-full" style={{ bottom: "180px", left: "30%", width: "14px", height: "14px", background: COBALT }} />
-      <span className="absolute rounded-full" style={{ bottom: "240px", right: "30%", width: "16px", height: "16px", background: MUSTARD }} />
+      <span
+        className="absolute rounded-full"
+        style={{ top: "260px", left: "28%", width: "16px", height: "16px", background: MUSTARD }}
+      />
+      <span
+        className="absolute rounded-full"
+        style={{ top: "320px", right: "26%", width: "18px", height: "18px", background: PINK }}
+      />
+      <span
+        className="absolute rounded-full"
+        style={{ bottom: "180px", left: "30%", width: "14px", height: "14px", background: COBALT }}
+      />
+      <span
+        className="absolute rounded-full"
+        style={{
+          bottom: "240px",
+          right: "30%",
+          width: "16px",
+          height: "16px",
+          background: MUSTARD,
+        }}
+      />
     </div>
   );
 }
@@ -201,9 +237,7 @@ function AuthPage() {
       redirect_uri: window.location.origin + (redirect ?? "/projects"),
     });
     if (result.error) {
-      setError(
-        result.error instanceof Error ? result.error.message : "Google sign-in failed",
-      );
+      setError(result.error instanceof Error ? result.error.message : "Google sign-in failed");
       setBusy(false);
       return;
     }
@@ -235,9 +269,7 @@ function AuthPage() {
           <h1 className="font-serif text-4xl mb-2">
             Check your <span className="italic">inbox</span>
           </h1>
-          <p className="text-sm text-muted-ink mb-2">
-            We've sent a confirmation link to
-          </p>
+          <p className="text-sm text-muted-ink mb-2">We've sent a confirmation link to</p>
           <p className="text-sm text-ink mb-8 font-medium">{pendingEmail}</p>
 
           <div className="space-y-3">
@@ -248,9 +280,7 @@ function AuthPage() {
             >
               {resendBusy ? "Sending…" : "Resend email"}
             </button>
-            {resendMsg ? (
-              <p className="text-xs text-muted-ink">{resendMsg}</p>
-            ) : null}
+            {resendMsg ? <p className="text-xs text-muted-ink">{resendMsg}</p> : null}
             <button
               onClick={() => {
                 setPendingEmail(null);
@@ -275,7 +305,9 @@ function AuthPage() {
 
       <main className="max-w-md mx-auto px-6 py-16 relative z-10">
         <h1 className="font-serif text-4xl mb-2">
-          {mode === "signin" ? "Sign in" : (
+          {mode === "signin" ? (
+            "Sign in"
+          ) : (
             <>
               Create an <span className="italic">account</span>
             </>

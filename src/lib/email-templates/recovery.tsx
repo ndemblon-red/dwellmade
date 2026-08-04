@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from "react";
 
 import {
   Body,
@@ -9,12 +9,12 @@ import {
   Html,
   Preview,
   Text,
-} from '@react-email/components'
-import { Footer, Wordmark, styles } from './_brand'
+} from "@react-email/components";
+import { Footer, Wordmark, styles } from "./_brand";
 
 interface RecoveryEmailProps {
-  siteName: string
-  confirmationUrl: string
+  siteName: string;
+  confirmationUrl: string;
 }
 
 export const RecoveryEmail = ({ siteName, confirmationUrl }: RecoveryEmailProps) => (
@@ -28,20 +28,20 @@ export const RecoveryEmail = ({ siteName, confirmationUrl }: RecoveryEmailProps)
           Reset your <span style={styles.italic}>password</span>
         </Heading>
         <Text style={styles.text}>
-          We received a request to reset your password for {siteName}. Click the button
-          below to choose a new password.
+          We received a request to reset your password for {siteName}. Click the button below to
+          choose a new password.
         </Text>
         <Button style={styles.button} href={confirmationUrl}>
           Reset password
         </Button>
         <Footer siteName={siteName} />
-        <Text style={{ ...styles.footer, marginTop: '12px' }}>
-          If you didn't request a password reset, you can safely ignore this email — your
-          password will not be changed.
+        <Text style={{ ...styles.footer, marginTop: "12px" }}>
+          If you didn't request a password reset, you can safely ignore this email — your password
+          will not be changed.
         </Text>
       </Container>
     </Body>
   </Html>
-)
+);
 
-export default RecoveryEmail
+export default RecoveryEmail;

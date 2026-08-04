@@ -201,10 +201,7 @@ export const useStore = create<State>()(
         const id = crypto.randomUUID();
         const blobId = newBlobId();
         set((s) => ({
-          inspo: [
-            ...s.inspo,
-            { id, blobId, dataUrl, status: "tagging" },
-          ],
+          inspo: [...s.inspo, { id, blobId, dataUrl, status: "tagging" }],
           blobError: null,
         }));
         void trySetBlob(blobId, dataUrl, (msg) => set({ blobError: msg }));
@@ -229,8 +226,7 @@ export const useStore = create<State>()(
       },
 
       setBrief: (brief) => set({ brief: { ...brief, userEdited: true } }),
-      patchBrief: (p) =>
-        set((s) => ({ brief: { ...s.brief, ...p, userEdited: true } })),
+      patchBrief: (p) => set((s) => ({ brief: { ...s.brief, ...p, userEdited: true } })),
       togglePaletteColor: async (hex) => {
         const { colorsMatch } = await import("./brief");
         set((s) => {
@@ -243,8 +239,7 @@ export const useStore = create<State>()(
       },
       addPaletteColor: (hex) =>
         set((s) =>
-          s.brief.palette.length >= 12 ||
-          !/^#[0-9a-f]{6}$/i.test(hex)
+          s.brief.palette.length >= 12 || !/^#[0-9a-f]{6}$/i.test(hex)
             ? s
             : {
                 brief: {
@@ -267,8 +262,7 @@ export const useStore = create<State>()(
         void autoDerive((p) => set(p as Partial<State>), get);
       },
 
-      setKeepChange: (k, v) =>
-        set((s) => ({ keepChange: { ...s.keepChange, [k]: v } })),
+      setKeepChange: (k, v) => set((s) => ({ keepChange: { ...s.keepChange, [k]: v } })),
 
       setNotes: (notes) => set({ notes }),
 
@@ -283,30 +277,24 @@ export const useStore = create<State>()(
 
       updateGeneration: (id, dataUrl, isFinal) => {
         set((s) => ({
-          generations: s.generations.map((g) =>
-            g.id === id ? { ...g, dataUrl, isFinal } : g,
-          ),
+          generations: s.generations.map((g) => (g.id === id ? { ...g, dataUrl, isFinal } : g)),
         }));
         if (!isFinal) return;
         const blobId = newBlobId();
-        void trySetBlob(blobId, dataUrl, (msg) => set({ blobError: msg })).then(
-          (ok) => {
-            if (!ok) return;
-            set((s) => {
-              const updated = s.generations.map((g) =>
-                g.id === id ? { ...g, blobId } : g,
-              );
-              const finals = updated.filter((g) => g.isFinal);
-              const pending = updated.filter((g) => !g.isFinal);
-              const keepFinals = finals.slice(0, MAX_HISTORY);
-              const evicted = finals.slice(MAX_HISTORY);
-              for (const e of evicted) {
-                if (e.blobId) void deleteBlob(e.blobId);
-              }
-              return { generations: [...pending, ...keepFinals] };
-            });
-          },
-        );
+        void trySetBlob(blobId, dataUrl, (msg) => set({ blobError: msg })).then((ok) => {
+          if (!ok) return;
+          set((s) => {
+            const updated = s.generations.map((g) => (g.id === id ? { ...g, blobId } : g));
+            const finals = updated.filter((g) => g.isFinal);
+            const pending = updated.filter((g) => !g.isFinal);
+            const keepFinals = finals.slice(0, MAX_HISTORY);
+            const evicted = finals.slice(MAX_HISTORY);
+            for (const e of evicted) {
+              if (e.blobId) void deleteBlob(e.blobId);
+            }
+            return { generations: [...pending, ...keepFinals] };
+          });
+        });
       },
 
       removeGeneration: (id) => {
@@ -314,8 +302,7 @@ export const useStore = create<State>()(
         if (target?.blobId) void deleteBlob(target.blobId);
         set((s) => ({
           generations: s.generations.filter((g) => g.id !== id),
-          activeGenerationId:
-            s.activeGenerationId === id ? null : s.activeGenerationId,
+          activeGenerationId: s.activeGenerationId === id ? null : s.activeGenerationId,
         }));
       },
 
@@ -339,9 +326,7 @@ export const useStore = create<State>()(
       }),
       partialize: (s) => ({
         stage: s.stage,
-        room: s.room
-          ? { blobId: s.room.blobId, uploadedAt: s.room.uploadedAt }
-          : null,
+        room: s.room ? { blobId: s.room.blobId, uploadedAt: s.room.uploadedAt } : null,
         inspo: s.inspo.map((i) => ({
           id: i.id,
           blobId: i.blobId,
@@ -389,17 +374,18 @@ export const useStore = create<State>()(
           useStore.setState(patches as Partial<State>);
         })();
       },
-      migrate: () => ({
-        stage: "collect" as Stage,
-        room: null,
-        inspo: [],
-        brief: { ...EMPTY_BRIEF },
-        keepChange: DEFAULT_KEEP_CHANGE,
-        notes: "",
-        generations: [],
-        activeGenerationId: null,
-        blobError: null,
-      }) as unknown as State,
+      migrate: () =>
+        ({
+          stage: "collect" as Stage,
+          room: null,
+          inspo: [],
+          brief: { ...EMPTY_BRIEF },
+          keepChange: DEFAULT_KEEP_CHANGE,
+          notes: "",
+          generations: [],
+          activeGenerationId: null,
+          blobError: null,
+        }) as unknown as State,
     },
   ),
 );

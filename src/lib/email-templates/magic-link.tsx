@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from "react";
 
 import {
   Body,
@@ -9,12 +9,12 @@ import {
   Html,
   Preview,
   Text,
-} from '@react-email/components'
-import { Footer, Wordmark, styles } from './_brand'
+} from "@react-email/components";
+import { Footer, Wordmark, styles } from "./_brand";
 
 interface MagicLinkEmailProps {
-  siteName: string
-  confirmationUrl: string
+  siteName: string;
+  confirmationUrl: string;
 }
 
 export const MagicLinkEmail = ({ siteName, confirmationUrl }: MagicLinkEmailProps) => (
@@ -34,12 +34,12 @@ export const MagicLinkEmail = ({ siteName, confirmationUrl }: MagicLinkEmailProp
           Log in
         </Button>
         <Footer siteName={siteName} />
-        <Text style={{ ...styles.footer, marginTop: '12px' }}>
+        <Text style={{ ...styles.footer, marginTop: "12px" }}>
           If you didn't request this link, you can safely ignore this email.
         </Text>
       </Container>
     </Body>
   </Html>
-)
+);
 
-export default MagicLinkEmail
+export default MagicLinkEmail;

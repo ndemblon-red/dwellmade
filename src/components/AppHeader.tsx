@@ -15,7 +15,9 @@ function Wordmark() {
       className="leading-none tracking-tight lowercase"
       style={{ fontFamily: "'Instrument Serif', serif", fontSize: "32px" }}
     >
-      <span className="italic" style={{ color: MUSTARD }}>dwell</span>
+      <span className="italic" style={{ color: MUSTARD }}>
+        dwell
+      </span>
       <span style={{ color: PINK }}>made</span>
     </span>
   );
@@ -72,9 +74,7 @@ function UserMenu({ email, onSignOut }: { email: string; onSignOut: () => void }
               fontSize: 13,
               padding: "8px 16px",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "rgba(245,240,232,0.08)")
-            }
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(245,240,232,0.08)")}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
           >
             Sign out

@@ -159,7 +159,12 @@ export async function checkAndIncrement(request: Request): Promise<GateResult> {
  */
 export async function readUsage(
   request: Request,
-): Promise<{ kind: "anonymous" | "paid" | "free"; used: number; limit: number; setCookie?: string }> {
+): Promise<{
+  kind: "anonymous" | "paid" | "free";
+  used: number;
+  limit: number;
+  setCookie?: string;
+}> {
   const user = await getUserFromBearer(request);
   if (user) {
     const { data: profile } = await supabaseAdmin

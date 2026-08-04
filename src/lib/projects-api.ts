@@ -64,11 +64,7 @@ export async function listProjects(): Promise<Project[]> {
 }
 
 export async function getProject(id: string): Promise<Project> {
-  const { data, error } = await supabase
-    .from("projects")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const { data, error } = await supabase.from("projects").select("*").eq("id", id).single();
   if (error) throw error;
   return data as Project;
 }
@@ -110,10 +106,7 @@ export async function listRooms(projectId: string): Promise<Room[]> {
   return (data as Room[]) ?? [];
 }
 
-export async function createRoom(
-  projectId: string,
-  name: string,
-): Promise<Room> {
+export async function createRoom(projectId: string, name: string): Promise<Room> {
   const { data, error } = await supabase
     .from("rooms")
     .insert({ project_id: projectId, name })
@@ -193,26 +186,18 @@ export async function updateInspoTags(
   id: string,
   tags: Partial<ImageAspects> & { status?: string },
 ): Promise<void> {
-  const { error } = await supabase
-    .from("inspiration_images")
-    .update({ tags })
-    .eq("id", id);
+  const { error } = await supabase.from("inspiration_images").update({ tags }).eq("id", id);
   if (error) throw error;
 }
 
 export async function deleteInspo(id: string): Promise<void> {
-  const { error } = await supabase
-    .from("inspiration_images")
-    .delete()
-    .eq("id", id);
+  const { error } = await supabase.from("inspiration_images").delete().eq("id", id);
   if (error) throw error;
 }
 
 // --- Generations -----------------------------------------------------------
 
-export async function listGenerations(
-  roomId: string,
-): Promise<GenerationRow[]> {
+export async function listGenerations(roomId: string): Promise<GenerationRow[]> {
   const { data, error } = await supabase
     .from("generations")
     .select("*")
@@ -270,13 +255,14 @@ export async function uploadDataUrl(
 }
 
 export async function signedUrl(path: string): Promise<string> {
-  const { data, error } = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrl(path, SIGNED_TTL);
+  const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(path, SIGNED_TTL);
   if (error) throw error;
   return data.signedUrl;
 }
 
 export async function removeStorage(path: string): Promise<void> {
-  await supabase.storage.from(BUCKET).remove([path]).catch(() => {});
+  await supabase.storage
+    .from(BUCKET)
+    .remove([path])
+    .catch(() => {});
 }

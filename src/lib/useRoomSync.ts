@@ -100,9 +100,7 @@ export function useRoomSync(room: DBRoom, masterPalette: string[]) {
         }),
       );
 
-      const palette =
-        brief?.palette ??
-        (masterPalette.length > 0 ? [...masterPalette] : []);
+      const palette = brief?.palette ?? (masterPalette.length > 0 ? [...masterPalette] : []);
 
       replace({
         room: roomDataUrl
@@ -244,11 +242,7 @@ export function useRoomSync(room: DBRoom, masterPalette: string[]) {
         (async () => {
           try {
             const path = await uploadDataUrl("generations", g.dataUrl);
-            const row = await insertGeneration(
-              room.id,
-              path,
-              g.promptSummary,
-            );
+            const row = await insertGeneration(room.id, path, g.promptSummary);
             generationMap.current.set(g.id, {
               remoteId: row.id,
               remotePath: path,
