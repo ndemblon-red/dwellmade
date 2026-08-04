@@ -270,10 +270,42 @@ function RoomPill({
   const [editing, setEditing] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [draft, setDraft] = useState(room.name);
+  const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   useEffect(() => setDraft(room.name), [room.name]);
 
+  // Position the fixed menu below the trigger whenever it opens.
+  useEffect(() => {
+    if (menuOpen && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setMenuPos({ top: rect.bottom + 4, left: rect.left });
+    } else {
+      setMenuPos(null);
+    }
+  }, [menuOpen]);
+
+  // Close menu on outside click or Esc.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onMouseDown = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (menuRef.current?.contains(target) || triggerRef.current?.contains(target)) return;
+      setMenuOpen(false);
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onMouseDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onMouseDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [menuOpen]);
+
   const base =
-     "min-h-11 shrink-0 inline-flex items-center gap-1 rounded-full pl-3 pr-1 py-1 text-xs transition-colors whitespace-nowrap";
+    "min-h-11 shrink-0 inline-flex items-center gap-1 rounded-full pl-3 pr-1 py-1 text-xs transition-colors whitespace-nowrap";
   const activeStyle = "bg-[#1A1A2E] text-[#F5F0E8]";
   const inactiveStyle =
     "border border-[rgba(26,26,46,0.25)] text-muted-ink hover:text-ink hover:border-ink/40";
@@ -291,18 +323,22 @@ function RoomPill({
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-            if (e.key === "Escape") setEditing(false);
+            if (e.key === "Escape") {
+              setDraft(room.name);
+              setEditing(false);
+            }
           }}
           className="bg-transparent border-b border-current focus:outline-none text-xs min-w-0 w-28"
         />
       ) : (
-         <button onClick={onSelect} className="self-stretch text-xs">
+        <button onClick={onSelect} className="self-stretch text-xs">
           {room.name}
         </button>
       )}
       <button
+        ref={triggerRef}
         onClick={() => setMenuOpen((v) => !v)}
-         className={`ml-1 size-9 grid place-items-center rounded-full text-[11px] leading-none sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity ${
+        className={`ml-1 size-9 grid place-items-center rounded-full text-[11px] leading-none sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity ${
           active ? "hover:bg-white/10" : "hover:bg-black/5"
         }`}
         aria-label="Room actions"
@@ -310,31 +346,35 @@ function RoomPill({
       >
         ···
       </button>
-      {menuOpen ? (
-        <div
-          className="absolute top-full left-0 mt-1 bg-paper ring-1 ring-black/10 rounded-md shadow-md z-10 py-1 min-w-[120px]"
-          onMouseLeave={() => setMenuOpen(false)}
-        >
-          <button
-            onClick={() => {
-              setEditing(true);
-              setMenuOpen(false);
-            }}
-             className="block min-h-11 w-full px-3 py-1.5 text-left text-xs text-ink hover:bg-black/5"
-          >
-            Rename
-          </button>
-          <button
-            onClick={() => {
-              setMenuOpen(false);
-              onDelete();
-            }}
-             className="block min-h-11 w-full px-3 py-1.5 text-left text-xs text-destructive hover:bg-black/5"
-          >
-            Delete
-          </button>
-        </div>
-      ) : null}
+      {menuOpen && menuPos
+        ? createPortal(
+            <div
+              ref={menuRef}
+              className="fixed bg-paper ring-1 ring-black/10 rounded-md shadow-md z-50 py-1 min-w-[140px]"
+              style={{ top: menuPos.top, left: menuPos.left }}
+            >
+              <button
+                onClick={() => {
+                  setEditing(true);
+                  setMenuOpen(false);
+                }}
+                className="block min-h-11 w-full px-3 py-1.5 text-left text-xs text-ink hover:bg-black/5"
+              >
+                Rename
+              </button>
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  onDelete();
+                }}
+                className="block min-h-11 w-full px-3 py-1.5 text-left text-xs text-destructive hover:bg-black/5"
+              >
+                Delete
+              </button>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }
