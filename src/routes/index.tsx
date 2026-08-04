@@ -605,8 +605,8 @@ function CollectStage({ onNext, canNext }: { onNext: () => void; canNext: boolea
   );
 
   return (
-    <div className="grid grid-cols-12 gap-10">
-      <section className="col-span-12 lg:col-span-6 space-y-4">
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+      <section className="min-w-0 lg:col-span-6 space-y-4">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-ink">
             Subject Room
@@ -623,7 +623,7 @@ function CollectStage({ onNext, canNext }: { onNext: () => void; canNext: boolea
         <RoomPanel room={room} onUpload={handleRoomUpload} />
       </section>
 
-      <section className="col-span-12 lg:col-span-6 space-y-4">
+      <section className="min-w-0 lg:col-span-6 space-y-4">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-ink">
             Inspiration
@@ -643,7 +643,7 @@ function CollectStage({ onNext, canNext }: { onNext: () => void; canNext: boolea
         )}
       </section>
 
-      <div className="col-span-12 flex flex-col items-center pt-6 gap-3">
+      <div className="min-w-0 lg:col-span-12 flex flex-col items-center pt-6 gap-3">
         {error ? <p className="text-[11px] text-destructive">{error}</p> : null}
         {blobError ? (
           <p className="text-[11px] text-destructive">
@@ -727,8 +727,8 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
   );
 
   return (
-    <div className="grid grid-cols-12 gap-10">
-      <section className="col-span-12 lg:col-span-7 space-y-4">
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+      <section className="min-w-0 lg:col-span-7 space-y-4">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-ink">
             Moodboard
@@ -741,7 +741,7 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
         <Moodboard inspo={inspo} selected={brief.palette} onToggle={togglePaletteColor} />
       </section>
 
-      <section className="col-span-12 lg:col-span-5 space-y-6">
+      <section className="min-w-0 lg:col-span-5 space-y-6">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-ink">
             Aesthetic Brief
@@ -764,7 +764,7 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
         />
       </section>
 
-      <div className="col-span-12 flex flex-col-reverse items-stretch gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="min-w-0 lg:col-span-12 flex flex-col-reverse items-stretch gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
         <button
           onClick={onBack}
           className="text-center text-[11px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink sm:text-left"
