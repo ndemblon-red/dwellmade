@@ -459,6 +459,7 @@ const STAGE_LABELS: Record<Stage, { num: string; title: string; sub: string }> =
   collect: { num: "01", title: "Collect", sub: "Room photo & references" },
   curate: { num: "02", title: "Curate", sub: "Build the aesthetic brief" },
   generate: { num: "03", title: "Generate", sub: "Apply brief to room" },
+  preview: { num: "", title: "Preview", sub: "Latest completed design" },
 };
 
 export function Workspace() {
@@ -472,6 +473,21 @@ export function Workspace() {
   const canGenerate =
     canCurate &&
     (brief.palette.length > 0 || brief.materials.length > 0 || brief.furnitureStyle || brief.vibe);
+
+  if (stage === "preview") {
+    return (
+      <div className="min-h-screen bg-canvas text-ink font-sans">
+        <main className="py-8 px-4 sm:py-10 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            <PreviewStage
+              onEdit={() => setStage("collect")}
+              onCreateVersion={() => setStage("generate")}
+            />
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-canvas text-ink font-sans">
@@ -541,7 +557,9 @@ function StageNav({
                 >
                   {meta.num}
                 </span>
-                <span className="min-w-0 truncate font-serif text-base sm:text-xl">{meta.title}</span>
+                <span className="min-w-0 truncate font-serif text-base sm:text-xl">
+                  {meta.title}
+                </span>
               </div>
               <p
                 className="hidden sm:block text-[11px] uppercase tracking-[0.12em] mt-1"
@@ -552,6 +570,85 @@ function StageNav({
             </button>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+// --- Preview (completed-room summary) ----------------------------------------
+
+function PreviewStage({
+  onEdit,
+  onCreateVersion,
+}: {
+  onEdit: () => void;
+  onCreateVersion: () => void;
+}) {
+  const room = useStore((s) => s.room);
+  const generations = useStore((s) => s.generations);
+  const latest = useMemo(
+    () => generations.find((g) => g.isFinal) ?? generations.find((g) => g.dataUrl),
+    [generations],
+  );
+
+  if (!room || !latest) {
+    return (
+      <div className="bg-paper ring-1 ring-border-card rounded-xl p-12 text-center">
+        <p className="text-sm text-muted-ink italic">Nothing to preview yet.</p>
+        <button
+          onClick={onEdit}
+          className="mt-4 bg-ink text-paper py-3 px-6 rounded-lg text-sm font-medium hover:bg-accent"
+        >
+          Start designing →
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      <div className="bg-paper ring-1 ring-border-card rounded-xl p-5 sm:p-8">
+        <div className="flex items-start justify-between flex-wrap gap-4 mb-5">
+          <div>
+            <h2 className="font-serif text-2xl sm:text-3xl italic">Room preview</h2>
+            <p className="text-[11px] uppercase tracking-widest text-muted-ink mt-1">
+              {latest.promptSummary}
+              {!latest.isFinal && latest.dataUrl ? " · rendering" : ""}
+            </p>
+          </div>
+          {latest.isFinal && latest.dataUrl ? (
+            <a
+              href={latest.dataUrl}
+              download={`dwellmade-${latest.id.slice(0, 8)}.png`}
+              className="text-[10px] uppercase tracking-widest font-medium underline underline-offset-4 text-muted-ink hover:text-ink"
+            >
+              Download
+            </a>
+          ) : null}
+        </div>
+
+        <div className="max-w-2xl mx-auto">
+          <BeforeAfter
+            beforeSrc={room.dataUrl}
+            afterSrc={latest.dataUrl}
+            afterBlurred={!latest.isFinal}
+          />
+        </div>
+
+        <div className="mt-6 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-center gap-3">
+          <button
+            onClick={onEdit}
+            className="min-h-11 px-5 py-2.5 rounded-lg text-sm font-medium ring-1 ring-border-card text-ink hover:bg-surface-raised transition-colors"
+          >
+            Edit room
+          </button>
+          <button
+            onClick={onCreateVersion}
+            className="min-h-11 bg-ink text-paper px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-accent transition-colors"
+          >
+            Create another version
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -614,7 +711,7 @@ function CollectStage({ onNext, canNext }: { onNext: () => void; canNext: boolea
           {room ? (
             <button
               onClick={() => setRoom(null)}
-               className="inline-flex min-h-11 items-center text-[10px] uppercase tracking-widest font-medium underline underline-offset-4 text-muted-ink hover:text-ink"
+              className="inline-flex min-h-11 items-center text-[10px] uppercase tracking-widest font-medium underline underline-offset-4 text-muted-ink hover:text-ink"
             >
               Replace
             </button>
@@ -676,7 +773,7 @@ function CollectInspoTile({ inspo, onRemove }: { inspo: InspoImage; onRemove: ()
       <img src={inspo.dataUrl} alt="Inspiration" className="w-full aspect-square object-cover" />
       <button
         onClick={onRemove}
-         className="absolute right-1 top-1 size-11 grid place-items-center rounded-full bg-paper/90 text-xs sm:right-2 sm:top-2"
+        className="absolute right-1 top-1 size-11 grid place-items-center rounded-full bg-paper/90 text-xs sm:right-2 sm:top-2"
         aria-label="Remove"
       >
         ×
@@ -1399,7 +1496,10 @@ function ControlsPanel({
     <div className="bg-paper ring-1 ring-border-card p-4 sm:p-6 rounded-xl space-y-6">
       <div className="space-y-3">
         {rows.map((r) => (
-          <div key={r.key} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 text-sm">
+          <div
+            key={r.key}
+            className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 text-sm"
+          >
             <span>{r.label}</span>
             <KeepChangeToggle value={keepChange[r.key]} onChange={(v) => setKeepChange(r.key, v)} />
           </div>
@@ -1466,7 +1566,7 @@ function UploadButton({
     <>
       <button
         onClick={() => ref.current?.click()}
-         className="inline-flex min-h-11 items-center text-xs font-medium underline underline-offset-4 hover:text-ink"
+        className="inline-flex min-h-11 items-center text-xs font-medium underline underline-offset-4 hover:text-ink"
       >
         {children}
       </button>

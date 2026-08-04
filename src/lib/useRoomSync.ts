@@ -35,6 +35,7 @@ type RemoteRef = { remoteId: string; remotePath: string };
 export function useRoomSync(room: DBRoom, masterPalette: string[]) {
   const replace = useStore((s) => s.replaceWorkspace);
   const setCurrentRoomId = useStore((s) => s.setCurrentRoomId);
+  const setStage = useStore((s) => s.setStage);
 
   // Maps from in-memory local id -> remote info
   const inspoMap = useRef(new Map<string, RemoteRef>());
@@ -102,6 +103,11 @@ export function useRoomSync(room: DBRoom, masterPalette: string[]) {
 
       const palette = brief?.palette ?? (masterPalette.length > 0 ? [...masterPalette] : []);
 
+      const hasCompletedGeneration = generationItems.length > 0;
+
+      // Guard against stale async writes after room switch / unmount.
+      if (cancelled) return;
+
       replace({
         room: roomDataUrl
           ? {
@@ -120,7 +126,12 @@ export function useRoomSync(room: DBRoom, masterPalette: string[]) {
         },
         generations: generationItems,
       });
+      if (cancelled) return;
       setCurrentRoomId(room.id);
+      if (cancelled) return;
+      // Completed rooms open in preview mode; unfinished rooms start at Collect.
+      setStage(hasCompletedGeneration ? "preview" : "collect");
+      if (cancelled) return;
       hydrated.current = true;
     })();
 
@@ -272,6 +283,5 @@ export function useRoomSync(room: DBRoom, masterPalette: string[]) {
       if (briefTimer) clearTimeout(briefTimer);
       for (const t of tagTimers.values()) clearTimeout(t);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [room.id]);
 }
