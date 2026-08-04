@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { z } from "zod";
 import { buildPrompt } from "@/prompts/generate.prompt";
 import { checkAndIncrement } from "@/lib/generation-gate.server";
 import {
