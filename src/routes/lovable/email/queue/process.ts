@@ -9,7 +9,23 @@ interface EmailQueueMessage {
   msg_id: number
   read_ct?: number
   enqueued_at?: string
-  message: Record<string, unknown>
+  message: EmailQueuePayload
+}
+
+interface EmailQueuePayload extends Record<string, Json | undefined> {
+  run_id?: string
+  message_id?: string
+  to: string
+  from: string
+  sender_domain?: string
+  subject: string
+  html: string
+  text: string
+  purpose?: string
+  label?: string
+  idempotency_key?: string
+  unsubscribe_token?: string
+  queued_at?: string
 }
 
 const MAX_RETRIES = 5
@@ -48,7 +64,7 @@ function getRetryAfterSeconds(error: unknown): number {
 async function moveToDlq(
   supabase: EmailQueueClient,
   queue: string,
-  msg: { msg_id: number; message: Record<string, unknown> },
+  msg: EmailQueueMessage,
   reason: string
 ): Promise<void> {
   const payload = msg.message
@@ -133,11 +149,12 @@ export const Route = createFileRoute("/lovable/email/queue/process")({
           }
 
           if (!messages?.length) continue
+          const queueMessages = messages as unknown as EmailQueueMessage[]
 
           // Retry budget is based on real send failures, not pgmq read_ct.
           const messageIds = Array.from(
             new Set(
-              messages
+              queueMessages
                 .map((msg: EmailQueueMessage) =>
                   msg?.message?.message_id && typeof msg.message.message_id === 'string'
                     ? msg.message.message_id
@@ -171,8 +188,8 @@ export const Route = createFileRoute("/lovable/email/queue/process")({
             }
           }
 
-          for (let i = 0; i < messages.length; i++) {
-            const msg = messages[i]
+          for (let i = 0; i < queueMessages.length; i++) {
+            const msg = queueMessages[i]
             const payload = msg.message
             const failedAttempts =
               payload?.message_id && typeof payload.message_id === 'string'
@@ -323,7 +340,7 @@ export const Route = createFileRoute("/lovable/email/queue/process")({
             }
 
             // Small delay between sends to smooth bursts
-            if (i < messages.length - 1) {
+            if (i < queueMessages.length - 1) {
               await new Promise((r) => setTimeout(r, sendDelayMs))
             }
           }
