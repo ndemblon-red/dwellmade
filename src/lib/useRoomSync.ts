@@ -35,6 +35,7 @@ type RemoteRef = { remoteId: string; remotePath: string };
 export function useRoomSync(room: DBRoom, masterPalette: string[]) {
   const replace = useStore((s) => s.replaceWorkspace);
   const setCurrentRoomId = useStore((s) => s.setCurrentRoomId);
+  const setStage = useStore((s) => s.setStage);
 
   // Maps from in-memory local id -> remote info
   const inspoMap = useRef(new Map<string, RemoteRef>());
