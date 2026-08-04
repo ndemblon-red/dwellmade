@@ -1,28 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { z } from "zod";
 import { buildPrompt } from "@/prompts/generate.prompt";
 import { checkAndIncrement } from "@/lib/generation-gate.server";
-
-const BriefSchema = z.object({
-  palette: z.array(z.string()),
-  materials: z.array(z.string()),
-  furnitureStyle: z.string(),
-  lightingMood: z.string().optional().default(""),
-  vibe: z.string(),
-});
-
-const BodySchema = z.object({
-  room: z.string().startsWith("data:"),
-  inspo: z.array(z.string().startsWith("data:")).default([]),
-  brief: BriefSchema,
-  keepChange: z.object({
-    walls: z.enum(["keep", "change"]),
-    flooring: z.enum(["keep", "change"]),
-    furniture: z.enum(["keep", "change"]),
-    decor: z.enum(["keep", "change"]),
-  }),
-  notes: z.string().optional().default(""),
-});
+import { GenerationRequestSchema, type GenerationRequest } from "@/lib/generation-request.schema";
 
 export const Route = createFileRoute("/api/generate")({
   server: {
@@ -31,10 +10,10 @@ export const Route = createFileRoute("/api/generate")({
         const key = process.env.LOVABLE_API_KEY;
         if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
 
-        let payload: z.infer<typeof BodySchema>;
+        let payload: GenerationRequest;
         try {
           const raw = await request.json();
-          payload = BodySchema.parse(raw);
+          payload = GenerationRequestSchema.parse(raw);
         } catch (e) {
           return new Response(
             JSON.stringify({ error: e instanceof Error ? e.message : "Invalid body" }),
