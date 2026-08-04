@@ -43,7 +43,7 @@ function UserMenu({ email, onSignOut }: { email: string; onSignOut: () => void }
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label="Account menu"
-        className="flex size-9 items-center justify-center rounded-full sm:size-7"
+        className="flex size-11 items-center justify-center rounded-full"
         style={{
           backgroundColor: "rgba(245, 240, 232, 0.15)",
           color: CREAM,
@@ -67,7 +67,7 @@ function UserMenu({ email, onSignOut }: { email: string; onSignOut: () => void }
               setOpen(false);
               onSignOut();
             }}
-            className="w-full text-left normal-case tracking-normal"
+            className="min-h-11 w-full text-left normal-case tracking-normal"
             style={{
               color: CREAM,
               fontSize: 13,

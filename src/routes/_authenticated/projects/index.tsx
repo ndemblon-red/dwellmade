@@ -44,7 +44,7 @@ function ProjectsDashboard() {
           <button
             onClick={() => create.mutate()}
             disabled={create.isPending}
-            className="shrink-0 bg-ink text-paper px-4 py-2.5 sm:px-5 rounded-md text-sm font-medium hover:bg-accent disabled:opacity-50"
+            className="min-h-11 shrink-0 bg-ink text-paper px-4 py-2.5 sm:px-5 rounded-md text-sm font-medium hover:bg-accent disabled:opacity-50"
           >
             + New project
           </button>
@@ -60,7 +60,7 @@ function ProjectsDashboard() {
             </p>
             <button
               onClick={() => create.mutate()}
-              className="bg-ink text-paper px-5 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
+              className="min-h-11 bg-ink text-paper px-5 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
             >
               Create your first project
             </button>
@@ -103,7 +103,7 @@ function ProjectsDashboard() {
                     if (confirm(`Delete "${p.name}"? This removes all its rooms.`))
                       del.mutate(p.id);
                   }}
-                  className="mt-3 text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+                  className="mt-1 inline-flex min-h-11 items-center text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
                 >
                   Delete
                 </button>

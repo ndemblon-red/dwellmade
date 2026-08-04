@@ -46,7 +46,7 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
         <button
           onClick={onClose}
           aria-label="Close"
-          className="absolute top-3 right-3 size-8 grid place-items-center text-lg"
+          className="absolute right-2 top-2 size-11 grid place-items-center text-lg"
           style={{ color: MUTED_CREAM }}
         >
           ✕

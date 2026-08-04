@@ -614,7 +614,7 @@ function CollectStage({ onNext, canNext }: { onNext: () => void; canNext: boolea
           {room ? (
             <button
               onClick={() => setRoom(null)}
-              className="text-[10px] uppercase tracking-widest font-medium underline underline-offset-4 text-muted-ink hover:text-ink"
+               className="inline-flex min-h-11 items-center text-[10px] uppercase tracking-widest font-medium underline underline-offset-4 text-muted-ink hover:text-ink"
             >
               Replace
             </button>
@@ -676,7 +676,7 @@ function CollectInspoTile({ inspo, onRemove }: { inspo: InspoImage; onRemove: ()
       <img src={inspo.dataUrl} alt="Inspiration" className="w-full aspect-square object-cover" />
       <button
         onClick={onRemove}
-        className="absolute top-2 right-2 size-6 grid place-items-center bg-paper/90 rounded-full text-xs"
+         className="absolute right-1 top-1 size-11 grid place-items-center rounded-full bg-paper/90 text-xs sm:right-2 sm:top-2"
         aria-label="Remove"
       >
         ×
@@ -1466,7 +1466,7 @@ function UploadButton({
     <>
       <button
         onClick={() => ref.current?.click()}
-        className="text-xs font-medium underline underline-offset-4 hover:text-ink"
+         className="inline-flex min-h-11 items-center text-xs font-medium underline underline-offset-4 hover:text-ink"
       >
         {children}
       </button>
