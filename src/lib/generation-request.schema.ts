@@ -10,13 +10,16 @@ const InlineImageSchema = z
 const SecureImageUrlSchema = z
   .string()
   .url()
-  .refine((value) => {
-    try {
-      return new URL(value).protocol === "https:";
-    } catch {
-      return false;
-    }
-  }, "Image URL must use HTTPS");
+  .refine(
+    (value) => {
+      try {
+        return new URL(value).protocol === "https:";
+      } catch {
+        return false;
+      }
+    },
+    "Image URL must use HTTPS",
+  );
 
 export const ImageSourceSchema = z.union([InlineImageSchema, SecureImageUrlSchema]);
 
