@@ -1,9 +1,11 @@
 import { z } from "zod";
 
-const InlineImageSchema = z.string().refine(
-  (value) => /^data:image\/[a-z0-9.+-]+;base64,[a-z0-9+/=\s]+$/i.test(value),
-  "Invalid inline image data URL",
-);
+const InlineImageSchema = z
+  .string()
+  .refine(
+    (value) => /^data:image\/[a-z0-9.+-]+;base64,[a-z0-9+/=\s]+$/i.test(value),
+    "Invalid inline image data URL",
+  );
 
 const SecureImageUrlSchema = z
   .string()
