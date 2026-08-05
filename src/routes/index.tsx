@@ -17,7 +17,27 @@ import { AppHeader } from "@/components/AppHeader";
 import { useGenerationUsage, authHeaders } from "@/hooks/use-generation-usage";
 import { UpgradeModal } from "@/components/UpgradeModal";
 
-export const Route = createFileRoute("/")({ component: LandingPage });
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "dwellmade — Interior design from your inspiration" },
+      {
+        name: "description",
+        content:
+          "Upload your room, drop in your inspiration images, and generate a redesign that blends your references into the space you live in.",
+      },
+      { property: "og:title", content: "dwellmade — Interior design from your inspiration" },
+      {
+        property: "og:description",
+        content:
+          "Upload your room, drop in your inspiration images, and generate a redesign that blends your references into the space you live in.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: LandingPage,
+});
 
 // Brand palette
 const CREAM = "#F5F0E8";
