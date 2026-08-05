@@ -1,6 +1,6 @@
 # dwellmade — Prioritised Bug Tracker
 
-Last updated: 2026-08-05, after the Designs-tab refactor.
+Last updated: 2026-08-05, after the payments integration.
 
 Severity key:
 
@@ -10,17 +10,20 @@ Severity key:
 
 ## Re-verification status (2026-08-05)
 
-| Check                                 | Result                                                                         |
-| ------------------------------------- | ------------------------------------------------------------------------------ |
-| Production build (`bun run build`)    | Pass                                                                           |
-| Typecheck (`tsgo --noEmit`)           | Pass, 0 errors                                                                 |
-| Lint (`eslint .`)                     | Pass, 0 errors, 8 `react-refresh` warnings (shadcn/ui + email brand)           |
-| Formatting (`prettier --check .`)     | Pass                                                                           |
-| Console/runtime on `/auth`            | Clean on fresh load — the reported hydration mismatch did not reproduce        |
-| Workspace responsive 375 / 768 / 1280 | Pass, no horizontal overflow at any width                                      |
-| Room flow smoke test                  | Pass — Collect → Curate → Generate → Designs, room switching, Designs re-entry |
-| Dependency/security scan              | Not re-run (no package changes since last pass)                                |
-| Database/RLS linter                   | Not re-run (no schema changes since last pass)                                 |
+| Check                                 | Result                                                                            |
+| ------------------------------------- | --------------------------------------------------------------------------------- |
+| Production build (`bun run build`)    | Pass                                                                              |
+| Typecheck (`tsgo --noEmit`)           | Pass, 0 errors                                                                    |
+| Lint (`eslint .`)                     | Pass, 0 errors, 10 `react-refresh` warnings (shadcn/ui + email brand + LegalPage) |
+| Formatting (`prettier --check .`)    | Pass                                                                              |
+| Console/runtime on `/auth`            | Clean on fresh load — the reported hydration mismatch did not reproduce           |
+| Workspace responsive 375 / 768 / 1280  | Pass, no horizontal overflow at any width                                         |
+| Room flow smoke test                  | Pass — Collect → Curate → Generate → Designs, room switching, Designs re-entry    |
+| Stripe checkout build                 | Pass — all payment modules and webhook compile and bundle                         |
+| Anonymous generation gate             | Pass — returns 402 with `limit_reached` after 3 anonymous generations             |
+| Webhook endpoint                      | Pass — `POST /api/public/payments/webhook` returns 200/400 as expected              |
+| Dependency/security scan              | Not re-run (no package changes since last pass)                                   |
+| Database/RLS linter                   | Not re-run (schema changes applied via migration)                                 |
 
 ---
 
@@ -39,7 +42,6 @@ Severity key:
 - **Detail:** the Upgrade modal now opens an embedded Stripe checkout for `dwellmade_basic_monthly` (£15/month). The webhook at `/api/public/payments/webhook` updates `user_profiles` and `subscriptions` on `customer.subscription.*` and `checkout.session.completed` events. Checkout is configured for full tax compliance handling (`managed_payments`) in supported countries.
 - **Status:** implemented. Needs end-to-end validation with a real test card in the preview before launch.
 - **Validation:** sign in as a free/non-comped account, exhaust the 3 anonymous generations, click "Subscribe now" in the Upgrade modal, complete checkout with test card `4242 4242 4242 4242`, and confirm `/projects?checkout=success` shows the success banner and the profile becomes `plan_active = true`.
-
 
 ---
 
@@ -64,8 +66,8 @@ Severity key:
 ### BUG-004 · Free signed-in accounts see limit copy meant for anonymous users
 
 - **Area:** workspace / billing UX
-- **Detail:** the limit gate distinguishes anonymous (3 lifetime) from free accounts, and the modal was updated for the `free_account` reason, but this path has not been exercised since BUG-001 masks it on the only test profile.
-- **Fix:** verify after BUG-001 is reverted — sign in as a fresh free account, exhaust the allowance, confirm the modal copy and remaining-count indicator are correct.
+- **Detail:** the limit gate distinguishes anonymous (3 lifetime) from free accounts, and the modal was updated for the `free_account` reason, but this path has not been exercised since the test profile is comped.
+- **Fix:** verify after BUG-001 is resolved — sign in as a fresh free account, exhaust the allowance, confirm the modal copy and remaining-count indicator are correct.
 
 ### BUG-005 · Email confirmation depends on auto-confirm still being on
 
@@ -104,10 +106,11 @@ Severity key:
 ### BUG-009 · `react-refresh/only-export-components` warnings
 
 - **Area:** codebase hygiene
-- **Detail:** 8 lint warnings from shadcn/ui primitives and `src/lib/email-templates/_brand.tsx` exporting non-components alongside components. Dev-experience only; no runtime effect.
+- **Detail:** 10 lint warnings from shadcn/ui primitives, `src/lib/email-templates/_brand.tsx` and `src/components/LegalPage.tsx` exporting non-components alongside components. Dev-experience only; no runtime effect.
 - **Fix:** split constants into sibling modules if the noise becomes annoying.
 
 ### BUG-010 · Examples section on the landing page is still "Coming soon"
 
 - **Area:** landing
 - **Fix:** publish two or three real before/after examples before or shortly after launch.
+
