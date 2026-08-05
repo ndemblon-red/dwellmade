@@ -77,8 +77,8 @@ function TermsPage() {
         <p>
           Generated images are visualisations, not plans. They are not architectural, structural,
           electrical, safety or professional design advice, and they don't account for the real
-          dimensions, services or condition of your room. Get a qualified professional before
-          making structural or safety-related changes.
+          dimensions, services or condition of your room. Get a qualified professional before making
+          structural or safety-related changes.
         </p>
         <p>
           AI output varies. Objects, proportions and materials may be rendered inaccurately, and two
@@ -129,8 +129,8 @@ function TermsPage() {
       <Section title="Suspension and ending the agreement">
         <p>
           We may suspend or close an account that breaks these terms, abuses the service, or puts
-          other users or our providers at risk. You can close your account at any time by
-          contacting us; closing it deletes your projects and designs.
+          other users or our providers at risk. You can close your account at any time by contacting
+          us; closing it deletes your projects and designs.
         </p>
       </Section>
 

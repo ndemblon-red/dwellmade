@@ -70,8 +70,8 @@ function PrivacyPage() {
           designs, sending account emails. Lawful basis: performance of a contract with you.
         </p>
         <p>
-          To run the free allowance fairly and prevent abuse of generation limits. Lawful basis:
-          our legitimate interest in protecting the service from misuse.
+          To run the free allowance fairly and prevent abuse of generation limits. Lawful basis: our
+          legitimate interest in protecting the service from misuse.
         </p>
         <p>
           To handle billing once paid subscriptions are live, and to keep the records we're required
@@ -85,9 +85,9 @@ function PrivacyPage() {
           your account, projects and images.
         </p>
         <p>
-          <strong>AI model provider</strong> — the room and inspiration images you submit, along with
-          your brief, are sent to the AI provider that tags inspiration and generates designs. This
-          is necessary to produce your results.
+          <strong>AI model provider</strong> — the room and inspiration images you submit, along
+          with your brief, are sent to the AI provider that tags inspiration and generates designs.
+          This is necessary to produce your results.
         </p>
         <p>
           <strong>Email delivery</strong> — account emails such as confirmation and password resets

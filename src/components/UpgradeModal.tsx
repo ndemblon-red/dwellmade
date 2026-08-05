@@ -68,7 +68,6 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
           <div style={serif} className="text-5xl leading-none">
             £15{" "}
             <span className="text-2xl" style={{ color: MUTED_CREAM }}>
-
               / month
             </span>
           </div>
@@ -101,7 +100,6 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
             Privacy
           </Link>
         </div>
-
       </div>
     </div>
   );

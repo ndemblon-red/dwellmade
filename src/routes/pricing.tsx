@@ -21,7 +21,8 @@ export const Route = createFileRoute("/pricing")({
       { property: "og:title", content: "Pricing — dwellmade" },
       {
         property: "og:description",
-        content: "£15 a month for 50 room designs. 3 free generations before signup. Cancel anytime.",
+        content:
+          "£15 a month for 50 room designs. 3 free generations before signup. Cancel anytime.",
       },
       { property: "og:type", content: "product" },
       { property: "og:url", content: "https://dwellmade.lovable.app/pricing" },
@@ -61,10 +62,7 @@ function PricingPage() {
           className="mt-10 p-8 sm:p-10"
           style={{ backgroundColor: NEAR_BLACK, color: CREAM, borderRadius: 4 }}
         >
-          <div
-            className="text-[10px] font-semibold tracking-[0.22em]"
-            style={{ color: MUSTARD }}
-          >
+          <div className="text-[10px] font-semibold tracking-[0.22em]" style={{ color: MUSTARD }}>
             DWELLMADE SUBSCRIPTION
           </div>
           <div style={serif} className="mt-3 text-6xl leading-none">
@@ -100,8 +98,8 @@ function PricingPage() {
             The free allowance
           </h2>
           <p className="mt-3 text-[15px] leading-relaxed" style={{ opacity: 0.85 }}>
-            Every visitor gets 3 generations in their browser before signing up. Creating an
-            account doesn't add more free generations — it saves your work and lets you subscribe.
+            Every visitor gets 3 generations in their browser before signing up. Creating an account
+            doesn't add more free generations — it saves your work and lets you subscribe.
           </p>
         </section>
 

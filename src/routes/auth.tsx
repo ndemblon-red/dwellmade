@@ -384,4 +384,3 @@ function AuthPage() {
     </div>
   );
 }
-
