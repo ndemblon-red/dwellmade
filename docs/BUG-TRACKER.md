@@ -38,6 +38,18 @@ Severity key:
 - **Area:** backend / billing
 - **Detail:** the Upgrade modal is reachable when a user hits the generation limit, but there is no Stripe checkout behind it, so a limited user cannot become a paying user.
 - **Fix:** enable Stripe, add a checkout session server function, and set `plan`/`plan_active` from the webhook. Until then, either ship with a waitlist/contact CTA in the modal or delay launch of the paid tier.
+- **Dependency:** commercial terms are now confirmed and published (£15/month, 50 generations, cancel anytime, no refunds — see `/pricing`, `/terms`, `/privacy`). Checkout must charge £15/month and link the terms and privacy pages.
+
+---
+
+## Commercial terms — confirmed 2026-08-05
+
+- Seller: Dwellmade, United Kingdom, hello@dwellmade.co.uk
+- Price: £15/month, 50 generations per month, monthly only
+- Free allowance: 3 generations per browser before signup; accounts get no extra free allowance
+- Cancellation: cancel anytime, access to end of paid period, no refunds for part-used months
+- Published at `/pricing`, `/terms`, `/privacy`, linked from the landing footer, auth page and upgrade modal
+
 
 ---
 
