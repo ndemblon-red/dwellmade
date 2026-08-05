@@ -67,7 +67,7 @@ async function upsertUserProfileFromSubscription(subscription: StripeSubscriptio
   const periodStart = item?.current_period_start ?? subscription.current_period_start;
   const periodEnd = item?.current_period_end ?? subscription.current_period_end;
 
-  await getSupabase()
+  const { error: subscriptionError } = await getSupabase()
     .from("subscriptions")
     .upsert(
       {
@@ -85,11 +85,15 @@ async function upsertUserProfileFromSubscription(subscription: StripeSubscriptio
       },
       { onConflict: "stripe_subscription_id" },
     );
+  if (subscriptionError) {
+    throw new Error(`Failed to save subscription ${subscription.id}: ${subscriptionError.message}`);
+  }
 
   if (subscription.status === "active" || subscription.status === "trialing") {
-    await getSupabase()
+    const { error: profileError } = await getSupabase()
       .from("user_profiles")
-      .update({
+      .upsert({
+        id: userId,
         plan: "paid",
         plan_active: true,
         stripe_customer_id: getCustomerId(subscription.customer),
@@ -97,26 +101,31 @@ async function upsertUserProfileFromSubscription(subscription: StripeSubscriptio
         current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
         cancel_at_period_end: subscription.cancel_at_period_end || false,
         updated_at: new Date().toISOString(),
-      })
-      .eq("id", userId);
+      });
+    if (profileError) {
+      throw new Error(`Failed to activate profile ${userId}: ${profileError.message}`);
+    }
   } else if (
     subscription.status === "canceled" ||
     subscription.status === "unpaid" ||
     subscription.status === "incomplete_expired"
   ) {
-    await getSupabase()
+    const { error: profileError } = await getSupabase()
       .from("user_profiles")
-      .update({
+      .upsert({
+        id: userId,
         plan_active: false,
         cancel_at_period_end: subscription.cancel_at_period_end || false,
         updated_at: new Date().toISOString(),
-      })
-      .eq("id", userId);
+      });
+    if (profileError) {
+      throw new Error(`Failed to deactivate profile ${userId}: ${profileError.message}`);
+    }
   }
 }
 
 async function handleSubscriptionDeleted(subscription: StripeSubscription, env: StripeEnv) {
-  await getSupabase()
+  const { error: subscriptionError } = await getSupabase()
     .from("subscriptions")
     .update({
       status: "canceled",
@@ -125,17 +134,23 @@ async function handleSubscriptionDeleted(subscription: StripeSubscription, env: 
     })
     .eq("stripe_subscription_id", subscription.id)
     .eq("environment", env);
+  if (subscriptionError) {
+    throw new Error(`Failed to cancel subscription ${subscription.id}: ${subscriptionError.message}`);
+  }
 
   const userId = subscription.metadata?.userId;
   if (userId) {
-    await getSupabase()
+    const { error: profileError } = await getSupabase()
       .from("user_profiles")
-      .update({
+      .upsert({
+        id: userId,
         plan_active: false,
         cancel_at_period_end: false,
         updated_at: new Date().toISOString(),
-      })
-      .eq("id", userId);
+      });
+    if (profileError) {
+      throw new Error(`Failed to deactivate profile ${userId}: ${profileError.message}`);
+    }
   }
 }
 
