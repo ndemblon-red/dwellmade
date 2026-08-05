@@ -69,7 +69,7 @@ export async function checkAndIncrement(request: Request): Promise<GateResult> {
     // Lazy-ensure a profile row.
     const { data: profile } = await supabaseAdmin
       .from("user_profiles")
-      .select("plan, plan_active, generations_used_this_month, billing_period_start")
+      .select("plan, plan_active, comp, generations_used_this_month, billing_period_start")
       .eq("id", user.id)
       .maybeSingle();
 
@@ -79,9 +79,11 @@ export async function checkAndIncrement(request: Request): Promise<GateResult> {
 
     const plan = profile?.plan ?? "free";
     const planActive = profile?.plan_active ?? false;
+    const comped = profile?.comp ?? false;
     const used = profile?.generations_used_this_month ?? 0;
 
-    if (!planActive || plan !== "paid") {
+    const hasPaidAccess = comped || (planActive && plan === "paid");
+    if (!hasPaidAccess) {
       return {
         ok: false,
         status: 402,
@@ -167,13 +169,14 @@ export async function readUsage(request: Request): Promise<{
   if (user) {
     const { data: profile } = await supabaseAdmin
       .from("user_profiles")
-      .select("plan, plan_active, generations_used_this_month")
+      .select("plan, plan_active, comp, generations_used_this_month")
       .eq("id", user.id)
       .maybeSingle();
     const plan = profile?.plan ?? "free";
     const planActive = profile?.plan_active ?? false;
+    const comped = profile?.comp ?? false;
     const used = profile?.generations_used_this_month ?? 0;
-    if (planActive && plan === "paid") {
+    if (comped || (planActive && plan === "paid")) {
       return { kind: "paid", used, limit: PAID_LIMIT };
     }
     return { kind: "free", used, limit: PAID_LIMIT };
