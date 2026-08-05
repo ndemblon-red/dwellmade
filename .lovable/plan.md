@@ -5,14 +5,14 @@
 - Stripe is enabled on the project; test webhook is registered at `https://project--b9f0be19-caae-4d23-8bf5-c0b64fdfb863-dev.lovable.app/api/public/payments/webhook?env=sandbox`.
 - Auto-subscribed webhook events: `subscription.created`, `subscription.updated`, `subscription.canceled`, `transaction.completed`, `transaction.payment_failed`.
 - Current pricing: £15/month for 50 generations. 3 free generations before signup.
-- The user asked whether the product should be named "dwellmade Monthly" instead of just "dwellmade".
+- The user wants the first plan to be named "Basic Monthly" so future tiers (Pro, Premium, etc.) can be added without confusion.
 
 ## Plan
 
 1. Create the Stripe product
-   - Product name: **dwellmade Monthly**
-   - Product ID: `dwellmade_subscription`
-   - Price ID: `dwellmade_monthly`
+   - Product name: **dwellmade Basic Monthly**
+   - Product ID: `dwellmade_basic_subscription`
+   - Price ID: `dwellmade_basic_monthly`
    - Price: £15.00 GBP, recurring monthly, quantity 1 only
    - Tax code: `txcd_10103001` (SaaS / electronic services)
 
@@ -54,4 +54,4 @@
 
 - All server-side Stripe calls go through `createStripeClient(env)`; never instantiate `new Stripe(process.env.STRIPE_SECRET_KEY)`.
 - The webhook route must be exactly `/api/public/payments/webhook` so the Lovable proxy bypasses auth for Stripe callbacks.
-- The `price_id` used in checkout is the human-readable lookup key (`dwellmade_monthly`), which is stable across test and live environments.
+- The `price_id` used in checkout is the human-readable lookup key (`dwellmade_basic_monthly`), which is stable across test and live environments.
