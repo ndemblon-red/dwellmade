@@ -543,7 +543,7 @@ function StageNav({
         {stages.map((s) => {
           const active = stage === s;
           const enabled =
-            s === "results" ||
+            s === "designs" ||
             s === "collect" ||
             (s === "curate" && canCurate) ||
             (s === "generate" && canGenerate);
