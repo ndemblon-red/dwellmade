@@ -26,19 +26,20 @@ Severity key:
 
 ## P0 — launch blockers
 
-### BUG-001 · Test account is force-flagged as paid
+### BUG-001 · Test account is comped
 
 - **Area:** backend / billing
-- **Detail:** `public.user_profiles` row `c3aeefe0-ead9-494e-9165-92c11a86d474` is `plan = 'paid'`, `plan_active = true`. This was a temporary override to unblock auditing and is currently the only profile row in the table.
-- **Repro:** query `user_profiles`; the account bypasses the free generation limit.
-- **Fix:** reset to `plan = 'free'`, `plan_active = false` before launch (or delete the row and let it recreate), then re-test the limit gate end to end.
+- **Detail:** `public.user_profiles` row `c3aeefe0-ead9-494e-9165-92c11a86d474` now has `comp = true`. This keeps the test account on the paid code path without a real subscription. Before launch, decide whether to remove the comp flag (and require the test account to subscribe like everyone else) or keep it as a permanent internal/team account.
+- **Repro:** query `user_profiles` for the row above; `comp` is `true`.
+- **Fix:** remove `comp` flag and reset `plan = 'free'`, `plan_active = false` if the test account should not have free access.
 
-### BUG-002 · Upgrade path dead-ends — payments not wired
+### BUG-002 · Stripe checkout is wired
 
 - **Area:** backend / billing
-- **Detail:** the Upgrade modal is reachable when a user hits the generation limit, but there is no Stripe checkout behind it, so a limited user cannot become a paying user.
-- **Fix:** enable Stripe, add a checkout session server function, and set `plan`/`plan_active` from the webhook. Until then, either ship with a waitlist/contact CTA in the modal or delay launch of the paid tier.
-- **Dependency:** commercial terms are now confirmed and published (£15/month, 50 generations, cancel anytime, no refunds — see `/pricing`, `/terms`, `/privacy`). Checkout must charge £15/month and link the terms and privacy pages.
+- **Detail:** the Upgrade modal now opens an embedded Stripe checkout for `dwellmade_basic_monthly` (£15/month). The webhook at `/api/public/payments/webhook` updates `user_profiles` and `subscriptions` on `customer.subscription.*` and `checkout.session.completed` events. Checkout is configured for full tax compliance handling (`managed_payments`) in supported countries.
+- **Status:** implemented. Needs end-to-end validation with a real test card in the preview before launch.
+- **Validation:** sign in as a free/non-comped account, exhaust the 3 anonymous generations, click "Subscribe now" in the Upgrade modal, complete checkout with test card `4242 4242 4242 4242`, and confirm `/projects?checkout=success` shows the success banner and the profile becomes `plan_active = true`.
+
 
 ---
 
