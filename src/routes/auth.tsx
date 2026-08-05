@@ -214,7 +214,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/confirm?email=${encodeURIComponent(email)}`,
+            emailRedirectTo: confirmRedirect(email),
           },
         });
         if (err) throw err;
@@ -230,7 +230,7 @@ function AuthPage() {
         });
         if (err) throw err;
       }
-      navigate({ to: redirect ?? "/projects" });
+      navigate({ to: destination });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Auth failed");
     } finally {
@@ -242,7 +242,7 @@ function AuthPage() {
     setBusy(true);
     setError(null);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + (redirect ?? "/projects"),
+      redirect_uri: window.location.origin + destination,
     });
     if (result.error) {
       setError(result.error instanceof Error ? result.error.message : "Google sign-in failed");
@@ -250,7 +250,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: redirect ?? "/projects" });
+    navigate({ to: destination });
   };
 
   const resend = async () => {
@@ -261,7 +261,7 @@ function AuthPage() {
       type: "signup",
       email: pendingEmail,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/confirm?email=${encodeURIComponent(pendingEmail)}`,
+        emailRedirectTo: confirmRedirect(pendingEmail),
       },
     });
     setResendBusy(false);
