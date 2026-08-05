@@ -1,4 +1,5 @@
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
+import { useServerFn } from "@tanstack/react-start";
 import { getStripe, getStripeEnvironment } from "@/lib/stripe";
 import { createCheckoutSession } from "@/utils/payments.functions";
 
@@ -13,8 +14,10 @@ export function StripeEmbeddedCheckout({
   quantity,
   returnUrl,
 }: StripeEmbeddedCheckoutProps) {
+  const fetchCheckout = useServerFn(createCheckoutSession);
+
   const fetchClientSecret = async (): Promise<string> => {
-    const result = await createCheckoutSession({
+    const result = await fetchCheckout({
       data: {
         priceId,
         quantity,
@@ -35,3 +38,4 @@ export function StripeEmbeddedCheckout({
     </div>
   );
 }
+
