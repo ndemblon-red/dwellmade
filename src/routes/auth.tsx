@@ -370,6 +370,16 @@ function AuthPage() {
             {mode === "signin" ? "Create an account" : "Sign in"}
           </button>
         </p>
+
+        <p className="text-[11px] text-muted-ink mt-4 text-center">
+          <Link to="/terms" className="underline underline-offset-4">
+            Terms
+          </Link>{" "}
+          ·{" "}
+          <Link to="/privacy" className="underline underline-offset-4">
+            Privacy
+          </Link>
+        </p>
       </main>
     </div>
   );

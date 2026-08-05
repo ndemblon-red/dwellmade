@@ -390,19 +390,40 @@ function HowItWorks() {
 }
 
 function LandingFooter() {
+  const linkStyle = {
+    fontSize: "11px",
+    letterSpacing: "0.18em",
+    textTransform: "uppercase" as const,
+    color: MUTED_CREAM,
+    ...dmSans,
+  };
   return (
     <footer style={{ backgroundColor: NEAR_BLACK }}>
-      <div className="max-w-7xl mx-auto px-6 py-10 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 py-10 flex flex-wrap items-center justify-between gap-6">
         <Wordmark size="text-xl" />
         <span className="italic text-sm hidden sm:inline" style={{ color: MUTED_CREAM, ...serif }}>
           Made with too much colour
         </span>
       </div>
+      <div className="max-w-7xl mx-auto px-6 pb-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <Link to="/pricing" style={linkStyle}>
+          Pricing
+        </Link>
+        <Link to="/privacy" style={linkStyle}>
+          Privacy
+        </Link>
+        <Link to="/terms" style={linkStyle}>
+          Terms
+        </Link>
+        <a href="mailto:hello@dwellmade.co.uk" style={linkStyle}>
+          hello@dwellmade.co.uk
+        </a>
+      </div>
       <div
         className="max-w-7xl mx-auto px-6 pb-6 text-[10px] uppercase tracking-[0.24em]"
         style={{ color: "rgba(245,240,232,0.4)", ...dmSans }}
       >
-        © 2026 dwellmade
+        © 2026 dwellmade · United Kingdom
       </div>
     </footer>
   );

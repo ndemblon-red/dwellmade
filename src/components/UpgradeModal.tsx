@@ -66,7 +66,7 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
 
         <div className="mt-6">
           <div style={serif} className="text-5xl leading-none">
-            £12{" "}
+            £15{" "}
             <span className="text-2xl" style={{ color: MUTED_CREAM }}>
               / month
             </span>
@@ -88,6 +88,16 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
           Already subscribed?{" "}
           <Link to="/auth" className="underline underline-offset-4" style={{ color: CREAM }}>
             Sign in
+          </Link>
+        </div>
+
+        <div className="mt-3 text-center text-[11px]" style={{ color: MUTED_CREAM }}>
+          <Link to="/terms" className="underline underline-offset-4">
+            Terms
+          </Link>{" "}
+          ·{" "}
+          <Link to="/privacy" className="underline underline-offset-4">
+            Privacy
           </Link>
         </div>
       </div>
