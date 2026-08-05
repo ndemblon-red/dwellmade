@@ -278,7 +278,14 @@ function AuthPage() {
             Check your <span className="italic">inbox</span>
           </h1>
           <p className="text-sm text-muted-ink mb-2">We've sent a confirmation link to</p>
-          <p className="text-sm text-ink mb-8 font-medium">{pendingEmail}</p>
+          <p className="text-sm text-ink mb-4 font-medium">{pendingEmail}</p>
+          {toCheckout ? (
+            <p className="text-sm text-muted-ink mb-8">
+              Confirm your email and we'll take you straight to payment.
+            </p>
+          ) : (
+            <div className="mb-4" />
+          )}
 
           <div className="space-y-3">
             <button
