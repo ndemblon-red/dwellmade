@@ -36,7 +36,7 @@ export type AestheticBrief = {
   userEdited: boolean;
 };
 
-export type Stage = "collect" | "curate" | "generate" | "preview";
+export type Stage = "results" | "collect" | "curate" | "generate";
 
 export type Generation = {
   id: string;

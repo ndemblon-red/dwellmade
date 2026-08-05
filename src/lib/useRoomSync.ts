@@ -129,8 +129,8 @@ export function useRoomSync(room: DBRoom, masterPalette: string[]) {
       if (cancelled) return;
       setCurrentRoomId(room.id);
       if (cancelled) return;
-      // Completed rooms open in preview mode; unfinished rooms start at Collect.
-      setStage(hasCompletedGeneration ? "preview" : "collect");
+      // Completed rooms open on the Results tab; unfinished rooms start at Collect.
+      setStage(hasCompletedGeneration ? "results" : "collect");
       if (cancelled) return;
       hydrated.current = true;
     })();
