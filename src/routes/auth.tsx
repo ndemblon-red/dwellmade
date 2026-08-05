@@ -322,9 +322,13 @@ function AuthPage() {
           )}
         </h1>
         <p className="text-sm text-muted-ink mb-8">
-          {mode === "signin"
-            ? "Welcome back. Pick up where you left off."
-            : "Save your projects, rooms, and generations."}
+          {toCheckout
+            ? mode === "signup"
+              ? "Step 1 of 2 — create your account, then complete payment for dwellmade Basic, £15 a month."
+              : "Sign in and we'll take you straight to payment for dwellmade Basic, £15 a month."
+            : mode === "signin"
+              ? "Welcome back. Pick up where you left off."
+              : "Save your projects, rooms, and generations."}
         </p>
 
         <button
