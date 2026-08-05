@@ -456,10 +456,10 @@ async function fileToDataUrl(file: File, maxDim: number): Promise<string> {
 
 const BASE_STAGE_ORDER: Stage[] = ["collect", "curate", "generate"];
 const STAGE_LABELS: Record<Stage, { num: string; title: string; sub: string }> = {
-  results: { num: "★", title: "Results", sub: "Your generated designs" },
   collect: { num: "01", title: "Collect", sub: "Room photo & references" },
   curate: { num: "02", title: "Curate", sub: "Build the aesthetic brief" },
   generate: { num: "03", title: "Generate", sub: "Apply brief to room" },
+  designs: { num: "04", title: "Designs", sub: "Original & generated designs" },
 };
 
 export function Workspace() {
@@ -477,13 +477,13 @@ export function Workspace() {
 
   const hasResults = generations.some((g) => g.dataUrl);
   const stages = useMemo(
-    () => (hasResults ? (["results", ...BASE_STAGE_ORDER] as Stage[]) : BASE_STAGE_ORDER),
+    () => (hasResults ? ([...BASE_STAGE_ORDER, "designs"] as Stage[]) : BASE_STAGE_ORDER),
     [hasResults],
   );
 
-  // If results disappear (e.g. all deleted), fall back into the workflow.
+  // If designs disappear (e.g. all deleted), fall back into the workflow.
   useEffect(() => {
-    if (stage === "results" && !hasResults) setStage("collect");
+    if (stage === "designs" && !hasResults) setStage("collect");
   }, [stage, hasResults, setStage]);
 
   return (
@@ -497,8 +497,8 @@ export function Workspace() {
       />
       <main className="py-8 px-4 sm:py-10 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          {stage === "results" ? (
-            <ResultsStage
+          {stage === "designs" ? (
+            <DesignsStage
               onEdit={() => setStage("collect")}
               onCreateVersion={() => setStage("generate")}
             />
@@ -543,7 +543,7 @@ function StageNav({
         {stages.map((s) => {
           const active = stage === s;
           const enabled =
-            s === "results" ||
+            s === "designs" ||
             s === "collect" ||
             (s === "curate" && canCurate) ||
             (s === "generate" && canGenerate);
@@ -587,7 +587,7 @@ function StageNav({
   );
 }
 
-// --- Results (saved designs for the room) ------------------------------------
+// --- Designs (saved designs for the room) ------------------------------------
 
 function GenerationGallery({
   history,
@@ -630,7 +630,7 @@ function GenerationGallery({
   );
 }
 
-function ResultsStage({
+function DesignsStage({
   onEdit,
   onCreateVersion,
 }: {
@@ -643,9 +643,8 @@ function ResultsStage({
   const removeGeneration = useStore((s) => s.removeGeneration);
 
   const withImages = useMemo(() => generations.filter((g) => g.dataUrl), [generations]);
-  const selected = withImages.find((g) => g.id === activeGenerationId) ?? withImages[0];
 
-  if (!room || !selected) {
+  if (!room || withImages.length === 0) {
     return (
       <div className="bg-paper ring-1 ring-border-card rounded-xl p-12 text-center">
         <p className="text-sm text-muted-ink italic">No designs for this room yet.</p>
@@ -660,46 +659,65 @@ function ResultsStage({
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       <div className="bg-paper ring-1 ring-border-card rounded-xl p-5 sm:p-8 space-y-6">
-        <div className="flex items-start justify-between flex-wrap gap-4">
-          <div>
-            <h2 className="font-serif text-2xl sm:text-3xl italic">Your designs</h2>
-            <p className="text-[11px] uppercase tracking-widest text-muted-ink mt-1">
-              {new Date(selected.createdAt).toLocaleDateString(undefined, {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })}
-              {selected.promptSummary ? ` · ${selected.promptSummary}` : ""}
-              {!selected.isFinal ? " · rendering" : ""}
-            </p>
-          </div>
-          {selected.isFinal ? (
-            <a
-              href={selected.dataUrl}
-              download={`dwellmade-${selected.id.slice(0, 8)}.png`}
-              className="text-[10px] uppercase tracking-widest font-medium underline underline-offset-4 text-muted-ink hover:text-ink"
-            >
-              Download
-            </a>
-          ) : null}
+        <div>
+          <h2 className="font-serif text-2xl sm:text-3xl italic">Your designs</h2>
+          <p className="text-[11px] uppercase tracking-widest text-muted-ink mt-1">
+            {withImages.length} design{withImages.length === 1 ? "" : "s"} · original room included
+          </p>
         </div>
 
-        <div className="max-w-2xl mx-auto">
-          <BeforeAfter
-            beforeSrc={room.dataUrl}
-            afterSrc={selected.dataUrl}
-            afterBlurred={!selected.isFinal}
-          />
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          <figure className="space-y-2">
+            <div className="rounded-lg overflow-hidden ring-1 ring-border-card bg-zinc-100">
+              <img src={room.dataUrl} alt="Original room" className="w-full h-auto block" />
+            </div>
+            <figcaption className="text-[10px] uppercase tracking-widest text-muted-ink">
+              Original
+            </figcaption>
+          </figure>
 
-        <GenerationGallery
-          history={withImages}
-          selectedId={selected.id}
-          onSelect={(id) => useStore.setState({ activeGenerationId: id })}
-          onRemove={removeGeneration}
-        />
+          {withImages.map((g, i) => {
+            const active = g.id === activeGenerationId;
+            return (
+              <figure key={g.id} className="space-y-2">
+                <button
+                  onClick={() => useStore.setState({ activeGenerationId: g.id })}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    removeGeneration(g.id);
+                  }}
+                  title="Click to select, right-click to remove"
+                  className={`block w-full rounded-lg overflow-hidden ring-1 transition-all bg-zinc-100 ${
+                    active ? "ring-ink" : "ring-border-card hover:ring-ink/30"
+                  }`}
+                >
+                  <img
+                    src={g.dataUrl}
+                    alt={`Design ${i + 1}`}
+                    className={`w-full h-auto block ${g.isFinal ? "" : "blur-sm"}`}
+                  />
+                </button>
+                <figcaption className="flex items-center justify-between gap-3 text-[10px] uppercase tracking-widest text-muted-ink">
+                  <span className="truncate">
+                    Design {i + 1}
+                    {g.isFinal ? "" : " · rendering"}
+                  </span>
+                  {g.isFinal ? (
+                    <a
+                      href={g.dataUrl}
+                      download={`dwellmade-${g.id.slice(0, 8)}.png`}
+                      className="shrink-0 underline underline-offset-4 hover:text-ink"
+                    >
+                      Download
+                    </a>
+                  ) : null}
+                </figcaption>
+              </figure>
+            );
+          })}
+        </div>
 
         <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-center gap-3">
           <button
