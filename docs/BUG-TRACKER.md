@@ -10,17 +10,17 @@ Severity key:
 
 ## Re-verification status (2026-08-05)
 
-| Check                                     | Result                                                              |
-| ----------------------------------------- | ------------------------------------------------------------------- |
-| Production build (`bun run build`)        | Pass                                                                  |
-| Typecheck (`tsgo --noEmit`)               | Pass, 0 errors                                                        |
-| Lint (`eslint .`)                         | Pass, 0 errors, 8 `react-refresh` warnings (shadcn/ui + email brand)  |
-| Formatting (`prettier --check .`)         | Pass                                                                  |
-| Console/runtime on `/auth`                | Clean on fresh load — the reported hydration mismatch did not reproduce |
-| Workspace responsive 375 / 768 / 1280     | Pass, no horizontal overflow at any width                             |
-| Room flow smoke test                      | Pass — Collect → Curate → Generate → Designs, room switching, Designs re-entry |
-| Dependency/security scan                  | Not re-run (no package changes since last pass)                       |
-| Database/RLS linter                       | Not re-run (no schema changes since last pass)                        |
+| Check                                 | Result                                                                         |
+| ------------------------------------- | ------------------------------------------------------------------------------ |
+| Production build (`bun run build`)    | Pass                                                                           |
+| Typecheck (`tsgo --noEmit`)           | Pass, 0 errors                                                                 |
+| Lint (`eslint .`)                     | Pass, 0 errors, 8 `react-refresh` warnings (shadcn/ui + email brand)           |
+| Formatting (`prettier --check .`)     | Pass                                                                           |
+| Console/runtime on `/auth`            | Clean on fresh load — the reported hydration mismatch did not reproduce        |
+| Workspace responsive 375 / 768 / 1280 | Pass, no horizontal overflow at any width                                      |
+| Room flow smoke test                  | Pass — Collect → Curate → Generate → Designs, room switching, Designs re-entry |
+| Dependency/security scan              | Not re-run (no package changes since last pass)                                |
+| Database/RLS linter                   | Not re-run (no schema changes since last pass)                                 |
 
 ---
 
@@ -49,7 +49,6 @@ Severity key:
 - Free allowance: 3 generations per browser before signup; accounts get no extra free allowance
 - Cancellation: cancel anytime, access to end of paid period, no refunds for part-used months
 - Published at `/pricing`, `/terms`, `/privacy`, linked from the landing footer, auth page and upgrade modal
-
 
 ---
 
