@@ -90,7 +90,7 @@ function PricingPage() {
             className="mt-8 block w-full py-3.5 text-center text-sm font-semibold"
             style={{ backgroundColor: MUSTARD, color: NEAR_BLACK, borderRadius: 4 }}
           >
-            Get started
+            Subscribe
           </Link>
         </div>
 
