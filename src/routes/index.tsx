@@ -454,12 +454,12 @@ async function fileToDataUrl(file: File, maxDim: number): Promise<string> {
   return canvas.toDataURL("image/jpeg", 0.86);
 }
 
-const STAGE_ORDER: Stage[] = ["collect", "curate", "generate"];
+const BASE_STAGE_ORDER: Stage[] = ["collect", "curate", "generate"];
 const STAGE_LABELS: Record<Stage, { num: string; title: string; sub: string }> = {
+  results: { num: "★", title: "Results", sub: "Your generated designs" },
   collect: { num: "01", title: "Collect", sub: "Room photo & references" },
   curate: { num: "02", title: "Curate", sub: "Build the aesthetic brief" },
   generate: { num: "03", title: "Generate", sub: "Apply brief to room" },
-  preview: { num: "", title: "Preview", sub: "Latest completed design" },
 };
 
 export function Workspace() {
@@ -468,30 +468,28 @@ export function Workspace() {
   const room = useStore((s) => s.room);
   const inspo = useStore((s) => s.inspo);
   const brief = useStore((s) => s.brief);
+  const generations = useStore((s) => s.generations);
 
   const canCurate = !!room && inspo.some((i) => i.status === "ready");
   const canGenerate =
     canCurate &&
     (brief.palette.length > 0 || brief.materials.length > 0 || brief.furnitureStyle || brief.vibe);
 
-  if (stage === "preview") {
-    return (
-      <div className="min-h-screen bg-canvas text-ink font-sans">
-        <main className="py-8 px-4 sm:py-10 sm:px-6">
-          <div className="max-w-7xl mx-auto">
-            <PreviewStage
-              onEdit={() => setStage("collect")}
-              onCreateVersion={() => setStage("generate")}
-            />
-          </div>
-        </main>
-      </div>
-    );
-  }
+  const hasResults = generations.some((g) => g.dataUrl);
+  const stages = useMemo(
+    () => (hasResults ? (["results", ...BASE_STAGE_ORDER] as Stage[]) : BASE_STAGE_ORDER),
+    [hasResults],
+  );
+
+  // If results disappear (e.g. all deleted), fall back into the workflow.
+  useEffect(() => {
+    if (stage === "results" && !hasResults) setStage("collect");
+  }, [stage, hasResults, setStage]);
 
   return (
     <div className="min-h-screen bg-canvas text-ink font-sans">
       <StageNav
+        stages={stages}
         stage={stage}
         setStage={setStage}
         canCurate={canCurate}
@@ -499,7 +497,12 @@ export function Workspace() {
       />
       <main className="py-8 px-4 sm:py-10 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          {stage === "collect" ? (
+          {stage === "results" ? (
+            <ResultsStage
+              onEdit={() => setStage("collect")}
+              onCreateVersion={() => setStage("generate")}
+            />
+          ) : stage === "collect" ? (
             <CollectStage onNext={() => canCurate && setStage("curate")} canNext={canCurate} />
           ) : stage === "curate" ? (
             <CurateStage onBack={() => setStage("collect")} onNext={() => setStage("generate")} />
