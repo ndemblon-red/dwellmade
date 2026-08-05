@@ -477,13 +477,13 @@ export function Workspace() {
 
   const hasResults = generations.some((g) => g.dataUrl);
   const stages = useMemo(
-    () => (hasResults ? (["results", ...BASE_STAGE_ORDER] as Stage[]) : BASE_STAGE_ORDER),
+    () => (hasResults ? ([...BASE_STAGE_ORDER, "designs"] as Stage[]) : BASE_STAGE_ORDER),
     [hasResults],
   );
 
-  // If results disappear (e.g. all deleted), fall back into the workflow.
+  // If designs disappear (e.g. all deleted), fall back into the workflow.
   useEffect(() => {
-    if (stage === "results" && !hasResults) setStage("collect");
+    if (stage === "designs" && !hasResults) setStage("collect");
   }, [stage, hasResults, setStage]);
 
   return (
@@ -497,8 +497,8 @@ export function Workspace() {
       />
       <main className="py-8 px-4 sm:py-10 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          {stage === "results" ? (
-            <ResultsStage
+          {stage === "designs" ? (
+            <DesignsStage
               onEdit={() => setStage("collect")}
               onCreateVersion={() => setStage("generate")}
             />
