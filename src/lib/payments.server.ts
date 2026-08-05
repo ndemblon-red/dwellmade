@@ -1,4 +1,6 @@
+import Stripe from "stripe";
 import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
+
 
 export type CheckoutSessionResult =
   | { clientSecret: string }
