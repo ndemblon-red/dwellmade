@@ -66,8 +66,9 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
 
         <div className="mt-6">
           <div style={serif} className="text-5xl leading-none">
-            £12{" "}
+            £15{" "}
             <span className="text-2xl" style={{ color: MUTED_CREAM }}>
+
               / month
             </span>
           </div>

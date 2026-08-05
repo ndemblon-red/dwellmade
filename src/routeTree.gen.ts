@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiGenerateRouteImport } from './routes/api/generate'
@@ -41,6 +42,11 @@ const AuthRoute = AuthRouteImport.update({
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudioRoute = StudioRouteImport.update({
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/studio': typeof StudioRoute
   '/terms': typeof TermsRoute
   '/api/generate': typeof ApiGenerateRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/studio': typeof StudioRoute
   '/terms': typeof TermsRoute
   '/api/generate': typeof ApiGenerateRoute
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/studio': typeof StudioRoute
   '/terms': typeof TermsRoute
   '/api/generate': typeof ApiGenerateRoute
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/pricing'
+    | '/privacy'
     | '/studio'
     | '/terms'
     | '/api/generate'
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/pricing'
+    | '/privacy'
     | '/studio'
     | '/terms'
     | '/api/generate'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/pricing'
+    | '/privacy'
     | '/studio'
     | '/terms'
     | '/api/generate'
@@ -198,6 +210,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   PricingRoute: typeof PricingRoute
+  PrivacyRoute: typeof PrivacyRoute
   StudioRoute: typeof StudioRoute
   TermsRoute: typeof TermsRoute
   ApiGenerateRoute: typeof ApiGenerateRoute
@@ -236,6 +249,13 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing'
       preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/studio': {
@@ -329,6 +349,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   PricingRoute: PricingRoute,
+  PrivacyRoute: PrivacyRoute,
   StudioRoute: StudioRoute,
   TermsRoute: TermsRoute,
   ApiGenerateRoute: ApiGenerateRoute,
