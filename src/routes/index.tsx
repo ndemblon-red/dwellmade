@@ -456,10 +456,10 @@ async function fileToDataUrl(file: File, maxDim: number): Promise<string> {
 
 const BASE_STAGE_ORDER: Stage[] = ["collect", "curate", "generate"];
 const STAGE_LABELS: Record<Stage, { num: string; title: string; sub: string }> = {
-  results: { num: "★", title: "Results", sub: "Your generated designs" },
   collect: { num: "01", title: "Collect", sub: "Room photo & references" },
   curate: { num: "02", title: "Curate", sub: "Build the aesthetic brief" },
   generate: { num: "03", title: "Generate", sub: "Apply brief to room" },
+  designs: { num: "04", title: "Designs", sub: "Original & generated designs" },
 };
 
 export function Workspace() {
