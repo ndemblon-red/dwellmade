@@ -130,7 +130,7 @@ export function useRoomSync(room: DBRoom, masterPalette: string[]) {
       setCurrentRoomId(room.id);
       if (cancelled) return;
       // Completed rooms open on the Results tab; unfinished rooms start at Collect.
-      setStage(hasCompletedGeneration ? "results" : "collect");
+      setStage(hasCompletedGeneration ? "designs" : "collect");
       if (cancelled) return;
       hydrated.current = true;
     })();
