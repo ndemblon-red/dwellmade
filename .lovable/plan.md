@@ -1,6 +1,6 @@
 # Day 2 — Stripe checkout for the dwellmade subscription
 
-Note on price: the day-1 legal and pricing work locked the plan at **£15/month for 50 generations** (the tracker item still says £12). This plan uses £15/month to match `/pricing`, `/terms` and the upgrade modal.
+Price is confirmed as **£15/month for 50 generations**, matching `/pricing`, `/terms` and the upgrade modal. The older £12 figure in the Day 2 list is superseded, and the tracker will be corrected as part of this work.
 
 ## What we're building
 
