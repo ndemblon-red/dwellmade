@@ -171,6 +171,7 @@ function Decorations() {
 
 const searchSchema = z.object({
   redirect: z.string().optional(),
+  next: z.enum(["checkout"]).optional(),
 });
 
 export const Route = createFileRoute("/auth")({
@@ -180,8 +181,10 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const { redirect } = useSearch({ from: "/auth" });
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const { redirect, next } = useSearch({ from: "/auth" });
+  const toCheckout = next === "checkout";
+  const destination = toCheckout ? "/checkout" : (redirect ?? "/projects");
+  const [mode, setMode] = useState<"signin" | "signup">(toCheckout ? "signup" : "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -190,11 +193,16 @@ function AuthPage() {
   const [resendBusy, setResendBusy] = useState(false);
   const [resendMsg, setResendMsg] = useState<string | null>(null);
 
+  const confirmRedirect = (addr: string) =>
+    `${window.location.origin}/auth/confirm?email=${encodeURIComponent(addr)}${
+      toCheckout ? "&next=checkout" : ""
+    }`;
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: redirect ?? "/projects" });
+      if (data.session) navigate({ to: destination });
     });
-  }, [navigate, redirect]);
+  }, [navigate, destination]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
