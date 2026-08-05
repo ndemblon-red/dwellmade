@@ -521,11 +521,13 @@ export function Workspace() {
 // --- Header / Nav ------------------------------------------------------------
 
 function StageNav({
+  stages,
   stage,
   setStage,
   canCurate,
   canGenerate,
 }: {
+  stages: Stage[];
   stage: Stage;
   setStage: (s: Stage) => void;
   canCurate: boolean;
@@ -533,11 +535,18 @@ function StageNav({
 }) {
   return (
     <div className="px-4 sm:px-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-3 gap-2 sm:gap-6 pt-2 pb-4 sm:pb-6 border-b border-zinc-950/5">
-        {STAGE_ORDER.map((s) => {
+      <div
+        className={`max-w-7xl mx-auto grid ${
+          stages.length === 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"
+        } gap-2 sm:gap-6 pt-2 pb-4 sm:pb-6 border-b border-zinc-950/5`}
+      >
+        {stages.map((s) => {
           const active = stage === s;
           const enabled =
-            s === "collect" || (s === "curate" && canCurate) || (s === "generate" && canGenerate);
+            s === "results" ||
+            s === "collect" ||
+            (s === "curate" && canCurate) ||
+            (s === "generate" && canGenerate);
           const meta = STAGE_LABELS[s];
           return (
             <button
