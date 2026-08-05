@@ -587,9 +587,50 @@ function StageNav({
   );
 }
 
-// --- Preview (completed-room summary) ----------------------------------------
+// --- Results (saved designs for the room) ------------------------------------
 
-function PreviewStage({
+function GenerationGallery({
+  history,
+  selectedId,
+  onSelect,
+  onRemove,
+}: {
+  history: import("@/lib/store").Generation[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+  onRemove: (id: string) => void;
+}) {
+  if (history.length < 2) return null;
+  return (
+    <div className="space-y-3">
+      <h3 className="text-xs uppercase tracking-widest text-muted-ink">Versions</h3>
+      <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 gap-3">
+        {history.map((h) => (
+          <button
+            key={h.id}
+            onClick={() => onSelect(h.id)}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              onRemove(h.id);
+            }}
+            className={`relative aspect-square bg-zinc-200 rounded-sm overflow-hidden ring-1 transition-all ${
+              h.id === selectedId ? "ring-ink" : "ring-black/5 hover:ring-ink/30"
+            }`}
+            title="Click to view, right-click to remove"
+          >
+            {h.dataUrl ? (
+              <img src={h.dataUrl} alt="Generation" className="size-full object-cover" />
+            ) : (
+              <div className="size-full animate-pulse bg-zinc-300" />
+            )}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ResultsStage({
   onEdit,
   onCreateVersion,
 }: {
@@ -598,15 +639,16 @@ function PreviewStage({
 }) {
   const room = useStore((s) => s.room);
   const generations = useStore((s) => s.generations);
-  const latest = useMemo(
-    () => generations.find((g) => g.isFinal) ?? generations.find((g) => g.dataUrl),
-    [generations],
-  );
+  const activeGenerationId = useStore((s) => s.activeGenerationId);
+  const removeGeneration = useStore((s) => s.removeGeneration);
 
-  if (!room || !latest) {
+  const withImages = useMemo(() => generations.filter((g) => g.dataUrl), [generations]);
+  const selected = withImages.find((g) => g.id === activeGenerationId) ?? withImages[0];
+
+  if (!room || !selected) {
     return (
       <div className="bg-paper ring-1 ring-border-card rounded-xl p-12 text-center">
-        <p className="text-sm text-muted-ink italic">Nothing to preview yet.</p>
+        <p className="text-sm text-muted-ink italic">No designs for this room yet.</p>
         <button
           onClick={onEdit}
           className="mt-4 bg-ink text-paper py-3 px-6 rounded-lg text-sm font-medium hover:bg-accent"
@@ -619,19 +661,24 @@ function PreviewStage({
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-paper ring-1 ring-border-card rounded-xl p-5 sm:p-8">
-        <div className="flex items-start justify-between flex-wrap gap-4 mb-5">
+      <div className="bg-paper ring-1 ring-border-card rounded-xl p-5 sm:p-8 space-y-6">
+        <div className="flex items-start justify-between flex-wrap gap-4">
           <div>
-            <h2 className="font-serif text-2xl sm:text-3xl italic">Room preview</h2>
+            <h2 className="font-serif text-2xl sm:text-3xl italic">Your designs</h2>
             <p className="text-[11px] uppercase tracking-widest text-muted-ink mt-1">
-              {latest.promptSummary}
-              {!latest.isFinal && latest.dataUrl ? " · rendering" : ""}
+              {new Date(selected.createdAt).toLocaleDateString(undefined, {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
+              {selected.promptSummary ? ` · ${selected.promptSummary}` : ""}
+              {!selected.isFinal ? " · rendering" : ""}
             </p>
           </div>
-          {latest.isFinal && latest.dataUrl ? (
+          {selected.isFinal ? (
             <a
-              href={latest.dataUrl}
-              download={`dwellmade-${latest.id.slice(0, 8)}.png`}
+              href={selected.dataUrl}
+              download={`dwellmade-${selected.id.slice(0, 8)}.png`}
               className="text-[10px] uppercase tracking-widest font-medium underline underline-offset-4 text-muted-ink hover:text-ink"
             >
               Download
@@ -642,12 +689,19 @@ function PreviewStage({
         <div className="max-w-2xl mx-auto">
           <BeforeAfter
             beforeSrc={room.dataUrl}
-            afterSrc={latest.dataUrl}
-            afterBlurred={!latest.isFinal}
+            afterSrc={selected.dataUrl}
+            afterBlurred={!selected.isFinal}
           />
         </div>
 
-        <div className="mt-6 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-center gap-3">
+        <GenerationGallery
+          history={withImages}
+          selectedId={selected.id}
+          onSelect={(id) => useStore.setState({ activeGenerationId: id })}
+          onRemove={removeGeneration}
+        />
+
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-center gap-3">
           <button
             onClick={onEdit}
             className="min-h-11 px-5 py-2.5 rounded-lg text-sm font-medium ring-1 ring-border-card text-ink hover:bg-surface-raised transition-colors"
