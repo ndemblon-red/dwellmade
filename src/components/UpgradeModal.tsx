@@ -91,6 +91,17 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
             Sign in
           </Link>
         </div>
+
+        <div className="mt-3 text-center text-[11px]" style={{ color: MUTED_CREAM }}>
+          <Link to="/terms" className="underline underline-offset-4">
+            Terms
+          </Link>{" "}
+          ·{" "}
+          <Link to="/privacy" className="underline underline-offset-4">
+            Privacy
+          </Link>
+        </div>
+
       </div>
     </div>
   );
