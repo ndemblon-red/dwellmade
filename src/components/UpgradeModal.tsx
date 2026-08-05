@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import { useAuth } from "@/hooks/use-auth";
 
 const NEAR_BLACK = "#1A1A2E";
 const CREAM = "#F5F0E8";
@@ -21,6 +22,7 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
     isOpen: checkoutOpen,
     checkoutElement,
   } = useStripeCheckout();
+  const { user, loading } = useAuth();
 
   if (!open) return null;
 
@@ -103,23 +105,50 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
               </div>
             </div>
 
-            <button
-              onClick={() =>
-                openCheckout({
-                  priceId: "dwellmade_basic_monthly",
-                  quantity: 1,
-                  returnUrl: `${window.location.origin}/projects?checkout=success`,
-                })
-              }
-              className="mt-7 w-full py-3.5 text-sm font-semibold"
-              style={{ backgroundColor: MUSTARD, color: NEAR_BLACK, borderRadius: 4 }}
-            >
-              Subscribe now
-            </button>
+            {user ? (
+              <button
+                onClick={() =>
+                  openCheckout({
+                    priceId: "dwellmade_basic_monthly",
+                    quantity: 1,
+                    returnUrl: `${window.location.origin}/projects?checkout=success`,
+                  })
+                }
+                className="mt-7 w-full py-3.5 text-sm font-semibold"
+                style={{ backgroundColor: MUSTARD, color: NEAR_BLACK, borderRadius: 4 }}
+              >
+                Subscribe now
+              </button>
+            ) : (
+              <Link
+                to="/auth"
+                search={{ next: "checkout" as const }}
+                className="mt-7 block w-full py-3.5 text-center text-sm font-semibold"
+                style={{
+                  backgroundColor: MUSTARD,
+                  color: NEAR_BLACK,
+                  borderRadius: 4,
+                  opacity: loading ? 0.7 : 1,
+                }}
+              >
+                Create an account & subscribe
+              </Link>
+            )}
+
+            {!user ? (
+              <p className="mt-3 text-center text-[11px]" style={{ color: MUTED_CREAM }}>
+                Takes a moment — you'll go straight to payment afterwards.
+              </p>
+            ) : null}
 
             <div className="mt-4 text-center text-xs" style={{ color: MUTED_CREAM }}>
               Already subscribed?{" "}
-              <Link to="/auth" className="underline underline-offset-4" style={{ color: CREAM }}>
+              <Link
+                to="/auth"
+                search={{ next: undefined }}
+                className="underline underline-offset-4"
+                style={{ color: CREAM }}
+              >
                 Sign in
               </Link>
             </div>

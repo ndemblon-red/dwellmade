@@ -8,6 +8,7 @@ const searchSchema = z.object({
   token_hash: z.string().optional(),
   type: z.string().optional(),
   email: z.string().optional(),
+  next: z.enum(["checkout"]).optional(),
 });
 
 export const Route = createFileRoute("/auth_/confirm")({
@@ -19,7 +20,8 @@ type Status = "verifying" | "success" | "error";
 
 function ConfirmPage() {
   const navigate = useNavigate();
-  const { token_hash, type, email } = useSearch({ from: "/auth_/confirm" });
+  const { token_hash, type, email, next } = useSearch({ from: "/auth_/confirm" });
+  const destination = next === "checkout" ? "/checkout" : "/projects";
   const [status, setStatus] = useState<Status>("verifying");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [resendBusy, setResendBusy] = useState(false);
@@ -42,7 +44,7 @@ function ConfirmPage() {
           return;
         }
         setStatus("success");
-        setTimeout(() => navigate({ to: "/projects" }), 600);
+        setTimeout(() => navigate({ to: destination }), 600);
         return;
       }
 
@@ -53,7 +55,7 @@ function ConfirmPage() {
         const { data } = await supabase.auth.getSession();
         if (data.session) {
           setStatus("success");
-          setTimeout(() => navigate({ to: "/projects" }), 600);
+          setTimeout(() => navigate({ to: destination }), 600);
           return;
         }
         await new Promise((r) => setTimeout(r, 150));
@@ -62,7 +64,7 @@ function ConfirmPage() {
       setStatus("error");
       setErrorMsg("Missing or expired verification token.");
     })();
-  }, [token_hash, type, navigate]);
+  }, [token_hash, type, navigate, destination]);
 
   const resend = async () => {
     if (!email) {
@@ -74,7 +76,11 @@ function ConfirmPage() {
     const { error } = await supabase.auth.resend({
       type: "signup",
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/confirm` },
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/confirm?email=${encodeURIComponent(email)}${
+          next === "checkout" ? "&next=checkout" : ""
+        }`,
+      },
     });
     setResendBusy(false);
     setResendMsg(error ? error.message : "Sent. Check your inbox.");
@@ -98,7 +104,7 @@ function ConfirmPage() {
             <h1 className="font-serif text-4xl mb-2">
               Email <span className="italic">confirmed</span>
             </h1>
-            <p className="text-sm text-muted-ink">Taking you to your projects…</p>
+            <p className="text-sm text-muted-ink">Taking you there now…</p>
           </>
         )}
 

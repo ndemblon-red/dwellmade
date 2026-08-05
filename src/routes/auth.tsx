@@ -171,6 +171,7 @@ function Decorations() {
 
 const searchSchema = z.object({
   redirect: z.string().optional(),
+  next: z.enum(["checkout"]).optional(),
 });
 
 export const Route = createFileRoute("/auth")({
@@ -180,8 +181,10 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const { redirect } = useSearch({ from: "/auth" });
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const { redirect, next } = useSearch({ from: "/auth" });
+  const toCheckout = next === "checkout";
+  const destination = toCheckout ? "/checkout" : (redirect ?? "/projects");
+  const [mode, setMode] = useState<"signin" | "signup">(toCheckout ? "signup" : "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -190,11 +193,16 @@ function AuthPage() {
   const [resendBusy, setResendBusy] = useState(false);
   const [resendMsg, setResendMsg] = useState<string | null>(null);
 
+  const confirmRedirect = (addr: string) =>
+    `${window.location.origin}/auth/confirm?email=${encodeURIComponent(addr)}${
+      toCheckout ? "&next=checkout" : ""
+    }`;
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: redirect ?? "/projects" });
+      if (data.session) navigate({ to: destination });
     });
-  }, [navigate, redirect]);
+  }, [navigate, destination]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -206,7 +214,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/confirm?email=${encodeURIComponent(email)}`,
+            emailRedirectTo: confirmRedirect(email),
           },
         });
         if (err) throw err;
@@ -222,7 +230,7 @@ function AuthPage() {
         });
         if (err) throw err;
       }
-      navigate({ to: redirect ?? "/projects" });
+      navigate({ to: destination });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Auth failed");
     } finally {
@@ -234,7 +242,7 @@ function AuthPage() {
     setBusy(true);
     setError(null);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + (redirect ?? "/projects"),
+      redirect_uri: window.location.origin + destination,
     });
     if (result.error) {
       setError(result.error instanceof Error ? result.error.message : "Google sign-in failed");
@@ -242,7 +250,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: redirect ?? "/projects" });
+    navigate({ to: destination });
   };
 
   const resend = async () => {
@@ -253,7 +261,7 @@ function AuthPage() {
       type: "signup",
       email: pendingEmail,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/confirm?email=${encodeURIComponent(pendingEmail)}`,
+        emailRedirectTo: confirmRedirect(pendingEmail),
       },
     });
     setResendBusy(false);
@@ -270,7 +278,14 @@ function AuthPage() {
             Check your <span className="italic">inbox</span>
           </h1>
           <p className="text-sm text-muted-ink mb-2">We've sent a confirmation link to</p>
-          <p className="text-sm text-ink mb-8 font-medium">{pendingEmail}</p>
+          <p className="text-sm text-ink mb-4 font-medium">{pendingEmail}</p>
+          {toCheckout ? (
+            <p className="text-sm text-muted-ink mb-8">
+              Confirm your email and we'll take you straight to payment.
+            </p>
+          ) : (
+            <div className="mb-4" />
+          )}
 
           <div className="space-y-3">
             <button
@@ -314,9 +329,13 @@ function AuthPage() {
           )}
         </h1>
         <p className="text-sm text-muted-ink mb-8">
-          {mode === "signin"
-            ? "Welcome back. Pick up where you left off."
-            : "Save your projects, rooms, and generations."}
+          {toCheckout
+            ? mode === "signup"
+              ? "Step 1 of 2 — create your account, then complete payment for dwellmade Basic, £15 a month."
+              : "Sign in and we'll take you straight to payment for dwellmade Basic, £15 a month."
+            : mode === "signin"
+              ? "Welcome back. Pick up where you left off."
+              : "Save your projects, rooms, and generations."}
         </p>
 
         <button
