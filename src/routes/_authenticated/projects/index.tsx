@@ -4,6 +4,9 @@ import { AppHeader } from "@/components/AppHeader";
 import { createProject, deleteProject, listProjects } from "@/lib/projects-api";
 
 export const Route = createFileRoute("/_authenticated/projects/")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    checkout: search.checkout === "success" ? "success" : undefined,
+  }),
   component: ProjectsDashboard,
 });
 
