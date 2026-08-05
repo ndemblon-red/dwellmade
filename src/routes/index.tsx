@@ -587,7 +587,7 @@ function StageNav({
   );
 }
 
-// --- Results (saved designs for the room) ------------------------------------
+// --- Designs (saved designs for the room) ------------------------------------
 
 function GenerationGallery({
   history,
