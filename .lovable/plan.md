@@ -24,7 +24,7 @@ Because dwellmade is a digital/SaaS product, this will be set up with Stripe's f
    - cancelled/unpaid → `plan_active = false` at period end (access to end of paid period, per the published terms)
 6. **Schema additions** to `user_profiles`: `stripe_customer_id`, `stripe_subscription_id`, `current_period_end`, `cancel_at_period_end`.
 7. **Post-checkout state** — on returning to `/projects?checkout=success`, refetch usage so the banner and gate reflect the new plan immediately rather than waiting on webhook timing.
-8. **Remove the test override** that forces the audit account to paid (BUG-001), so the real paid path is what gets tested.
+8. **Replace the code-level test override with a data flag** — your account keeps unlimited-feeling access, but through the same path everyone else uses. Add a `comp` value to the `plan` column (or a `plan_source` of `comp`) so a row can be marked paid without a Stripe subscription behind it, set that on your account, and delete the hardcoded "force this user to paid" branch. The gate then has one code path, the webhook never fights a hardcoded value, and complimentary accounts stay a normal, auditable database row. Stripe testing happens on separate throwaway accounts.
 9. **Verify** in the test environment: subscribe with a Stripe test card, confirm the profile flips to paid, confirm generations run and the counter increments toward 50, confirm a cancelled subscription keeps access until period end.
 
 ## Not in this step
