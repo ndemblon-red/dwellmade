@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 
 const NEAR_BLACK = "#1A1A2E";
 const CREAM = "#F5F0E8";
@@ -14,7 +15,10 @@ export type UpgradeModalProps = {
 };
 
 export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
+  const { openCheckout, closeCheckout, isOpen: checkoutOpen, checkoutElement } = useStripeCheckout();
+
   if (!open) return null;
+
   const eyebrow = {
     anonymous_used_free: "YOU'VE USED YOUR 3 FREE GENERATIONS",
     free_account: "YOUR FREE VISITOR ALLOWANCE HAS ENDED",
@@ -29,7 +33,10 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center p-4"
       style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
-      onClick={onClose}
+      onClick={() => {
+        closeCheckout();
+        onClose();
+      }}
     >
       <div
         role="dialog"
@@ -44,7 +51,10 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
         }}
       >
         <button
-          onClick={onClose}
+          onClick={() => {
+            closeCheckout();
+            onClose();
+          }}
           aria-label="Close"
           className="absolute right-2 top-2 size-11 grid place-items-center text-lg"
           style={{ color: MUTED_CREAM }}
@@ -52,54 +62,74 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
           ✕
         </button>
 
-        <div className="text-[10px] font-semibold tracking-[0.22em]" style={{ color: MUSTARD }}>
-          {eyebrow}
-        </div>
-
-        <h2 style={serif} className="mt-3 text-4xl leading-[1.05]">
-          Ready to make it yours?
-        </h2>
-
-        <p className="mt-4 text-sm leading-relaxed" style={{ color: MUTED_CREAM }}>
-          {description}
-        </p>
-
-        <div className="mt-6">
-          <div style={serif} className="text-5xl leading-none">
-            £15{" "}
-            <span className="text-2xl" style={{ color: MUTED_CREAM }}>
-              / month
-            </span>
+        {checkoutOpen ? (
+          <div className="mt-2">
+            <div className="text-[10px] font-semibold tracking-[0.22em]" style={{ color: MUSTARD }}>
+              SECURE CHECKOUT
+            </div>
+            <h2 style={serif} className="mt-3 text-3xl leading-[1.05]">
+              Complete your subscription
+            </h2>
+            <div className="mt-4 -mx-4 sm:-mx-6">{checkoutElement}</div>
           </div>
-          <div className="mt-1 text-xs" style={{ color: MUTED_CREAM }}>
-            Cancel anytime.
-          </div>
-        </div>
+        ) : (
+          <>
+            <div className="text-[10px] font-semibold tracking-[0.22em]" style={{ color: MUSTARD }}>
+              {eyebrow}
+            </div>
 
-        <button
-          onClick={() => console.log("Stripe checkout to be implemented")}
-          className="mt-7 w-full py-3.5 text-sm font-semibold"
-          style={{ backgroundColor: MUSTARD, color: NEAR_BLACK, borderRadius: 4 }}
-        >
-          Subscribe now
-        </button>
+            <h2 style={serif} className="mt-3 text-4xl leading-[1.05]">
+              Ready to make it yours?
+            </h2>
 
-        <div className="mt-4 text-center text-xs" style={{ color: MUTED_CREAM }}>
-          Already subscribed?{" "}
-          <Link to="/auth" className="underline underline-offset-4" style={{ color: CREAM }}>
-            Sign in
-          </Link>
-        </div>
+            <p className="mt-4 text-sm leading-relaxed" style={{ color: MUTED_CREAM }}>
+              {description}
+            </p>
 
-        <div className="mt-3 text-center text-[11px]" style={{ color: MUTED_CREAM }}>
-          <Link to="/terms" className="underline underline-offset-4">
-            Terms
-          </Link>{" "}
-          ·{" "}
-          <Link to="/privacy" className="underline underline-offset-4">
-            Privacy
-          </Link>
-        </div>
+            <div className="mt-6">
+              <div style={serif} className="text-5xl leading-none">
+                £15{" "}
+                <span className="text-2xl" style={{ color: MUTED_CREAM }}>
+                  / month
+                </span>
+              </div>
+              <div className="mt-1 text-xs" style={{ color: MUTED_CREAM }}>
+                Cancel anytime.
+              </div>
+            </div>
+
+            <button
+              onClick={() =>
+                openCheckout({
+                  priceId: "dwellmade_basic_monthly",
+                  quantity: 1,
+                  returnUrl: `${window.location.origin}/projects?checkout=success`,
+                })
+              }
+              className="mt-7 w-full py-3.5 text-sm font-semibold"
+              style={{ backgroundColor: MUSTARD, color: NEAR_BLACK, borderRadius: 4 }}
+            >
+              Subscribe now
+            </button>
+
+            <div className="mt-4 text-center text-xs" style={{ color: MUTED_CREAM }}>
+              Already subscribed?{" "}
+              <Link to="/auth" className="underline underline-offset-4" style={{ color: CREAM }}>
+                Sign in
+              </Link>
+            </div>
+
+            <div className="mt-3 text-center text-[11px]" style={{ color: MUTED_CREAM }}>
+              <Link to="/terms" className="underline underline-offset-4">
+                Terms
+              </Link>{" "}
+              ·{" "}
+              <Link to="/privacy" className="underline underline-offset-4">
+                Privacy
+              </Link>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

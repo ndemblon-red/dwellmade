@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppHeader } from "@/components/AppHeader";
 import { createProject, deleteProject, listProjects } from "@/lib/projects-api";
@@ -10,6 +10,7 @@ export const Route = createFileRoute("/_authenticated/projects/")({
 function ProjectsDashboard() {
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { checkout: checkoutSuccess } = useSearch({ from: "/_authenticated/projects/" });
   const { data: projects, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: listProjects,
@@ -22,6 +23,7 @@ function ProjectsDashboard() {
       navigate({ to: "/projects/$projectId", params: { projectId: p.id } });
     },
   });
+
 
   const del = useMutation({
     mutationFn: deleteProject,
