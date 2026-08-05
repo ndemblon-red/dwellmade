@@ -1,15 +1,19 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppHeader } from "@/components/AppHeader";
 import { createProject, deleteProject, listProjects } from "@/lib/projects-api";
 
 export const Route = createFileRoute("/_authenticated/projects/")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    checkout: search.checkout === "success" ? "success" : undefined,
+  }),
   component: ProjectsDashboard,
 });
 
 function ProjectsDashboard() {
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { checkout: checkoutSuccess } = useSearch({ from: "/_authenticated/projects/" });
   const { data: projects, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: listProjects,
@@ -32,6 +36,12 @@ function ProjectsDashboard() {
     <div className="min-h-screen bg-canvas text-ink font-sans">
       <AppHeader />
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 sm:py-12">
+        {checkoutSuccess && (
+          <div className="mb-6 bg-green-50 text-green-900 border border-green-200 rounded-md px-4 py-3 text-sm">
+            Welcome to dwellmade — your subscription is active. You can now generate up to 50
+            designs a month.
+          </div>
+        )}
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 border-b border-zinc-950/5 pb-6 mb-8">
           <div className="min-w-0">
             <h1 className="font-serif text-4xl">
