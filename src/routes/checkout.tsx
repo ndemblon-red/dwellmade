@@ -49,7 +49,7 @@ function CheckoutPage() {
       const { data } = await supabase
         .from("user_profiles")
         .select("plan_active, comp")
-        .eq("user_id", user.id)
+        .eq("id", user.id)
         .maybeSingle();
       if (cancelled) return;
       if (data?.plan_active || data?.comp) {
