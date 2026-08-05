@@ -1737,33 +1737,12 @@ function ResultSection({
           </div>
         )}
 
-        {history.length > 1 ? (
-          <div className="space-y-3">
-            <h3 className="text-xs uppercase tracking-widest text-muted-ink">Session history</h3>
-            <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 gap-3">
-              {history.map((h) => (
-                <button
-                  key={h.id}
-                  onClick={() => onSelect(h.id)}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    onRemove(h.id);
-                  }}
-                  className={`relative aspect-square bg-zinc-200 rounded-sm overflow-hidden ring-1 transition-all ${
-                    h.id === gen.id ? "ring-ink" : "ring-black/5 hover:ring-ink/30"
-                  }`}
-                  title="Click to view, right-click to remove"
-                >
-                  {h.dataUrl ? (
-                    <img src={h.dataUrl} alt="Generation" className="size-full object-cover" />
-                  ) : (
-                    <div className="size-full animate-pulse bg-zinc-300" />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : null}
+        <GenerationGallery
+          history={history}
+          selectedId={gen.id}
+          onSelect={onSelect}
+          onRemove={onRemove}
+        />
       </div>
     </section>
   );
