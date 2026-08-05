@@ -38,4 +38,3 @@ export function StripeEmbeddedCheckout({
     </div>
   );
 }
-

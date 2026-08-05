@@ -27,7 +27,6 @@ function ProjectsDashboard() {
     },
   });
 
-
   const del = useMutation({
     mutationFn: deleteProject,
     onSuccess: () => qc.invalidateQueries({ queryKey: ["projects"] }),
@@ -39,7 +38,8 @@ function ProjectsDashboard() {
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 sm:py-12">
         {checkoutSuccess && (
           <div className="mb-6 bg-green-50 text-green-900 border border-green-200 rounded-md px-4 py-3 text-sm">
-            Welcome to dwellmade — your subscription is active. You can now generate up to 50 designs a month.
+            Welcome to dwellmade — your subscription is active. You can now generate up to 50
+            designs a month.
           </div>
         )}
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 border-b border-zinc-950/5 pb-6 mb-8">

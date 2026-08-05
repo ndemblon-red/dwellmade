@@ -15,7 +15,12 @@ export type UpgradeModalProps = {
 };
 
 export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
-  const { openCheckout, closeCheckout, isOpen: checkoutOpen, checkoutElement } = useStripeCheckout();
+  const {
+    openCheckout,
+    closeCheckout,
+    isOpen: checkoutOpen,
+    checkoutElement,
+  } = useStripeCheckout();
 
   if (!open) return null;
 

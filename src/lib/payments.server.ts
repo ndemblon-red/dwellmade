@@ -1,10 +1,7 @@
 import Stripe from "stripe";
 import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
 
-
-export type CheckoutSessionResult =
-  | { clientSecret: string }
-  | { error: string };
+export type CheckoutSessionResult = { clientSecret: string } | { error: string };
 
 export async function resolveOrCreateCustomer(
   stripe: ReturnType<typeof createStripeClient>,
@@ -39,16 +36,14 @@ export async function resolveOrCreateCustomer(
   return created.id;
 }
 
-export async function createCheckoutSessionCore(
-  data: {
-    priceId: string;
-    quantity?: number;
-    customerEmail?: string;
-    userId?: string;
-    returnUrl: string;
-    environment: StripeEnv;
-  },
-): Promise<CheckoutSessionResult> {
+export async function createCheckoutSessionCore(data: {
+  priceId: string;
+  quantity?: number;
+  customerEmail?: string;
+  userId?: string;
+  returnUrl: string;
+  environment: StripeEnv;
+}): Promise<CheckoutSessionResult> {
   try {
     if (!/^[a-zA-Z0-9_-]+$/.test(data.priceId)) throw new Error("Invalid priceId");
 
@@ -58,18 +53,18 @@ export async function createCheckoutSessionCore(
     const stripePrice = prices.data[0];
     const isRecurring = stripePrice.type === "recurring";
 
-    const customerId = (data.customerEmail || data.userId)
-      ? await resolveOrCreateCustomer(stripe, {
-          email: data.customerEmail,
-          userId: data.userId,
-        })
-      : undefined;
+    const customerId =
+      data.customerEmail || data.userId
+        ? await resolveOrCreateCustomer(stripe, {
+            email: data.customerEmail,
+            userId: data.userId,
+          })
+        : undefined;
 
     let productDescription: string | undefined;
     if (!isRecurring) {
-      const productId = typeof stripePrice.product === "string"
-        ? stripePrice.product
-        : stripePrice.product.id;
+      const productId =
+        typeof stripePrice.product === "string" ? stripePrice.product : stripePrice.product.id;
       const product = await stripe.products.retrieve(productId);
       productDescription = product.name;
     }
@@ -94,13 +89,13 @@ export async function createCheckoutSessionCore(
   }
 }
 
-export type PortalSessionResult =
-  | { url: string }
-  | { error: string };
+export type PortalSessionResult = { url: string } | { error: string };
 
-export async function createPortalSessionCore(
-  data: { returnUrl?: string; environment: StripeEnv; customerId: string },
-): Promise<PortalSessionResult> {
+export async function createPortalSessionCore(data: {
+  returnUrl?: string;
+  environment: StripeEnv;
+  customerId: string;
+}): Promise<PortalSessionResult> {
   try {
     const stripe = createStripeClient(data.environment);
     const portal = await stripe.billingPortal.sessions.create({

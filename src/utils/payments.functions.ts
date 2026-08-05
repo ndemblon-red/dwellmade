@@ -5,18 +5,17 @@ import { createCheckoutSessionCore, createPortalSessionCore } from "@/lib/paymen
 
 export const createCheckoutSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: {
-    priceId: string;
-    quantity?: number;
-    returnUrl: string;
-    environment: StripeEnv;
-  }) => {
-    if (!/^[a-zA-Z0-9_-]+$/.test(data.priceId)) throw new Error("Invalid priceId");
-    return data;
-  })
+  .inputValidator(
+    (data: { priceId: string; quantity?: number; returnUrl: string; environment: StripeEnv }) => {
+      if (!/^[a-zA-Z0-9_-]+$/.test(data.priceId)) throw new Error("Invalid priceId");
+      return data;
+    },
+  )
   .handler(async ({ data, context }) => {
     const { userId, supabase } = context;
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     return createCheckoutSessionCore({
       ...data,
       userId,

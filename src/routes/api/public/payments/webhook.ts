@@ -14,12 +14,8 @@ function getSupabase() {
   return _supabase;
 }
 
-
 function getPriceId(price: any): string {
-  return price?.lookup_key
-    || price?.metadata?.lovable_external_id
-    || price?.id
-    || "";
+  return price?.lookup_key || price?.metadata?.lovable_external_id || price?.id || "";
 }
 
 async function upsertUserProfileFromSubscription(subscription: any, env: StripeEnv) {
@@ -35,22 +31,27 @@ async function upsertUserProfileFromSubscription(subscription: any, env: StripeE
   const periodStart = item?.current_period_start ?? subscription.current_period_start;
   const periodEnd = item?.current_period_end ?? subscription.current_period_end;
 
-  await getSupabase().from("subscriptions").upsert(
-    {
-      user_id: userId,
-      stripe_subscription_id: subscription.id,
-      stripe_customer_id: typeof subscription.customer === "string" ? subscription.customer : subscription.customer?.id,
-      product_id: productId,
-      price_id: priceId,
-      status: subscription.status,
-      current_period_start: periodStart ? new Date(periodStart * 1000).toISOString() : null,
-      current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
-      cancel_at_period_end: subscription.cancel_at_period_end || false,
-      environment: env,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "stripe_subscription_id" },
-  );
+  await getSupabase()
+    .from("subscriptions")
+    .upsert(
+      {
+        user_id: userId,
+        stripe_subscription_id: subscription.id,
+        stripe_customer_id:
+          typeof subscription.customer === "string"
+            ? subscription.customer
+            : subscription.customer?.id,
+        product_id: productId,
+        price_id: priceId,
+        status: subscription.status,
+        current_period_start: periodStart ? new Date(periodStart * 1000).toISOString() : null,
+        current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+        cancel_at_period_end: subscription.cancel_at_period_end || false,
+        environment: env,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "stripe_subscription_id" },
+    );
 
   if (subscription.status === "active" || subscription.status === "trialing") {
     await getSupabase()
@@ -58,14 +59,21 @@ async function upsertUserProfileFromSubscription(subscription: any, env: StripeE
       .update({
         plan: "paid",
         plan_active: true,
-        stripe_customer_id: typeof subscription.customer === "string" ? subscription.customer : subscription.customer?.id,
+        stripe_customer_id:
+          typeof subscription.customer === "string"
+            ? subscription.customer
+            : subscription.customer?.id,
         stripe_subscription_id: subscription.id,
         current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
         cancel_at_period_end: subscription.cancel_at_period_end || false,
         updated_at: new Date().toISOString(),
       })
       .eq("id", userId);
-  } else if (subscription.status === "canceled" || subscription.status === "unpaid" || subscription.status === "incomplete_expired") {
+  } else if (
+    subscription.status === "canceled" ||
+    subscription.status === "unpaid" ||
+    subscription.status === "incomplete_expired"
+  ) {
     await getSupabase()
       .from("user_profiles")
       .update({
@@ -117,7 +125,10 @@ async function handleWebhook(req: Request, env: StripeEnv) {
     case "checkout.session.completed": {
       const session = event.data.object;
       if (session.payment_status !== "unpaid" && session.mode === "subscription") {
-        const subscriptionId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
+        const subscriptionId =
+          typeof session.subscription === "string"
+            ? session.subscription
+            : session.subscription?.id;
         if (subscriptionId) {
           const stripe = (await import("@/lib/stripe.server")).createStripeClient(env);
           const subscription = await stripe.subscriptions.retrieve(subscriptionId);
@@ -129,7 +140,10 @@ async function handleWebhook(req: Request, env: StripeEnv) {
     case "checkout.session.async_payment_succeeded": {
       const session = event.data.object;
       if (session.mode === "subscription") {
-        const subscriptionId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
+        const subscriptionId =
+          typeof session.subscription === "string"
+            ? session.subscription
+            : session.subscription?.id;
         if (subscriptionId) {
           const stripe = (await import("@/lib/stripe.server")).createStripeClient(env);
           const subscription = await stripe.subscriptions.retrieve(subscriptionId);
