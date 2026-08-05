@@ -78,6 +78,14 @@ Severity key:
 - **Detail:** removing a generation requires a right-click on its thumbnail, which is undiscoverable and impossible on touch devices.
 - **Fix:** add a visible delete affordance (hover/tap overlay button with a confirm) on each design card in the Designs tab.
 
+### BUG-011 · Wire up email sending and post-auth redirects
+
+- **Area:** auth / email
+- **Detail:** the branded auth email templates and the `notify.dwellmade.co.uk` sender exist, but the end-to-end path is not confirmed live: emails need to actually send from the verified domain, and the links in them need to return the user to the right place (confirm → `/projects`, password reset → reset form, magic link → intended destination rather than the landing page).
+- **Fix:** verify sending from the verified domain, then check every template's redirect target end to end, including the case where the user opens the link in a different browser or is already signed in.
+
+
+
 ---
 
 ## P2 — post-launch
