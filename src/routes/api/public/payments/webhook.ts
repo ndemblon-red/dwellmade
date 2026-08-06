@@ -135,19 +135,19 @@ async function handleSubscriptionDeleted(subscription: StripeSubscription, env: 
     .eq("stripe_subscription_id", subscription.id)
     .eq("environment", env);
   if (subscriptionError) {
-    throw new Error(`Failed to cancel subscription ${subscription.id}: ${subscriptionError.message}`);
+    throw new Error(
+      `Failed to cancel subscription ${subscription.id}: ${subscriptionError.message}`,
+    );
   }
 
   const userId = subscription.metadata?.userId;
   if (userId) {
-    const { error: profileError } = await getSupabase()
-      .from("user_profiles")
-      .upsert({
-        id: userId,
-        plan_active: false,
-        cancel_at_period_end: false,
-        updated_at: new Date().toISOString(),
-      });
+    const { error: profileError } = await getSupabase().from("user_profiles").upsert({
+      id: userId,
+      plan_active: false,
+      cancel_at_period_end: false,
+      updated_at: new Date().toISOString(),
+    });
     if (profileError) {
       throw new Error(`Failed to deactivate profile ${userId}: ${profileError.message}`);
     }
