@@ -6,8 +6,15 @@ const PAID_LIMIT = 50;
 const COOKIE = "dm_fp";
 
 export type GateOk =
-  | { ok: true; setCookie?: string; kind: "anonymous"; used: number; limit: number }
-  | { ok: true; setCookie?: string; kind: "paid"; used: number; limit: number };
+  | {
+      ok: true;
+      setCookie?: string;
+      kind: "anonymous";
+      used: number;
+      limit: number;
+      fingerprint: string;
+    }
+  | { ok: true; setCookie?: string; kind: "paid"; used: number; limit: number; userId: string };
 
 export type GateBlock = {
   ok: false;
