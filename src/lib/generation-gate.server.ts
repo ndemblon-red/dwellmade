@@ -66,51 +66,31 @@ export async function checkAndIncrement(request: Request): Promise<GateResult> {
   const user = await getUserFromBearer(request);
 
   if (user) {
-    // Lazy-ensure a profile row.
-    const { data: profile } = await supabaseAdmin
-      .from("user_profiles")
-      .select("plan, plan_active, comp, generations_used_this_month, billing_period_start")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (!profile) {
-      await supabaseAdmin.from("user_profiles").insert({ id: user.id });
+    const { data, error } = await supabaseAdmin.rpc("consume_generation", {
+      _user_id: user.id,
+      _limit: PAID_LIMIT,
+    });
+    if (error || !data) {
+      throw new Error(error?.message ?? "Failed to record generation usage");
     }
-
-    const plan = profile?.plan ?? "free";
-    const planActive = profile?.plan_active ?? false;
-    const comped = profile?.comp ?? false;
-    const used = profile?.generations_used_this_month ?? 0;
-
-    const hasPaidAccess = comped || (planActive && plan === "paid");
-    if (!hasPaidAccess) {
+    const result = data as {
+      allowed: boolean;
+      code?: "limit_reached" | "upgrade_required";
+      kind: "paid" | "free";
+      used: number;
+      limit: number;
+    };
+    if (!result.allowed) {
       return {
         ok: false,
         status: 402,
-        code: "upgrade_required",
-        kind: "free",
-        used,
-        limit: PAID_LIMIT,
+        code: result.code ?? "upgrade_required",
+        kind: result.kind,
+        used: result.used,
+        limit: result.limit,
       };
     }
-
-    if (used >= PAID_LIMIT) {
-      return {
-        ok: false,
-        status: 402,
-        code: "limit_reached",
-        kind: "paid",
-        used,
-        limit: PAID_LIMIT,
-      };
-    }
-
-    await supabaseAdmin
-      .from("user_profiles")
-      .update({ generations_used_this_month: used + 1 })
-      .eq("id", user.id);
-
-    return { ok: true, kind: "paid", used: used + 1, limit: PAID_LIMIT };
+    return { ok: true, kind: "paid", used: result.used, limit: result.limit };
   }
 
   // Anonymous path
@@ -123,38 +103,29 @@ export async function checkAndIncrement(request: Request): Promise<GateResult> {
     setCookie = `${COOKIE}=${fp}; Path=/; Max-Age=${60 * 60 * 24 * 365}; HttpOnly; SameSite=Lax; Secure`;
   }
 
-  const { data: row } = await supabaseAdmin
-    .from("anonymous_generations")
-    .select("count")
-    .eq("fingerprint", fp)
-    .maybeSingle();
-
-  const count = row?.count ?? 0;
-  if (count >= ANON_LIMIT) {
+  const { data, error } = await supabaseAdmin.rpc("consume_anonymous_generation", {
+    _fingerprint: fp,
+    _limit: ANON_LIMIT,
+  });
+  if (error || !data) {
+    throw new Error(error?.message ?? "Failed to record generation usage");
+  }
+  const result = data as { allowed: boolean; used: number; limit: number };
+  if (!result.allowed) {
     return {
       ok: false,
       status: 402,
       code: "limit_reached",
       kind: "anonymous",
-      used: count,
-      limit: ANON_LIMIT,
+      used: result.used,
+      limit: result.limit,
       setCookie,
     };
   }
 
-  if (!row) {
-    await supabaseAdmin
-      .from("anonymous_generations")
-      .insert({ fingerprint: fp, count: 1, last_used_at: new Date().toISOString() });
-  } else {
-    await supabaseAdmin
-      .from("anonymous_generations")
-      .update({ count: count + 1, last_used_at: new Date().toISOString() })
-      .eq("fingerprint", fp);
-  }
-
-  return { ok: true, kind: "anonymous", used: count + 1, limit: ANON_LIMIT, setCookie };
+  return { ok: true, kind: "anonymous", used: result.used, limit: result.limit, setCookie };
 }
+
 
 /**
  * Read-only usage lookup (no increment). Used by the /api/usage endpoint.
