@@ -411,6 +411,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      consume_anonymous_generation: {
+        Args: { _fingerprint: string; _limit: number }
+        Returns: Json
+      }
+      consume_generation: {
+        Args: { _limit: number; _user_id: string }
+        Returns: Json
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
