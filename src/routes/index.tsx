@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
 import { useGenerationUsage, authHeaders } from "@/hooks/use-generation-usage";
 import { UpgradeModal } from "@/components/UpgradeModal";
+import { downloadImage } from "@/lib/downloadImage";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -769,13 +770,15 @@ function DesignsStage({
                     {g.isFinal ? "" : " · rendering"}
                   </span>
                   {g.isFinal ? (
-                    <a
-                      href={g.dataUrl}
-                      download={`dwellmade-${g.id.slice(0, 8)}.png`}
-                      className="shrink-0 underline underline-offset-4 hover:text-ink"
+                    <button
+                      type="button"
+                      onClick={() =>
+                        downloadImage(g.dataUrl, `dwellmade-${g.id.slice(0, 8)}.png`)
+                      }
+                      className="shrink-0 underline underline-offset-4 hover:text-ink uppercase tracking-widest"
                     >
                       Download
-                    </a>
+                    </button>
                   ) : null}
                 </figcaption>
               </figure>
@@ -1800,13 +1803,15 @@ function ResultSection({
             </p>
           </div>
           {gen.isFinal && gen.dataUrl ? (
-            <a
-              href={gen.dataUrl}
-              download={`dwellmade-${gen.id.slice(0, 8)}.png`}
+            <button
+              type="button"
+              onClick={() =>
+                downloadImage(gen.dataUrl!, `dwellmade-${gen.id.slice(0, 8)}.png`)
+              }
               className="text-[10px] uppercase tracking-widest font-medium underline underline-offset-4"
             >
               Download
-            </a>
+            </button>
           ) : null}
         </div>
 
