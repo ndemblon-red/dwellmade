@@ -340,9 +340,6 @@ function AuthPage() {
         ) : (
           <div className="mb-8" />
         )}
-              ? "Welcome back. Pick up where you left off."
-              : "Save your projects, rooms, and generations."}
-        </p>
 
         <button
           onClick={google}
