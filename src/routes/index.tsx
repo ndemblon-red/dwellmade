@@ -117,6 +117,22 @@ function LandingNav() {
           </a>
           <Link
             to="/auth"
+            search={{ next: "checkout" as const }}
+            className="transition-colors"
+            style={{
+              fontSize: "12px",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "rgba(245, 240, 232, 0.7)",
+              ...dmSans,
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(245, 240, 232, 1)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(245, 240, 232, 0.7)")}
+          >
+            Subscribe
+          </Link>
+          <Link
+            to="/auth"
             className="transition-colors"
             style={{
               fontSize: "12px",
