@@ -6,8 +6,15 @@ const PAID_LIMIT = 50;
 const COOKIE = "dm_fp";
 
 export type GateOk =
-  | { ok: true; setCookie?: string; kind: "anonymous"; used: number; limit: number }
-  | { ok: true; setCookie?: string; kind: "paid"; used: number; limit: number };
+  | {
+      ok: true;
+      setCookie?: string;
+      kind: "anonymous";
+      used: number;
+      limit: number;
+      fingerprint: string;
+    }
+  | { ok: true; setCookie?: string; kind: "paid"; used: number; limit: number; userId: string };
 
 export type GateBlock = {
   ok: false;
@@ -90,7 +97,7 @@ export async function checkAndIncrement(request: Request): Promise<GateResult> {
         limit: result.limit,
       };
     }
-    return { ok: true, kind: "paid", used: result.used, limit: result.limit };
+    return { ok: true, kind: "paid", used: result.used, limit: result.limit, userId: user.id };
   }
 
   // Anonymous path
@@ -123,8 +130,32 @@ export async function checkAndIncrement(request: Request): Promise<GateResult> {
     };
   }
 
-  return { ok: true, kind: "anonymous", used: result.used, limit: result.limit, setCookie };
+  return {
+    ok: true,
+    kind: "anonymous",
+    used: result.used,
+    limit: result.limit,
+    setCookie,
+    fingerprint: fp,
+  };
 }
+
+/**
+ * Give back a reserved generation slot when the generation never produced an image.
+ * Safe to call more than once only if the caller guards it — it decrements by one.
+ */
+export async function releaseGeneration(gate: GateOk): Promise<void> {
+  try {
+    if (gate.kind === "paid") {
+      await supabaseAdmin.rpc("release_generation", { _user_id: gate.userId });
+    } else {
+      await supabaseAdmin.rpc("release_anonymous_generation", { _fingerprint: gate.fingerprint });
+    }
+  } catch {
+    // Never let a refund failure break the response.
+  }
+}
+
 
 /**
  * Read-only usage lookup (no increment). Used by the /api/usage endpoint.

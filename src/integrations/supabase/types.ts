@@ -445,6 +445,11 @@ export type Database = {
           read_ct: number
         }[]
       }
+      release_anonymous_generation: {
+        Args: { _fingerprint: string }
+        Returns: undefined
+      }
+      release_generation: { Args: { _user_id: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
