@@ -1802,13 +1802,15 @@ function ResultSection({
             </p>
           </div>
           {gen.isFinal && gen.dataUrl ? (
-            <a
-              href={gen.dataUrl}
-              download={`dwellmade-${gen.id.slice(0, 8)}.png`}
+            <button
+              type="button"
+              onClick={() =>
+                downloadImage(gen.dataUrl!, `dwellmade-${gen.id.slice(0, 8)}.png`)
+              }
               className="text-[10px] uppercase tracking-widest font-medium underline underline-offset-4"
             >
               Download
-            </a>
+            </button>
           ) : null}
         </div>
 
