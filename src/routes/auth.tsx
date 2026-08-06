@@ -195,7 +195,7 @@ function AuthPage() {
 
   const confirmRedirect = (addr: string) =>
     `${window.location.origin}/auth/confirm?email=${encodeURIComponent(addr)}${
-      toCheckout ? "&next=checkout" : ""
+      toCheckout || mode === "signup" ? "&next=checkout" : ""
     }`;
 
   useEffect(() => {
@@ -223,6 +223,8 @@ function AuthPage() {
           setBusy(false);
           return;
         }
+        navigate({ to: "/checkout" });
+        return;
       } else {
         const { error: err } = await supabase.auth.signInWithPassword({
           email,
@@ -279,13 +281,9 @@ function AuthPage() {
           </h1>
           <p className="text-sm text-muted-ink mb-2">We've sent a confirmation link to</p>
           <p className="text-sm text-ink mb-4 font-medium">{pendingEmail}</p>
-          {toCheckout ? (
-            <p className="text-sm text-muted-ink mb-8">
-              Confirm your email and we'll take you straight to payment.
-            </p>
-          ) : (
-            <div className="mb-4" />
-          )}
+          <p className="text-sm text-muted-ink mb-8">
+            Confirm your email and we'll take you straight to payment.
+          </p>
 
           <div className="space-y-3">
             <button
@@ -321,22 +319,27 @@ function AuthPage() {
       <main className="max-w-md mx-auto px-6 py-16 relative z-10">
         <h1 className="font-serif text-4xl mb-2">
           {mode === "signin" ? (
-            "Sign in"
+            <>
+              Welcome <span className="italic">back</span>
+            </>
           ) : (
             <>
-              Create an <span className="italic">account</span>
+              Start your <span className="italic">subscription</span>
             </>
           )}
         </h1>
-        <p className="text-sm text-muted-ink mb-8">
-          {toCheckout
-            ? mode === "signup"
-              ? "Step 1 of 2 — create your account, then complete payment for dwellmade Basic, £15 a month."
-              : "Sign in and we'll take you straight to payment for dwellmade Basic, £15 a month."
-            : mode === "signin"
-              ? "Welcome back. Pick up where you left off."
-              : "Save your projects, rooms, and generations."}
+        <p className="text-sm text-muted-ink mb-2">
+          {mode === "signin"
+            ? "Sign in to your dwellmade subscription"
+            : "£15/month · 50 generations · cancel anytime"}
         </p>
+        {mode === "signup" ? (
+          <p className="text-xs text-muted-ink mb-8">
+            Creating an account starts your £15/month subscription.
+          </p>
+        ) : (
+          <div className="mb-8" />
+        )}
 
         <button
           onClick={google}

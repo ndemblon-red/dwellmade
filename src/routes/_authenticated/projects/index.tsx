@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppHeader } from "@/components/AppHeader";
 import { createProject, deleteProject, listProjects } from "@/lib/projects-api";
@@ -14,6 +15,14 @@ function ProjectsDashboard() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { checkout: checkoutSuccess } = useSearch({ from: "/_authenticated/projects/" });
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
+    if (checkoutSuccess !== "success") return;
+    if (localStorage.getItem("welcomeSeen") === "true") return;
+    localStorage.setItem("welcomeSeen", "true");
+    setShowWelcome(true);
+  }, [checkoutSuccess]);
   const { data: projects, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: listProjects,
@@ -36,10 +45,20 @@ function ProjectsDashboard() {
     <div className="min-h-screen bg-canvas text-ink font-sans">
       <AppHeader />
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 sm:py-12">
-        {checkoutSuccess && (
-          <div className="mb-6 bg-green-50 text-green-900 border border-green-200 rounded-md px-4 py-3 text-sm">
-            Welcome to dwellmade — your subscription is active. You can now generate up to 50
-            designs a month.
+        {showWelcome && (
+          <div
+            className="mb-6 flex items-start justify-between gap-4 rounded-md px-4 py-3 text-sm"
+            style={{ backgroundColor: "#F0A500", color: "#1A1A2E" }}
+          >
+            <span>Welcome to dwellmade. You have 50 generations this month.</span>
+            <button
+              type="button"
+              onClick={() => setShowWelcome(false)}
+              aria-label="Dismiss"
+              className="shrink-0 leading-none opacity-70 hover:opacity-100"
+            >
+              ✕
+            </button>
           </div>
         )}
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 border-b border-zinc-950/5 pb-6 mb-8">

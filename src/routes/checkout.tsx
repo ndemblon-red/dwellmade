@@ -68,7 +68,10 @@ function CheckoutPage() {
       <PaymentTestModeBanner />
       <AppHeader />
       <main className="max-w-lg mx-auto px-6 py-14">
-        <div className="p-6 sm:p-8" style={{ backgroundColor: NEAR_BLACK, color: CREAM, borderRadius: 4 }}>
+        <div
+          className="p-6 sm:p-8"
+          style={{ backgroundColor: NEAR_BLACK, color: CREAM, borderRadius: 4 }}
+        >
           <div className="text-[10px] font-semibold tracking-[0.22em]" style={{ color: MUSTARD }}>
             SECURE CHECKOUT
           </div>
