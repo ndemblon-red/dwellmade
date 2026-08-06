@@ -62,6 +62,26 @@ function UserMenu({ email, onSignOut }: { email: string; onSignOut: () => void }
             padding: "8px 0",
           }}
         >
+          <div
+            className="px-4 pb-2 text-[11px] normal-case tracking-normal truncate"
+            style={{ color: MUTED_CREAM, maxWidth: 220 }}
+          >
+            {email}
+          </div>
+          <Link
+            to="/account"
+            onClick={() => setOpen(false)}
+            className="min-h-11 w-full flex items-center normal-case tracking-normal"
+            style={{
+              color: CREAM,
+              fontSize: 13,
+              padding: "8px 16px",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(245,240,232,0.08)")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+          >
+            Account
+          </Link>
           <button
             onClick={() => {
               setOpen(false);
