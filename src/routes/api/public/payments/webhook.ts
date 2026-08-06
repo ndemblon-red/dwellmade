@@ -90,6 +90,16 @@ async function upsertUserProfileFromSubscription(subscription: StripeSubscriptio
   }
 
   if (subscription.status === "active" || subscription.status === "trialing") {
+    const periodStartIso = periodStart ? new Date(periodStart * 1000).toISOString() : null;
+
+    // Reset the monthly allowance when the billing period rolls over (renewal).
+    const { data: existing } = await getSupabase()
+      .from("user_profiles")
+      .select("billing_period_start")
+      .eq("id", userId)
+      .maybeSingle();
+    const periodChanged = !!periodStartIso && existing?.billing_period_start !== periodStartIso;
+
     const { error: profileError } = await getSupabase()
       .from("user_profiles")
       .upsert({
@@ -100,12 +110,15 @@ async function upsertUserProfileFromSubscription(subscription: StripeSubscriptio
         stripe_subscription_id: subscription.id,
         current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
         cancel_at_period_end: subscription.cancel_at_period_end || false,
+        ...(periodStartIso ? { billing_period_start: periodStartIso } : {}),
+        ...(periodChanged ? { generations_used_this_month: 0 } : {}),
         updated_at: new Date().toISOString(),
       });
     if (profileError) {
       throw new Error(`Failed to activate profile ${userId}: ${profileError.message}`);
     }
   } else if (
+
     subscription.status === "canceled" ||
     subscription.status === "unpaid" ||
     subscription.status === "incomplete_expired"
