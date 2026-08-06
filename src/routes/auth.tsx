@@ -195,7 +195,7 @@ function AuthPage() {
 
   const confirmRedirect = (addr: string) =>
     `${window.location.origin}/auth/confirm?email=${encodeURIComponent(addr)}${
-      toCheckout ? "&next=checkout" : ""
+      toCheckout || mode === "signup" ? "&next=checkout" : ""
     }`;
 
   useEffect(() => {
