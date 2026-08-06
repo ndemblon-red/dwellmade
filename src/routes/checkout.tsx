@@ -1,10 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { AppHeader } from "@/components/AppHeader";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { deleteMyAccount } from "@/utils/account.functions";
+
 
 const NEAR_BLACK = "#1A1A2E";
 const CREAM = "#F5F0E8";
@@ -37,6 +40,29 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const [checking, setChecking] = useState(true);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const runDeleteAccount = useServerFn(deleteMyAccount);
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      const result = await runDeleteAccount({});
+      if ("error" in result) {
+        setDeleteError(result.error);
+        setDeleting(false);
+        return;
+      }
+      await supabase.auth.signOut();
+      navigate({ to: "/" });
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : String(err));
+      setDeleting(false);
+    }
+  };
+
 
   useEffect(() => {
     if (loading) return;
@@ -95,6 +121,46 @@ function CheckoutPage() {
               />
             )}
           </div>
+
+          {!loading && !checking && (
+            <div className="mt-4 text-center text-[11px]" style={{ color: MUTED_CREAM }}>
+              {confirmingDelete ? (
+                <span>
+                  This will permanently delete your account.{" "}
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="underline underline-offset-4 disabled:opacity-50"
+                  >
+                    {deleting ? "Deleting…" : "Delete account"}
+                  </button>{" "}
+                  ·{" "}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setConfirmingDelete(false);
+                      setDeleteError(null);
+                    }}
+                    disabled={deleting}
+                    className="underline underline-offset-4 disabled:opacity-50"
+                  >
+                    Go back
+                  </button>
+                  {deleteError && <span className="block mt-2">{deleteError}</span>}
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setConfirmingDelete(true)}
+                  className="underline underline-offset-4"
+                >
+                  Cancel and delete my account
+                </button>
+              )}
+            </div>
+          )}
+
 
           <div className="mt-5 text-center text-[11px]" style={{ color: MUTED_CREAM }}>
             <Link to="/terms" className="underline underline-offset-4">
