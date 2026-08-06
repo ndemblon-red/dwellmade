@@ -66,17 +66,35 @@ export const Route = createFileRoute("/api/generate")({
         });
 
         if (!upstream.ok || !upstream.body) {
+          // Never produced an image — give the reserved slot back.
+          await releaseGeneration(gate);
           const text = await upstream.text().catch(() => "");
           return new Response(text || "Upstream error", { status: upstream.status });
         }
+
+        // Refund the slot if the stream ends without a completed image.
+        let sawCompleted = false;
+        let buffered = "";
+        const watcher = new TransformStream<Uint8Array, Uint8Array>({
+          transform(chunk, controller) {
+            buffered += new TextDecoder().decode(chunk, { stream: true });
+            if (buffered.includes("image_generation.completed")) sawCompleted = true;
+            if (buffered.length > 4096) buffered = buffered.slice(-1024);
+            controller.enqueue(chunk);
+          },
+          async flush() {
+            if (!sawCompleted) await releaseGeneration(gate);
+          },
+        });
 
         const streamHeaders: Record<string, string> = {
           "Content-Type": "text/event-stream",
           "Cache-Control": "no-cache",
           Connection: "keep-alive",
         };
-        if (gate.ok && gate.setCookie) streamHeaders["Set-Cookie"] = gate.setCookie;
-        return new Response(upstream.body, { headers: streamHeaders });
+        if (gate.setCookie) streamHeaders["Set-Cookie"] = gate.setCookie;
+        return new Response(upstream.body.pipeThrough(watcher), { headers: streamHeaders });
+
       },
     },
   },
