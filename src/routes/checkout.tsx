@@ -122,6 +122,46 @@ function CheckoutPage() {
             )}
           </div>
 
+          {!loading && !checking && (
+            <div className="mt-4 text-center text-[11px]" style={{ color: MUTED_CREAM }}>
+              {confirmingDelete ? (
+                <span>
+                  This will permanently delete your account.{" "}
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="underline underline-offset-4 disabled:opacity-50"
+                  >
+                    {deleting ? "Deleting…" : "Delete account"}
+                  </button>{" "}
+                  ·{" "}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setConfirmingDelete(false);
+                      setDeleteError(null);
+                    }}
+                    disabled={deleting}
+                    className="underline underline-offset-4 disabled:opacity-50"
+                  >
+                    Go back
+                  </button>
+                  {deleteError && <span className="block mt-2">{deleteError}</span>}
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setConfirmingDelete(true)}
+                  className="underline underline-offset-4"
+                >
+                  Cancel and delete my account
+                </button>
+              )}
+            </div>
+          )}
+
+
           <div className="mt-5 text-center text-[11px]" style={{ color: MUTED_CREAM }}>
             <Link to="/terms" className="underline underline-offset-4">
               Terms
