@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { buildPrompt } from "@/prompts/generate.prompt";
-import { checkAndIncrement } from "@/lib/generation-gate.server";
+import { checkAndIncrement, releaseGeneration } from "@/lib/generation-gate.server";
 import { GenerationRequestSchema, type GenerationRequest } from "@/lib/generation-request.schema";
 
 export const Route = createFileRoute("/api/generate")({
