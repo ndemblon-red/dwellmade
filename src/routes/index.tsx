@@ -1403,7 +1403,6 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
         (dataUrl, isFinal) => updateGeneration(id, dataUrl, isFinal),
         { headers },
       );
-      refreshUsage();
     } catch (e) {
       if (e instanceof GenerationLimitError) {
         setUpgradeReason(
@@ -1413,14 +1412,16 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
               ? "free_account"
               : "paid_limit_reached",
         );
-        refreshUsage();
       } else {
         setError(e instanceof Error ? e.message : "Generation failed");
       }
       removeGeneration(id);
     } finally {
       setGenerating(false);
+      // Always resync the counter — failed attempts are refunded server-side.
+      refreshUsage();
     }
+
   }, [
     room,
     inspo,
