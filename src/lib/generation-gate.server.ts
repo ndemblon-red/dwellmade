@@ -126,7 +126,6 @@ export async function checkAndIncrement(request: Request): Promise<GateResult> {
   return { ok: true, kind: "anonymous", used: result.used, limit: result.limit, setCookie };
 }
 
-
 /**
  * Read-only usage lookup (no increment). Used by the /api/usage endpoint.
  */
@@ -159,7 +158,6 @@ export async function readUsage(request: Request): Promise<{
       return { kind: "paid", used, limit: PAID_LIMIT };
     }
     return { kind: "free", used, limit: PAID_LIMIT };
-
   }
 
   let fp = parseCookie(request.headers.get("cookie"), COOKIE);

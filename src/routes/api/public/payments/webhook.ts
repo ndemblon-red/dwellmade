@@ -118,7 +118,6 @@ async function upsertUserProfileFromSubscription(subscription: StripeSubscriptio
       throw new Error(`Failed to activate profile ${userId}: ${profileError.message}`);
     }
   } else if (
-
     subscription.status === "canceled" ||
     subscription.status === "unpaid" ||
     subscription.status === "incomplete_expired"
