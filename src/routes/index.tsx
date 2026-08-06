@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
 import { useGenerationUsage, authHeaders } from "@/hooks/use-generation-usage";
 import { UpgradeModal } from "@/components/UpgradeModal";
+import { downloadImage } from "@/lib/downloadImage";
 
 export const Route = createFileRoute("/")({
   head: () => ({
