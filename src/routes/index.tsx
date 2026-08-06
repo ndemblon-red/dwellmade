@@ -443,9 +443,15 @@ function LandingFooter() {
         </span>
       </div>
       <div className="max-w-7xl mx-auto px-6 pb-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-        <Link to="/auth" search={{ next: "checkout" as const }} style={linkStyle}>
-          Subscribe
-        </Link>
+        {user ? (
+          <Link to="/account" style={linkStyle}>
+            Account
+          </Link>
+        ) : (
+          <Link to="/auth" search={{ next: "checkout" as const }} style={linkStyle}>
+            Subscribe
+          </Link>
+        )}
         <Link to="/privacy" style={linkStyle}>
           Privacy
         </Link>
