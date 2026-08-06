@@ -40,6 +40,29 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const [checking, setChecking] = useState(true);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const runDeleteAccount = useServerFn(deleteMyAccount);
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      const result = await runDeleteAccount({});
+      if ("error" in result) {
+        setDeleteError(result.error);
+        setDeleting(false);
+        return;
+      }
+      await supabase.auth.signOut();
+      navigate({ to: "/" });
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : String(err));
+      setDeleting(false);
+    }
+  };
+
 
   useEffect(() => {
     if (loading) return;
