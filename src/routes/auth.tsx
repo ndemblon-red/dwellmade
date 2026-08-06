@@ -223,6 +223,8 @@ function AuthPage() {
           setBusy(false);
           return;
         }
+        navigate({ to: "/checkout" });
+        return;
       } else {
         const { error: err } = await supabase.auth.signInWithPassword({
           email,
