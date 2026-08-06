@@ -426,6 +426,7 @@ function HowItWorks() {
 }
 
 function LandingFooter() {
+  const { user } = useAuth();
   const linkStyle = {
     fontSize: "11px",
     letterSpacing: "0.18em",
