@@ -1802,7 +1802,7 @@ function ResultSection({
           {gen.isFinal && gen.dataUrl ? (
             <a
               href={gen.dataUrl}
-              download={`studio-syn-${gen.id.slice(0, 8)}.png`}
+              download={`dwellmade-${gen.id.slice(0, 8)}.png`}
               className="text-[10px] uppercase tracking-widest font-medium underline underline-offset-4"
             >
               Download

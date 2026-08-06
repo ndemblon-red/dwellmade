@@ -309,7 +309,7 @@ export const useStore = create<State>()(
       clearBlobError: () => set({ blobError: null }),
     }),
     {
-      name: "studio-syn-session",
+      name: "dwellmade-session",
       version: 3,
       storage: createJSONStorage(() => {
         if (typeof window === "undefined") {
@@ -321,6 +321,16 @@ export const useStore = create<State>()(
             clear: () => {},
             key: () => null,
           } satisfies Storage;
+        }
+        // One-time migration from the pre-rebrand key.
+        try {
+          const legacy = window.sessionStorage.getItem("studio-syn-session");
+          if (legacy && !window.sessionStorage.getItem("dwellmade-session")) {
+            window.sessionStorage.setItem("dwellmade-session", legacy);
+          }
+          if (legacy) window.sessionStorage.removeItem("studio-syn-session");
+        } catch {
+          // ignore
         }
         return window.sessionStorage;
       }),
