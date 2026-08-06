@@ -97,7 +97,7 @@ export async function checkAndIncrement(request: Request): Promise<GateResult> {
         limit: result.limit,
       };
     }
-    return { ok: true, kind: "paid", used: result.used, limit: result.limit };
+    return { ok: true, kind: "paid", used: result.used, limit: result.limit, userId: user.id };
   }
 
   // Anonymous path
