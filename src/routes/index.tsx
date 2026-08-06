@@ -769,13 +769,15 @@ function DesignsStage({
                     {g.isFinal ? "" : " · rendering"}
                   </span>
                   {g.isFinal ? (
-                    <a
-                      href={g.dataUrl}
-                      download={`dwellmade-${g.id.slice(0, 8)}.png`}
-                      className="shrink-0 underline underline-offset-4 hover:text-ink"
+                    <button
+                      type="button"
+                      onClick={() =>
+                        downloadImage(g.dataUrl, `dwellmade-${g.id.slice(0, 8)}.png`)
+                      }
+                      className="shrink-0 underline underline-offset-4 hover:text-ink uppercase tracking-widest"
                     >
                       Download
-                    </a>
+                    </button>
                   ) : null}
                 </figcaption>
               </figure>
