@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
-const ADMIN_EMAIL = "bordain@gmail.com";
+const ADMIN_EMAIL = "ndemblon@gmail.com";
 export const FORCE_UPGRADE_KEY = "dm_debug_force_upgrade";
 
 type DebugState = {
