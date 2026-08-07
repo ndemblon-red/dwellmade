@@ -2,10 +2,14 @@
 // Internal debug API for testing generation limits and subscription flows.
 // All writes use the service role key and are gated on a hardcoded admin email.
 import { createFileRoute } from "@tanstack/react-router";
-import { supabaseAdmin } from "@/lib/debug-admin.server";
 
 export const DEBUG_ADMIN_EMAIL = "bordain@gmail.com";
 const COOKIE = "dm_fp";
+
+async function admin() {
+  const m = await import("@/integrations/supabase/client.server");
+  return m.supabaseAdmin;
+}
 
 function parseCookie(header: string | null, name: string): string | undefined {
   if (!header) return;
@@ -16,6 +20,7 @@ function parseCookie(header: string | null, name: string): string | undefined {
 }
 
 async function requireAdmin(request: Request): Promise<{ id: string; email: string } | null> {
+  const supabaseAdmin = await admin();
   const auth = request.headers.get("authorization") || "";
   const token = auth.toLowerCase().startsWith("bearer ") ? auth.slice(7) : "";
   if (!token) return null;
@@ -27,6 +32,7 @@ async function requireAdmin(request: Request): Promise<{ id: string; email: stri
 }
 
 async function readState(request: Request, user: { id: string; email: string }) {
+  const supabaseAdmin = await admin();
   const fingerprint = parseCookie(request.headers.get("cookie"), COOKIE) ?? null;
 
   const { data: profile } = await supabaseAdmin
@@ -76,6 +82,7 @@ export const Route = createFileRoute("/api/debug")({
         const user = await requireAdmin(request);
         if (!user) return new Response("Forbidden", { status: 403 });
 
+        const supabaseAdmin = await admin();
         const body = (await request.json()) as { action?: string; value?: number };
         const fingerprint = parseCookie(request.headers.get("cookie"), COOKIE);
 
