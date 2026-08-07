@@ -169,6 +169,15 @@ async function handleSubscriptionDeleted(subscription: StripeSubscription, env: 
 async function handleWebhook(req: Request, env: StripeEnv) {
   const event = await verifyWebhook(req, env);
 
+  // TODO: remove this route's debug logging before any significant public launch
+  try {
+    await getSupabase()
+      .from("webhook_log")
+      .insert({ event_type: event.type, payload: JSON.parse(JSON.stringify(event)) });
+  } catch (e) {
+    console.error("webhook_log insert failed", e);
+  }
+
   switch (event.type) {
     case "customer.subscription.created":
       await upsertUserProfileFromSubscription(event.data.object as StripeSubscription, env);

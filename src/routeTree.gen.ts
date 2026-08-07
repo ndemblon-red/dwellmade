@@ -13,12 +13,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as DebugRouteImport } from './routes/debug'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
+import { Route as ApiDebugRouteImport } from './routes/api/debug'
 import { Route as ApiGenerateRouteImport } from './routes/api/generate'
 import { Route as ApiUsageRouteImport } from './routes/api/usage'
 import { Route as AuthConfirmRouteImport } from './routes/auth_.confirm'
@@ -46,6 +48,11 @@ const AuthRoute = AuthRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DebugRoute = DebugRouteImport.update({
+  id: '/debug',
+  path: '/debug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PricingRoute = PricingRouteImport.update({
@@ -77,6 +84,11 @@ const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   id: '/account',
   path: '/account',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiDebugRoute = ApiDebugRouteImport.update({
+  id: '/api/debug',
+  path: '/api/debug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiGenerateRoute = ApiGenerateRouteImport.update({
   id: '/api/generate',
@@ -132,12 +144,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
+  '/debug': typeof DebugRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/studio': typeof StudioRoute
   '/terms': typeof TermsRoute
   '/account': typeof AuthenticatedAccountRoute
+  '/api/debug': typeof ApiDebugRoute
   '/api/generate': typeof ApiGenerateRoute
   '/api/usage': typeof ApiUsageRoute
   '/auth/confirm': typeof AuthConfirmRoute
@@ -152,12 +166,14 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
+  '/debug': typeof DebugRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/studio': typeof StudioRoute
   '/terms': typeof TermsRoute
   '/account': typeof AuthenticatedAccountRoute
+  '/api/debug': typeof ApiDebugRoute
   '/api/generate': typeof ApiGenerateRoute
   '/api/usage': typeof ApiUsageRoute
   '/auth/confirm': typeof AuthConfirmRoute
@@ -174,12 +190,14 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
+  '/debug': typeof DebugRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/studio': typeof StudioRoute
   '/terms': typeof TermsRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
+  '/api/debug': typeof ApiDebugRoute
   '/api/generate': typeof ApiGenerateRoute
   '/api/usage': typeof ApiUsageRoute
   '/auth_/confirm': typeof AuthConfirmRoute
@@ -196,12 +214,14 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/checkout'
+    | '/debug'
     | '/pricing'
     | '/privacy'
     | '/reset-password'
     | '/studio'
     | '/terms'
     | '/account'
+    | '/api/debug'
     | '/api/generate'
     | '/api/usage'
     | '/auth/confirm'
@@ -216,12 +236,14 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/checkout'
+    | '/debug'
     | '/pricing'
     | '/privacy'
     | '/reset-password'
     | '/studio'
     | '/terms'
     | '/account'
+    | '/api/debug'
     | '/api/generate'
     | '/api/usage'
     | '/auth/confirm'
@@ -237,12 +259,14 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/checkout'
+    | '/debug'
     | '/pricing'
     | '/privacy'
     | '/reset-password'
     | '/studio'
     | '/terms'
     | '/_authenticated/account'
+    | '/api/debug'
     | '/api/generate'
     | '/api/usage'
     | '/auth_/confirm'
@@ -259,11 +283,13 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   CheckoutRoute: typeof CheckoutRoute
+  DebugRoute: typeof DebugRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   StudioRoute: typeof StudioRoute
   TermsRoute: typeof TermsRoute
+  ApiDebugRoute: typeof ApiDebugRoute
   ApiGenerateRoute: typeof ApiGenerateRoute
   ApiUsageRoute: typeof ApiUsageRoute
   AuthConfirmRoute: typeof AuthConfirmRoute
@@ -301,6 +327,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/debug': {
+      id: '/debug'
+      path: '/debug'
+      fullPath: '/debug'
+      preLoaderRoute: typeof DebugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pricing': {
@@ -344,6 +377,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/account'
       preLoaderRoute: typeof AuthenticatedAccountRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/debug': {
+      id: '/api/debug'
+      path: '/api/debug'
+      fullPath: '/api/debug'
+      preLoaderRoute: typeof ApiDebugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/generate': {
       id: '/api/generate'
@@ -431,11 +471,13 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CheckoutRoute: CheckoutRoute,
+  DebugRoute: DebugRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   StudioRoute: StudioRoute,
   TermsRoute: TermsRoute,
+  ApiDebugRoute: ApiDebugRoute,
   ApiGenerateRoute: ApiGenerateRoute,
   ApiUsageRoute: ApiUsageRoute,
   AuthConfirmRoute: AuthConfirmRoute,
@@ -447,13 +489,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

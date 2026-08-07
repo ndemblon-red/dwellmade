@@ -1376,6 +1376,11 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
 
   const handleGenerate = useCallback(async () => {
     if (!room || generating || briefIsEmpty) return;
+    // TODO: remove this debug hook before any significant public launch
+    if (typeof localStorage !== "undefined" && localStorage.getItem("dm_debug_force_upgrade") === "1") {
+      setUpgradeReason(usage?.kind === "anonymous" ? "anonymous_used_free" : "paid_limit_reached");
+      return;
+    }
     if (notesLookSuspicious(notes)) {
       setNotesError("Please rephrase your notes — they couldn't be processed.");
       return;
@@ -1440,6 +1445,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
     notes,
     generating,
     briefIsEmpty,
+    usage?.kind,
     startGeneration,
     updateGeneration,
     removeGeneration,
