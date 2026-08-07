@@ -3,7 +3,7 @@
 // All writes use the service role key and are gated on a hardcoded admin email.
 import { createFileRoute } from "@tanstack/react-router";
 
-export const DEBUG_ADMIN_EMAIL = "bordain@gmail.com";
+export const DEBUG_ADMIN_EMAIL = "ndemblon@gmail.com";
 const COOKIE = "dm_fp";
 
 async function admin() {
