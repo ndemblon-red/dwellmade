@@ -173,7 +173,7 @@ async function handleWebhook(req: Request, env: StripeEnv) {
   try {
     await getSupabase()
       .from("webhook_log")
-      .insert({ event_type: event.type, payload: event as unknown as Record<string, unknown> });
+      .insert({ event_type: event.type, payload: JSON.parse(JSON.stringify(event)) });
   } catch (e) {
     console.error("webhook_log insert failed", e);
   }
