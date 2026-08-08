@@ -157,11 +157,7 @@ function DebugPage() {
             onChange={(e) => setCountValue(e.target.value)}
             style={{ padding: 6, width: 100, border: "1px solid #999" }}
           />
-          <button
-            type="button"
-            onClick={() => act("set_count", Number(countValue))}
-            style={btn}
-          >
+          <button type="button" onClick={() => act("set_count", Number(countValue))} style={btn}>
             Set generation count
           </button>
         </div>

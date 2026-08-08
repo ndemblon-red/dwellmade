@@ -103,7 +103,9 @@ function AccountPage() {
     (async () => {
       const { data } = await supabase
         .from("user_profiles")
-        .select("plan, plan_active, comp, current_period_end, cancel_at_period_end, billing_period_start")
+        .select(
+          "plan, plan_active, comp, current_period_end, cancel_at_period_end, billing_period_start",
+        )
         .eq("id", user.id)
         .maybeSingle();
       if (!cancelled) setProfile((data as Profile) ?? null);
@@ -214,9 +216,7 @@ function AccountPage() {
                 </p>
                 <div className="mt-4">
                   {resetState === "sent" ? (
-                    <p className="text-sm">
-                      Reset link sent to {user?.email}. Check your inbox.
-                    </p>
+                    <p className="text-sm">Reset link sent to {user?.email}. Check your inbox.</p>
                   ) : (
                     <button
                       type="button"
@@ -336,11 +336,7 @@ function AccountPage() {
                   {deleteError && <span className="block mt-2">{deleteError}</span>}
                 </span>
               ) : (
-                <button
-                  type="button"
-                  onClick={() => setConfirmingDelete(true)}
-                  className={linkish}
-                >
+                <button type="button" onClick={() => setConfirmingDelete(true)} className={linkish}>
                   Delete my account
                 </button>
               )}

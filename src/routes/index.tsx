@@ -772,9 +772,7 @@ function DesignsStage({
                   {g.isFinal ? (
                     <button
                       type="button"
-                      onClick={() =>
-                        downloadImage(g.dataUrl, `dwellmade-${g.id.slice(0, 8)}.png`)
-                      }
+                      onClick={() => downloadImage(g.dataUrl, `dwellmade-${g.id.slice(0, 8)}.png`)}
                       className="shrink-0 underline underline-offset-4 hover:text-ink uppercase tracking-widest"
                     >
                       Download
@@ -1377,7 +1375,10 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
   const handleGenerate = useCallback(async () => {
     if (!room || generating || briefIsEmpty) return;
     // TODO: remove this debug hook before any significant public launch
-    if (typeof localStorage !== "undefined" && localStorage.getItem("dm_debug_force_upgrade") === "1") {
+    if (
+      typeof localStorage !== "undefined" &&
+      localStorage.getItem("dm_debug_force_upgrade") === "1"
+    ) {
       setUpgradeReason(usage?.kind === "anonymous" ? "anonymous_used_free" : "paid_limit_reached");
       return;
     }
@@ -1436,7 +1437,6 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
       // Always resync the counter — failed attempts are refunded server-side.
       refreshUsage();
     }
-
   }, [
     room,
     inspo,
@@ -1811,9 +1811,7 @@ function ResultSection({
           {gen.isFinal && gen.dataUrl ? (
             <button
               type="button"
-              onClick={() =>
-                downloadImage(gen.dataUrl!, `dwellmade-${gen.id.slice(0, 8)}.png`)
-              }
+              onClick={() => downloadImage(gen.dataUrl!, `dwellmade-${gen.id.slice(0, 8)}.png`)}
               className="text-[10px] uppercase tracking-widest font-medium underline underline-offset-4"
             >
               Download

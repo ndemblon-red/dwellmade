@@ -156,7 +156,6 @@ export async function releaseGeneration(gate: GateOk): Promise<void> {
   }
 }
 
-
 /**
  * Read-only usage lookup (no increment). Used by the /api/usage endpoint.
  */

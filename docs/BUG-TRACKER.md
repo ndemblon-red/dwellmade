@@ -15,13 +15,13 @@ Severity key:
 | Production build (`bun run build`)    | Pass                                                                              |
 | Typecheck (`tsgo --noEmit`)           | Pass, 0 errors                                                                    |
 | Lint (`eslint .`)                     | Pass, 0 errors, 10 `react-refresh` warnings (shadcn/ui + email brand + LegalPage) |
-| Formatting (`prettier --check .`)    | Pass                                                                              |
+| Formatting (`prettier --check .`)     | Pass                                                                              |
 | Console/runtime on `/auth`            | Clean on fresh load — the reported hydration mismatch did not reproduce           |
-| Workspace responsive 375 / 768 / 1280  | Pass, no horizontal overflow at any width                                         |
+| Workspace responsive 375 / 768 / 1280 | Pass, no horizontal overflow at any width                                         |
 | Room flow smoke test                  | Pass — Collect → Curate → Generate → Designs, room switching, Designs re-entry    |
 | Stripe checkout build                 | Pass — all payment modules and webhook compile and bundle                         |
 | Anonymous generation gate             | Pass — returns 402 with `limit_reached` after 3 anonymous generations             |
-| Webhook endpoint                      | Pass — `POST /api/public/payments/webhook` returns 200/400 as expected              |
+| Webhook endpoint                      | Pass — `POST /api/public/payments/webhook` returns 200/400 as expected            |
 | Dependency/security scan              | Not re-run (no package changes since last pass)                                   |
 | Database/RLS linter                   | Not re-run (schema changes applied via migration)                                 |
 
@@ -113,4 +113,3 @@ Severity key:
 
 - **Area:** landing
 - **Fix:** publish two or three real before/after examples before or shortly after launch.
-

@@ -8,7 +8,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteMyAccount } from "@/utils/account.functions";
 
-
 const NEAR_BLACK = "#1A1A2E";
 const CREAM = "#F5F0E8";
 const MUSTARD = "#F0A500";
@@ -62,7 +61,6 @@ function CheckoutPage() {
       setDeleting(false);
     }
   };
-
 
   useEffect(() => {
     if (loading) return;
@@ -160,7 +158,6 @@ function CheckoutPage() {
               )}
             </div>
           )}
-
 
           <div className="mt-5 text-center text-[11px]" style={{ color: MUTED_CREAM }}>
             <Link to="/terms" className="underline underline-offset-4">

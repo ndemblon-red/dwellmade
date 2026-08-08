@@ -6,9 +6,10 @@ Two separate problems, both on the paid path.
 
 Confirmed by reading the page: the pricing CTA is a plain link to `/auth` with no memory of why you clicked it. After signing in you land on `/projects` and the subscribe intent is gone. There is no way to go from "I want to pay" to paying in one motion.
 
-Stripe still needs an account to attach the subscription to, so the fix isn't to skip signup — it's to make signup a step *inside* the upgrade, not a detour that loses your place.
+Stripe still needs an account to attach the subscription to, so the fix isn't to skip signup — it's to make signup a step _inside_ the upgrade, not a detour that loses your place.
 
 Plan:
+
 1. Pricing CTA carries the intent: link to `/auth?next=checkout` (and the same for the "Sign in" path from the upgrade modal).
 2. `/auth` shows subscribe-flavoured copy when that intent is present ("Create your account, then complete payment") so it doesn't feel like a wrong turn.
 3. After successful sign-in or sign-up, if the intent is `checkout`, go straight to a checkout screen with the Stripe payment form already open — no extra clicks, no hunting for the Upgrade button.
@@ -21,11 +22,13 @@ Plan:
 When checkout does open, it shows Stripe's grey "Something went wrong" panel.
 
 What I checked:
+
 - Stripe (test mode) has **zero checkout sessions, ever** — so this fails on our side before Stripe accepts the session. That grey panel is Stripe's fallback when our app fails to hand it a session.
 - Product and price are correct: `dwellmade Basic Monthly`, £15/month, lookup key `dwellmade_basic_monthly`, tax code set.
 - One likely culprit: the price has **`tax_behavior: unspecified`** while our checkout turns on Stripe's full tax/compliance handling, which Stripe rejects. Unconfirmed until I see the real error, so step 1 is to expose it rather than guess.
 
 Plan:
+
 1. Surface the real error — show the actual message in the upgrade panel and log it server-side, instead of letting the Stripe iframe swallow it.
 2. Reproduce once and read the exact Stripe error.
 3. If it's the tax behaviour: recreate the price under the same ID `dwellmade_basic_monthly` with VAT-inclusive tax behaviour, so the displayed price stays £15.

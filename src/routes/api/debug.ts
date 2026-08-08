@@ -90,13 +90,11 @@ export const Route = createFileRoute("/api/debug")({
           switch (body.action) {
             case "set_count": {
               const value = Math.max(0, Math.min(50, Math.floor(Number(body.value ?? 0))));
-              const { error } = await supabaseAdmin
-                .from("user_profiles")
-                .upsert({
-                  id: user.id,
-                  generations_used_this_month: value,
-                  updated_at: new Date().toISOString(),
-                });
+              const { error } = await supabaseAdmin.from("user_profiles").upsert({
+                id: user.id,
+                generations_used_this_month: value,
+                updated_at: new Date().toISOString(),
+              });
               if (error) throw new Error(error.message);
               return Response.json({ ok: true, message: `Generation count set to ${value}.` });
             }
