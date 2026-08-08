@@ -1,6 +1,6 @@
 # dwellmade — Prioritised Bug Tracker
 
-Last updated: 2026-08-05, after the payments integration.
+Last updated: 2026-08-08, after the full launch re-audit.
 
 Severity key:
 
@@ -8,22 +8,29 @@ Severity key:
 - **P1** — must fix before public launch; visible quality or trust issue.
 - **P2** — post-launch polish.
 
-## Re-verification status (2026-08-05)
+## Re-verification status (2026-08-08)
 
-| Check                                 | Result                                                                            |
-| ------------------------------------- | --------------------------------------------------------------------------------- |
-| Production build (`bun run build`)    | Pass                                                                              |
-| Typecheck (`tsgo --noEmit`)           | Pass, 0 errors                                                                    |
-| Lint (`eslint .`)                     | Pass, 0 errors, 10 `react-refresh` warnings (shadcn/ui + email brand + LegalPage) |
-| Formatting (`prettier --check .`)    | Pass                                                                              |
-| Console/runtime on `/auth`            | Clean on fresh load — the reported hydration mismatch did not reproduce           |
-| Workspace responsive 375 / 768 / 1280  | Pass, no horizontal overflow at any width                                         |
-| Room flow smoke test                  | Pass — Collect → Curate → Generate → Designs, room switching, Designs re-entry    |
-| Stripe checkout build                 | Pass — all payment modules and webhook compile and bundle                         |
-| Anonymous generation gate             | Pass — returns 402 with `limit_reached` after 3 anonymous generations             |
-| Webhook endpoint                      | Pass — `POST /api/public/payments/webhook` returns 200/400 as expected              |
-| Dependency/security scan              | Not re-run (no package changes since last pass)                                   |
-| Database/RLS linter                   | Not re-run (schema changes applied via migration)                                 |
+| Check                                    | Result                                                                                                                                                                                            |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Production build (`bun run build`)       | Pass                                                                                                                                                                                              |
+| Typecheck (`tsgo --noEmit`)              | Pass, 0 errors                                                                                                                                                                                    |
+| Lint (`eslint .`)                        | Pass, 0 errors, 10 `react-refresh` warnings (shadcn/ui + email brand + LegalPage)                                                                                                                 |
+| Formatting (`prettier --check .`)        | Pass (fixed 18 Prettier errors before this run)                                                                                                                                                   |
+| Dependency/security scan                 | Pass — no high/critical vulnerabilities                                                                                                                                                           |
+| Supabase security scan                   | Pass — no issues found                                                                                                                                                                            |
+| Database/RLS linter                      | 2 INFO-level flags — `anonymous_generations` and `webhook_log` have RLS enabled but no policies. Both are intentional; they are only written/read via service role or SECURITY DEFINER functions. |
+| Signed-out browser audit (public routes) | Pass — all public routes (`/`, `/auth`, `/auth/confirm`, `/studio`, `/pricing`, `/terms`, `/privacy`) load cleanly with no console or network errors                                              |
+| Protected-route redirects (signed out)   | Pass — `/projects`, `/projects/:id`, `/account`, `/checkout` all redirect to `/auth` correctly                                                                                                    |
+| API endpoint contracts (signed out)      | Pass — `GET /api/usage` returns anonymous allowance; `POST /api/generate` with invalid body returns 400; `GET /api/public/payments/webhook` now returns 405                                       |
+| Responsive layout audit (public routes)  | Pass — no horizontal overflow from 320px through 1280px on `/`, `/auth`, `/auth/confirm`, `/studio`, `/pricing`, `/terms`, `/privacy`                                                             |
+| `/debug` non-admin redirect              | Pass — redirects to `/` when not signed in as the admin email                                                                                                                                     |
+
+---
+
+## Audit notes
+
+- The managed browser session is currently **signed out**. Authenticated-route testing (signed-in `/projects`, `/account`, `/checkout`, and the full Stripe sandbox payment flow) requires a signed-in session. Sign in via the Lovable preview; the session will inject on the next turn.
+- The only code change made during this audit was adding a `GET` handler to `src/routes/api/public/payments/webhook.ts` that returns HTTP 405, so unsupported webhook methods are rejected cleanly.
 
 ---
 
@@ -36,12 +43,19 @@ Severity key:
 - **Repro:** query `user_profiles` for the row above; `comp` is `true`.
 - **Fix:** remove `comp` flag and reset `plan = 'free'`, `plan_active = false` if the test account should not have free access.
 
-### BUG-002 · Stripe checkout is wired
+### BUG-002 · Stripe checkout needs end-to-end validation
 
 - **Area:** backend / billing
 - **Detail:** the Upgrade modal now opens an embedded Stripe checkout for `dwellmade_basic_monthly` (£15/month). The webhook at `/api/public/payments/webhook` updates `user_profiles` and `subscriptions` on `customer.subscription.*` and `checkout.session.completed` events. Checkout is configured for full tax compliance handling (`managed_payments`) in supported countries.
 - **Status:** implemented. Needs end-to-end validation with a real test card in the preview before launch.
 - **Validation:** sign in as a free/non-comped account, exhaust the 3 anonymous generations, click "Subscribe now" in the Upgrade modal, complete checkout with test card `4242 4242 4242 4242`, and confirm `/projects?checkout=success` shows the success banner and the profile becomes `plan_active = true`.
+
+### BUG-012 · Webhook GET handler returned 200
+
+- **Area:** backend / security
+- **Detail:** `GET /api/public/payments/webhook` was returning HTTP 200 instead of rejecting the unsupported method. This was flagged during the endpoint contract audit.
+- **Status:** fixed — now returns HTTP 405 with "Method not allowed".
+- **Validation:** `GET /api/public/payments/webhook` returns 405 in the signed-out audit.
 
 ---
 
@@ -113,4 +127,3 @@ Severity key:
 
 - **Area:** landing
 - **Fix:** publish two or three real before/after examples before or shortly after launch.
-

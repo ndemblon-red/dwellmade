@@ -94,7 +94,6 @@ export const Route = createFileRoute("/api/generate")({
         };
         if (gate.setCookie) streamHeaders["Set-Cookie"] = gate.setCookie;
         return new Response(upstream.body.pipeThrough(watcher), { headers: streamHeaders });
-
       },
     },
   },
