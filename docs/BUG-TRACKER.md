@@ -10,20 +10,20 @@ Severity key:
 
 ## Re-verification status (2026-08-08)
 
-| Check                                                | Result                                                                                                     |
-| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Production build (`bun run build`)                   | Pass                                                                                                       |
-| Typecheck (`tsgo --noEmit`)                          | Pass, 0 errors                                                                                             |
-| Lint (`eslint .`)                                    | Pass, 0 errors, 10 `react-refresh` warnings (shadcn/ui + email brand + LegalPage)                         |
-| Formatting (`prettier --check .`)                    | Pass (fixed 18 Prettier errors before this run)                                                            |
-| Dependency/security scan                             | Pass — no high/critical vulnerabilities                                                                    |
-| Supabase security scan                               | Pass — no issues found                                                                                     |
-| Database/RLS linter                                  | 2 INFO-level flags — `anonymous_generations` and `webhook_log` have RLS enabled but no policies. Both are intentional; they are only written/read via service role or SECURITY DEFINER functions. |
-| Signed-out browser audit (public routes)             | Pass — all public routes (`/`, `/auth`, `/auth/confirm`, `/studio`, `/pricing`, `/terms`, `/privacy`) load cleanly with no console or network errors |
-| Protected-route redirects (signed out)               | Pass — `/projects`, `/projects/:id`, `/account`, `/checkout` all redirect to `/auth` correctly            |
-| API endpoint contracts (signed out)                  | Pass — `GET /api/usage` returns anonymous allowance; `POST /api/generate` with invalid body returns 400; `GET /api/public/payments/webhook` now returns 405 |
-| Responsive layout audit (public routes)                | Pass — no horizontal overflow from 320px through 1280px on `/`, `/auth`, `/auth/confirm`, `/studio`, `/pricing`, `/terms`, `/privacy` |
-| `/debug` non-admin redirect                          | Pass — redirects to `/` when not signed in as the admin email                                              |
+| Check                                    | Result                                                                                                                                                                                            |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Production build (`bun run build`)       | Pass                                                                                                                                                                                              |
+| Typecheck (`tsgo --noEmit`)              | Pass, 0 errors                                                                                                                                                                                    |
+| Lint (`eslint .`)                        | Pass, 0 errors, 10 `react-refresh` warnings (shadcn/ui + email brand + LegalPage)                                                                                                                 |
+| Formatting (`prettier --check .`)        | Pass (fixed 18 Prettier errors before this run)                                                                                                                                                   |
+| Dependency/security scan                 | Pass — no high/critical vulnerabilities                                                                                                                                                           |
+| Supabase security scan                   | Pass — no issues found                                                                                                                                                                            |
+| Database/RLS linter                      | 2 INFO-level flags — `anonymous_generations` and `webhook_log` have RLS enabled but no policies. Both are intentional; they are only written/read via service role or SECURITY DEFINER functions. |
+| Signed-out browser audit (public routes) | Pass — all public routes (`/`, `/auth`, `/auth/confirm`, `/studio`, `/pricing`, `/terms`, `/privacy`) load cleanly with no console or network errors                                              |
+| Protected-route redirects (signed out)   | Pass — `/projects`, `/projects/:id`, `/account`, `/checkout` all redirect to `/auth` correctly                                                                                                    |
+| API endpoint contracts (signed out)      | Pass — `GET /api/usage` returns anonymous allowance; `POST /api/generate` with invalid body returns 400; `GET /api/public/payments/webhook` now returns 405                                       |
+| Responsive layout audit (public routes)  | Pass — no horizontal overflow from 320px through 1280px on `/`, `/auth`, `/auth/confirm`, `/studio`, `/pricing`, `/terms`, `/privacy`                                                             |
+| `/debug` non-admin redirect              | Pass — redirects to `/` when not signed in as the admin email                                                                                                                                     |
 
 ---
 
