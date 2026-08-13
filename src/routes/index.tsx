@@ -269,8 +269,11 @@ function HeroComparison() {
     const el = ref.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
-    const x = ((clientX - r.left) / r.width) * 100;
-    setPos(Math.max(0, Math.min(100, x)));
+    const px = clientX - r.left;
+    const minPx = 20;
+    const maxPx = Math.max(minPx, r.width - 20);
+    const clamped = Math.max(minPx, Math.min(maxPx, px));
+    setPos((clamped / r.width) * 100);
   }, []);
   useEffect(() => {
     const move = (e: PointerEvent) => dragging.current && update(e.clientX);
