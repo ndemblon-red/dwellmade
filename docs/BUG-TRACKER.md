@@ -1,6 +1,6 @@
 # dwellmade — Prioritised Bug Tracker
 
-Last updated: 2026-08-08, after the full launch re-audit.
+Last updated: 2026-08-13, after the paid limit reached modal fix.
 
 Severity key:
 
