@@ -12,7 +12,12 @@ export const Route = createFileRoute("/api/usage")({
         };
         if (usage.setCookie) headers["Set-Cookie"] = usage.setCookie;
         return new Response(
-          JSON.stringify({ kind: usage.kind, used: usage.used, limit: usage.limit }),
+          JSON.stringify({
+            kind: usage.kind,
+            used: usage.used,
+            limit: usage.limit,
+            resetsAt: usage.resetsAt,
+          }),
           { status: 200, headers },
         );
       },
