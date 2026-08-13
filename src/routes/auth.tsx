@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-r
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { signInWithEmail } from "@/lib/auth-actions";
 import { lovable } from "@/integrations/lovable";
 const NEAR_BLACK = "#1A1A2E";
 const MUSTARD = "#F0A500";
@@ -226,11 +227,7 @@ function AuthPage() {
         navigate({ to: "/checkout" });
         return;
       } else {
-        const { error: err } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (err) throw err;
+        await signInWithEmail(email, password);
       }
       navigate({ to: destination });
     } catch (err) {

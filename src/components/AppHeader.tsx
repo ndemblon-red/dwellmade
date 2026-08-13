@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
-import { supabase } from "@/integrations/supabase/client";
+import { signOutSession } from "@/lib/auth-actions";
 
 const NEAR_BLACK = "#1A1A2E";
 const MUSTARD = "#F0A500";
@@ -158,7 +158,7 @@ export function AppHeader() {
   const signOut = async () => {
     await queryClient.cancelQueries();
     queryClient.clear();
-    await supabase.auth.signOut();
+    await signOutSession();
     await router.navigate({ to: "/auth", replace: true });
   };
 

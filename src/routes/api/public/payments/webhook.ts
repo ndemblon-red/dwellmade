@@ -166,7 +166,7 @@ async function handleSubscriptionDeleted(subscription: StripeSubscription, env: 
   }
 }
 
-async function handleWebhook(req: Request, env: StripeEnv) {
+export async function handleWebhook(req: Request, env: StripeEnv) {
   const event = await verifyWebhook(req, env);
 
   // TODO: remove this route's debug logging before any significant public launch
