@@ -9,6 +9,7 @@ import {
 } from "@/lib/store";
 import { tagInspoImage } from "@/lib/tagging.functions";
 import { streamImage, GenerationLimitError } from "@/lib/streamImage";
+import { upgradeReasonForKind } from "@/lib/upgrade-reason";
 import { BeforeAfter } from "@/components/BeforeAfter";
 import { deriveBrief, colorsMatch, notesLookSuspicious, NOTES_MAX_LENGTH } from "@/lib/brief";
 
