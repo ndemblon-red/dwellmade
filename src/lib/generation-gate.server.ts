@@ -163,6 +163,7 @@ export async function readUsage(request: Request): Promise<{
   kind: "anonymous" | "paid" | "free";
   used: number;
   limit: number;
+  resetsAt?: string;
   setCookie?: string;
 }> {
   const user = await getUserFromBearer(request);
