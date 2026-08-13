@@ -27,25 +27,40 @@ export function Wordmark({ size = "text-2xl" }: { size?: string }) {
 }
 
 export function SiteNav() {
+  const { user, loading } = useAuth();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  const signOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    await router.navigate({ to: "/auth", replace: true });
+  };
+
   return (
     <nav style={{ backgroundColor: NEAR_BLACK }}>
       <div className="max-w-7xl mx-auto px-6 sm:px-8 py-4 flex items-center justify-between">
         <Link to="/">
           <Wordmark size="text-[32px]" />
         </Link>
-        <Link
-          to="/auth"
-          className="transition-colors"
-          style={{
-            fontSize: "12px",
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            color: MUTED_CREAM,
-            ...dmSans,
-          }}
-        >
-          Sign in
-        </Link>
+        {loading ? null : user ? (
+          <UserMenu email={user.email ?? ""} onSignOut={signOut} />
+        ) : (
+          <Link
+            to="/auth"
+            className="transition-colors"
+            style={{
+              fontSize: "12px",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: MUTED_CREAM,
+              ...dmSans,
+            }}
+          >
+            Sign in
+          </Link>
+        )}
       </div>
     </nav>
   );
