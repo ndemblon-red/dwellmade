@@ -654,7 +654,13 @@ function StageNav({
 
 // --- Designs (saved designs for the room) ------------------------------------
 
-function DeleteButton({ onClick, label }: { onClick: (e: React.MouseEvent) => void; label: string }) {
+function DeleteButton({
+  onClick,
+  label,
+}: {
+  onClick: (e: React.MouseEvent) => void;
+  label: string;
+}) {
   return (
     <button
       type="button"
@@ -666,7 +672,16 @@ function DeleteButton({ onClick, label }: { onClick: (e: React.MouseEvent) => vo
       onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(232, 127, 163, 0.9)")}
       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "rgba(26, 26, 46, 0.75)")}
     >
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 14 14"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M11 3L3 11M3 3L11 11" />
       </svg>
     </button>
@@ -832,7 +847,6 @@ function DesignsStage({
     </div>
   );
 }
-
 
 // --- Stage 1: Collect --------------------------------------------------------
 
