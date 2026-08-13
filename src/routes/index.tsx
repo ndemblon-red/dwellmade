@@ -221,7 +221,7 @@ function Hero() {
             className="inline-block text-[10px] uppercase tracking-[0.22em] rounded-full px-3 py-1.5 font-semibold"
             style={{ backgroundColor: MUSTARD, color: NEAR_BLACK }}
           >
-            Interior design, made personal
+            INTERIOR DESIGN, MADE EASY
           </span>
           <h1
             style={serif}
