@@ -36,12 +36,13 @@ Severity key:
 
 ## P0 — launch blockers
 
-### BUG-001 · Test account is comped
+### BUG-001 · Test account is comped — RESOLVED (decision: keep)
 
 - **Area:** backend / billing
-- **Detail:** `public.user_profiles` row `c3aeefe0-ead9-494e-9165-92c11a86d474` now has `comp = true`. This keeps the test account on the paid code path without a real subscription. Before launch, decide whether to remove the comp flag (and require the test account to subscribe like everyone else) or keep it as a permanent internal/team account.
-- **Repro:** query `user_profiles` for the row above; `comp` is `true`.
-- **Fix:** remove `comp` flag and reset `plan = 'free'`, `plan_active = false` if the test account should not have free access.
+- **Detail:** `public.user_profiles` row `c3aeefe0-ead9-494e-9165-92c11a86d474` (ndemblon@gmail.com) has `comp = true`.
+- **Decision (2026-08-13):** keep it. This is the permanent internal/team test account and should always retain paid access without a Stripe subscription.
+- **Status:** closed — no action needed at launch.
+
 
 ### BUG-002 · Stripe checkout needs end-to-end validation
 
