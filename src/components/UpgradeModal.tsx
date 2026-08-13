@@ -13,9 +13,19 @@ export type UpgradeModalProps = {
   open: boolean;
   onClose: () => void;
   reason: "anonymous_used_free" | "free_account" | "paid_limit_reached";
+  resetsAt?: string;
+  used?: number;
+  limit?: number;
 };
 
-export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
+function formatResetDate(iso?: string): string | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "long" });
+}
+
+export function UpgradeModal({ open, onClose, reason, resetsAt, used, limit }: UpgradeModalProps) {
   const {
     openCheckout,
     closeCheckout,
