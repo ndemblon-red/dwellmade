@@ -290,13 +290,14 @@ function HeroComparison() {
         dragging.current = true;
         update(e.clientX);
       }}
-      className="relative w-full aspect-[3/2] rounded-2xl overflow-hidden select-none cursor-ew-resize shadow-2xl"
+      className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden select-none cursor-ew-resize shadow-2xl"
       style={{ border: `1px solid ${NEAR_BLACK}`, backgroundColor: NEAR_BLACK }}
     >
       <img
         src={heroBefore.url}
         alt="Kitchen before redesign"
         className="absolute inset-0 size-full object-cover"
+        style={{ filter: "brightness(1.15) contrast(1.05)" }}
         draggable={false}
       />
       <img
