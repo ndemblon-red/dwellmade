@@ -23,26 +23,47 @@ import heroAfter from "@/assets/hero-after.png.asset.json";
 
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "dwellmade — Interior design from your inspiration" },
-      {
-        name: "description",
-        content:
-          "Upload your room, drop in your inspiration images, and generate a redesign that blends your references into the space you live in.",
-      },
-      { property: "og:title", content: "dwellmade — Interior design from your inspiration" },
-      {
-        property: "og:description",
-        content:
-          "Upload your room, drop in your inspiration images, and generate a redesign that blends your references into the space you live in.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () => {
+    const faqSchema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: FAQ_ITEMS.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    };
+    return {
+      meta: [
+        { title: "dwellmade — Interior design from your inspiration" },
+        {
+          name: "description",
+          content:
+            "Upload your room, drop in your inspiration images, and generate a redesign that blends your references into the space you live in.",
+        },
+        { property: "og:title", content: "dwellmade — Interior design from your inspiration" },
+        {
+          property: "og:description",
+          content:
+            "Upload your room, drop in your inspiration images, and generate a redesign that blends your references into the space you live in.",
+        },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(faqSchema),
+        },
+      ],
+    };
+  },
   component: LandingPage,
 });
+
 
 // Brand palette
 const CREAM = "#F5F0E8";
