@@ -8,20 +8,20 @@ Status is based on the current suite: `src/lib/upgrade-reason.test.ts`, `src/com
 
 | Test | Verifies | Priority | Status |
 | --- | --- | --- | --- |
-| Anonymous gate blocks at 3 generations | A visitor with 3 recorded generations is refused and the limit error surfaces the anonymous upgrade reason | Critical | Missing |
-| Anonymous gate allows under 3 generations | A visitor with 0–2 generations is allowed and the counter increments by one | Critical | Missing |
+| Anonymous gate blocks at 3 generations | A visitor with 3 recorded generations is refused and the limit error surfaces the anonymous upgrade reason | Critical | Exists |
+| Anonymous gate allows under 3 generations | A visitor with 0–2 generations is allowed and the counter increments by one | Critical | Exists |
 | Anonymous fingerprint cookie set on first generation | First anonymous generation issues a stable fingerprint cookie and reuses it on later requests | Critical | Missing |
-| Paid gate blocks at 50 generations | A subscriber at 50 generations in the current period is refused with the paid limit reason | Critical | Missing |
-| Paid gate allows under 50 generations | A subscriber below the monthly cap is allowed and usage is reserved | Critical | Missing |
+| Paid gate blocks at 50 generations | A subscriber at 50 generations in the current period is refused with the paid limit reason | Critical | Exists |
+| Paid gate allows under 50 generations | A subscriber below the monthly cap is allowed and usage is reserved | Critical | Exists |
 | Monthly count resets on billing period start | Crossing the Stripe billing anniversary resets the period counter to 0 and moves `resetsAt` forward | Critical | Missing |
 | Unauthenticated redirect from protected routes | `/projects`, `/account`, `/studio` and `/checkout` redirect signed-out users away to the public entry point | Critical | Missing |
-| Stripe webhook activates subscription | `checkout.session.completed` / `customer.subscription.created` flips `plan_active` to true | Critical | Missing |
+| Stripe webhook activates subscription | `checkout.session.completed` / `customer.subscription.created` flips `plan_active` to true | Critical | Exists |
 | Stripe webhook stores subscription id | The webhook writes the correct `stripe_subscription_id` onto the user profile | Critical | Missing |
 | Subscription cancellation deactivates plan | `customer.subscription.deleted` flips `plan_active` to false | Critical | Missing |
-| Generation blocked when plan inactive | A user whose `plan_active` is false is gated back to the free/anonymous allowance | Critical | Missing |
-| Email/password sign in | Valid credentials create a session and land the user on the intended route | Critical | Missing |
+| Generation blocked when plan inactive | A user whose `plan_active` is false is gated back to the free/anonymous allowance | Critical | Exists |
+| Email/password sign in | Valid credentials create a session and land the user on the intended route | Critical | Exists |
 | Google OAuth sign in | The OAuth entry point is invoked with the correct provider and same-origin redirect URL | Critical | Missing |
-| Sign out clears session | Signing out clears the Supabase session and returns the nav to its signed-out state | Critical | Missing |
+| Sign out clears session | Signing out clears the Supabase session and returns the nav to its signed-out state | Critical | Exists |
 
 ## Important
 
@@ -57,12 +57,15 @@ Status is based on the current suite: `src/lib/upgrade-reason.test.ts`, `src/com
 | --- | --- |
 | `src/lib/upgrade-reason.test.ts` | Mapping of user state and thrown limit errors to the correct upgrade modal reason |
 | `src/components/UpgradeModal.test.tsx` | Modal copy per variant, renewal date, Manage subscription link, checkout CTA, close behaviour |
+| `src/lib/generation-gate.test.ts` | Anonymous and paid gate outcomes, fingerprint cookie issuance, inactive-plan block |
+| `src/lib/auth-actions.test.ts` | Email/password sign in and sign out, including error propagation |
+| `src/routes/api/public/payments/webhook.test.ts` | `checkout.session.completed` activates the plan; unpaid sessions ignored |
 
 ## Summary
 
 - Total tests documented: **32**
-- Currently existing: **1**
-- Missing: **31**
-- Coverage: **3%** (1 / 32)
+- Currently existing: **9**
+- Missing: **23**
+- Coverage: **28%** (9 / 32)
 
 Counting only the plan above. Two further test files (12 additional cases) cover the upgrade-modal path and are listed separately.
