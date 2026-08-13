@@ -98,6 +98,52 @@ function UserMenu({ email, onSignOut }: { email: string; onSignOut: () => void }
           >
             Sign out
           </button>
+          <div
+            className="my-2"
+            style={{ borderTop: "1px solid rgba(245,240,232,0.1)" }}
+          />
+          <Link
+            to="/privacy"
+            onClick={() => setOpen(false)}
+            className="block normal-case tracking-normal"
+            style={{
+              color: MUTED_CREAM,
+              fontSize: 12,
+              padding: "6px 16px",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(245,240,232,0.08)")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+          >
+            Privacy
+          </Link>
+          <Link
+            to="/terms"
+            onClick={() => setOpen(false)}
+            className="block normal-case tracking-normal"
+            style={{
+              color: MUTED_CREAM,
+              fontSize: 12,
+              padding: "6px 16px",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(245,240,232,0.08)")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+          >
+            Terms
+          </Link>
+          <a
+            href="mailto:hello@dwellmade.co.uk"
+            onClick={() => setOpen(false)}
+            className="block normal-case tracking-normal"
+            style={{
+              color: MUTED_CREAM,
+              fontSize: 12,
+              padding: "6px 16px",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(245,240,232,0.08)")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+          >
+            Contact
+          </a>
         </div>
       )}
     </div>
