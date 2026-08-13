@@ -103,7 +103,7 @@ export function FaqSection() {
                 </button>
                 <div
                   id={panelId}
-                  hidden={!isOpen}
+                  aria-hidden={!isOpen}
                   className="overflow-hidden transition-all duration-300 ease-out"
                   style={{
                     maxHeight: isOpen ? "600px" : "0px",
