@@ -1,5 +1,7 @@
 # dwellmade
 
+![Tests](https://github.com/natalie/dwellmade/actions/workflows/test.yml/badge.svg?branch=main)
+
 > From inspiration to your actual home.
 
 An AI-powered interior design tool that lets you upload inspiration images, build an aesthetic brief, and see it applied to your own room in real time. No design experience required.
