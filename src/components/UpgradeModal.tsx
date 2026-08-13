@@ -13,9 +13,19 @@ export type UpgradeModalProps = {
   open: boolean;
   onClose: () => void;
   reason: "anonymous_used_free" | "free_account" | "paid_limit_reached";
+  resetsAt?: string;
+  used?: number;
+  limit?: number;
 };
 
-export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
+function formatResetDate(iso?: string): string | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "long" });
+}
+
+export function UpgradeModal({ open, onClose, reason, resetsAt, used, limit }: UpgradeModalProps) {
   const {
     openCheckout,
     closeCheckout,
@@ -25,6 +35,77 @@ export function UpgradeModal({ open, onClose, reason }: UpgradeModalProps) {
   const { user, loading } = useAuth();
 
   if (!open) return null;
+
+  if (reason === "paid_limit_reached") {
+    const resetLabel = formatResetDate(resetsAt);
+    const shownLimit = limit ?? 50;
+    const shownUsed = used ?? shownLimit;
+    return (
+      <div
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+        style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+        onClick={onClose}
+      >
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => e.stopPropagation()}
+          className="relative w-full max-w-md p-8 sm:p-10"
+          style={{
+            backgroundColor: NEAR_BLACK,
+            color: CREAM,
+            borderRadius: 4,
+            ...dmSans,
+          }}
+        >
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="absolute right-2 top-2 size-11 grid place-items-center text-lg"
+            style={{ color: MUTED_CREAM }}
+          >
+            ✕
+          </button>
+
+          <div className="text-[10px] font-semibold tracking-[0.22em]" style={{ color: MUSTARD }}>
+            YOU'VE REACHED YOUR MONTHLY LIMIT
+          </div>
+
+          <h2 style={serif} className="mt-3 text-4xl leading-[1.05]">
+            You've used all {shownLimit} generations
+          </h2>
+
+          <p className="mt-4 text-sm leading-relaxed" style={{ color: MUTED_CREAM }}>
+            {resetLabel
+              ? `Your next ${shownLimit} generations unlock on ${resetLabel}, when your subscription renews.`
+              : `Your next ${shownLimit} generations unlock at the start of your next billing month.`}
+          </p>
+
+          <div className="mt-6 text-xs" style={{ color: MUTED_CREAM }}>
+            {shownUsed} of {shownLimit} used this month
+          </div>
+
+          <button
+            onClick={onClose}
+            className="mt-7 w-full py-3.5 text-sm font-semibold"
+            style={{ backgroundColor: MUSTARD, color: NEAR_BLACK, borderRadius: 4 }}
+          >
+            Got it
+          </button>
+
+          <div className="mt-4 text-center text-xs">
+            <Link
+              to="/account"
+              className="underline underline-offset-4"
+              style={{ color: MUTED_CREAM }}
+            >
+              Manage subscription
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const eyebrow = {
     anonymous_used_free: "YOU'VE USED YOUR 3 FREE GENERATIONS",
