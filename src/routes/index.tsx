@@ -234,8 +234,8 @@ function Hero() {
             </span>
           </h1>
           <p className="mt-6 max-w-md text-base leading-relaxed" style={{ color: "#4A4A5A" }}>
-            Drop in a photo of your room and a handful of references. dwellmade pulls a palette,
-            curates a moodboard, and renders the room you actually live in — restyled.
+            Upload the spaces that inspire you. Build your aesthetic. See it applied to your own
+            room — in seconds.
           </p>
           <div className="mt-8 flex flex-col items-start gap-3">
             <Link
