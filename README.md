@@ -1,6 +1,6 @@
 # dwellmade
 
-![Tests](https://github.com/natalie/dwellmade/actions/workflows/test.yml/badge.svg?branch=main)
+![Tests](https://github.com/ndemblon-red/dwellmade/actions/workflows/test.yml/badge.svg?branch=main)
 
 > From inspiration to your actual home.
 
