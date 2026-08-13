@@ -1,6 +1,6 @@
 # dwellmade — Prioritised Bug Tracker
 
-Last updated: 2026-08-08, after the full launch re-audit.
+Last updated: 2026-08-13, after the paid limit reached modal fix.
 
 Severity key:
 
@@ -30,6 +30,7 @@ Severity key:
 ## Audit notes
 
 - The managed browser session is currently **signed out**. Authenticated-route testing (signed-in `/projects`, `/account`, `/checkout`, and the full Stripe sandbox payment flow) requires a signed-in session. Sign in via the Lovable preview; the session will inject on the next turn.
+- Paid subscribers who exhaust their 50 monthly generations now see a dedicated "limit reached" modal with the next billing reset date, instead of being re-offered the £15/month subscription.
 - The only code change made during this audit was adding a `GET` handler to `src/routes/api/public/payments/webhook.ts` that returns HTTP 405, so unsupported webhook methods are rejected cleanly.
 
 ---
@@ -57,6 +58,14 @@ Severity key:
 - **Detail:** `GET /api/public/payments/webhook` was returning HTTP 200 instead of rejecting the unsupported method. This was flagged during the endpoint contract audit.
 - **Status:** fixed — now returns HTTP 405 with "Method not allowed".
 - **Validation:** `GET /api/public/payments/webhook` returns 405 in the signed-out audit.
+
+
+### BUG-013 · Paid users at 50 generations saw the subscribe modal again
+
+- **Area:** workspace / billing UX
+- **Detail:** when a paid subscriber exhausted their 50 monthly generations, the Upgrade modal still presented the "Subscribe for £15/month" offer. This was confusing because they were already subscribed.
+- **Status:** fixed — the workspace now distinguishes `paid_limit_reached` and the modal shows a non-commercial "You've used all 50 generations" state with the next billing reset date and a "Manage subscription" link.
+- **Validation:** sign in as a paid subscriber, exhaust 50 generations, and confirm the modal displays the correct renewal date and no payment offer.
 
 ---
 
