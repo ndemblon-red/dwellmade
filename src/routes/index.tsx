@@ -1573,6 +1573,9 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
         open={upgradeReason !== null}
         onClose={() => setUpgradeReason(null)}
         reason={upgradeReason ?? "anonymous_used_free"}
+        resetsAt={usage?.resetsAt}
+        used={usage?.used}
+        limit={usage?.limit}
       />
 
       {activeGen ? (
