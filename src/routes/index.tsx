@@ -1480,13 +1480,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
       );
     } catch (e) {
       if (e instanceof GenerationLimitError) {
-        setUpgradeReason(
-          e.kind === "anonymous"
-            ? "anonymous_used_free"
-            : e.kind === "free"
-              ? "free_account"
-              : "paid_limit_reached",
-        );
+        setUpgradeReason(upgradeReasonForKind(e.kind));
       } else {
         setError(e instanceof Error ? e.message : "Generation failed");
       }
