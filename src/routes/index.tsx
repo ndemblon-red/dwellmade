@@ -17,6 +17,9 @@ import { AppHeader } from "@/components/AppHeader";
 import { useGenerationUsage, authHeaders } from "@/hooks/use-generation-usage";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { downloadImage } from "@/lib/downloadImage";
+import heroBefore from "@/assets/hero-before.png.asset.json";
+import heroAfter from "@/assets/hero-after.png.asset.json";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -280,9 +283,6 @@ function HeroComparison() {
     };
   }, [update]);
 
-  const before = `repeating-linear-gradient(135deg, #B5A28A 0 28px, #C9B89C 28px 56px)`;
-  const after = `linear-gradient(135deg, ${MUSTARD} 0%, ${PINK} 55%, ${COBALT} 100%)`;
-
   return (
     <div
       ref={ref}
@@ -290,13 +290,23 @@ function HeroComparison() {
         dragging.current = true;
         update(e.clientX);
       }}
-      className="relative w-full aspect-[4/5] sm:aspect-[5/6] rounded-2xl overflow-hidden select-none cursor-ew-resize shadow-2xl"
-      style={{ background: before, border: `1px solid ${NEAR_BLACK}` }}
+      className="relative w-full aspect-[3/2] rounded-2xl overflow-hidden select-none cursor-ew-resize shadow-2xl"
+      style={{ border: `1px solid ${NEAR_BLACK}`, backgroundColor: NEAR_BLACK }}
     >
-      <div
-        className="absolute inset-0"
-        style={{ background: after, clipPath: `inset(0 0 0 ${pos}%)` }}
+      <img
+        src={heroBefore.url}
+        alt="Kitchen before redesign"
+        className="absolute inset-0 size-full object-cover"
+        draggable={false}
       />
+      <img
+        src={heroAfter.url}
+        alt="Kitchen after dwellmade redesign"
+        className="absolute inset-0 size-full object-cover"
+        style={{ clipPath: `inset(0 0 0 ${pos}%)` }}
+        draggable={false}
+      />
+
       <span
         className="absolute top-3 left-3 text-[9px] uppercase tracking-[0.2em] font-semibold px-2 py-1 rounded-sm"
         style={{ backgroundColor: NEAR_BLACK, color: CREAM }}
