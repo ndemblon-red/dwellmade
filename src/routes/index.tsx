@@ -145,9 +145,11 @@ function LandingPage() {
       <Hero />
       <TickerBand />
       <HowItWorks />
+      <FaqSection />
       <LandingFooter />
     </div>
   );
+
 }
 
 function LandingNav() {
