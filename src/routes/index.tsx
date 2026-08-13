@@ -500,7 +500,93 @@ function HowItWorks() {
   );
 }
 
+function FaqSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const toggle = (index: number) => {
+    setOpenIndex((current) => (current === index ? null : index));
+  };
+  return (
+    <section style={{ backgroundColor: NEAR_BLACK }}>
+      <div className="max-w-[720px] mx-auto px-6 py-24">
+        <h2
+          className="text-center mb-12"
+          style={{
+            fontSize: "11px",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            color: "rgba(245, 240, 232, 0.6)",
+            ...dmSans,
+          }}
+        >
+          FREQUENTLY ASKED QUESTIONS
+        </h2>
+        <div>
+          {FAQ_ITEMS.map((item, index) => {
+            const isOpen = openIndex === index;
+            return (
+              <div
+                key={index}
+                className="border-b last:border-b-0"
+                style={{ borderColor: "rgba(245, 240, 232, 0.08)" }}
+              >
+                <button
+                  type="button"
+                  onClick={() => toggle(index)}
+                  aria-expanded={isOpen}
+                  className="w-full py-5 flex items-center justify-between text-left gap-4"
+                >
+                  <span
+                    style={{
+                      ...serif,
+                      fontSize: "18px",
+                      fontStyle: "italic",
+                      color: CREAM,
+                    }}
+                  >
+                    {item.question}
+                  </span>
+                  <span
+                    className="shrink-0"
+                    aria-hidden
+                    style={{
+                      fontSize: "18px",
+                      color: MUSTARD,
+                      ...dmSans,
+                    }}
+                  >
+                    {isOpen ? "−" : "+"}
+                  </span>
+                </button>
+                <div
+                  className="overflow-hidden transition-all duration-300 ease-out"
+                  style={{
+                    maxHeight: isOpen ? "600px" : "0px",
+                    opacity: isOpen ? 1 : 0,
+                  }}
+                >
+                  <p
+                    className="pb-5"
+                    style={{
+                      fontSize: "13px",
+                      lineHeight: 1.7,
+                      color: "rgba(245, 240, 232, 0.6)",
+                      ...dmSans,
+                    }}
+                  >
+                    {item.answer}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function LandingFooter() {
+
   const { user } = useAuth();
   const linkStyle = {
     fontSize: "11px",
