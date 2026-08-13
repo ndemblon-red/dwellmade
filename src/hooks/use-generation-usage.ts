@@ -5,6 +5,7 @@ export type Usage = {
   kind: "anonymous" | "paid" | "free";
   used: number;
   limit: number;
+  resetsAt?: string;
 };
 
 async function authHeaders(): Promise<Record<string, string>> {
