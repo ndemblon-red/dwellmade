@@ -179,14 +179,19 @@ export async function readUsage(request: Request): Promise<{
     let used = profile?.generations_used_this_month ?? 0;
 
     // Mirror the allowance rollover applied by consume_generation.
+    let resetsAt: string | undefined;
     if (profile?.billing_period_start) {
       const next = new Date(profile.billing_period_start);
       next.setMonth(next.getMonth() + 1);
-      if (Date.now() >= next.getTime()) used = 0;
+      while (Date.now() >= next.getTime()) {
+        used = 0;
+        next.setMonth(next.getMonth() + 1);
+      }
+      resetsAt = next.toISOString();
     }
 
     if (comped || (planActive && plan === "paid")) {
-      return { kind: "paid", used, limit: PAID_LIMIT };
+      return { kind: "paid", used, limit: PAID_LIMIT, resetsAt };
     }
     return { kind: "free", used, limit: PAID_LIMIT };
   }
