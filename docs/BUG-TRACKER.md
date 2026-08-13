@@ -93,7 +93,9 @@ Severity key:
 
 - **Area:** workspace / Designs
 - **Detail:** removing a generation requires a right-click on its thumbnail, which is undiscoverable and impossible on touch devices.
-- **Fix:** add a visible delete affordance (hover/tap overlay button with a confirm) on each design card in the Designs tab.
+- **Status:** fixed — each design card now shows a visible delete button in the top-right corner; the right-click shortcut is still present as a convenience. A `confirm()` dialog prevents accidental deletion.
+- **Validation:** open the Designs tab with at least one generated image; confirm the delete button is visible and clickable on desktop and touch devices; confirm deleting requires confirmation and removes the card.
+
 
 ### BUG-011 · Wire up email sending and post-auth redirects
 
