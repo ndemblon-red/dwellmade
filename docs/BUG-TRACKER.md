@@ -87,8 +87,9 @@ Severity key:
 ### BUG-005 · Email confirmation depends on auto-confirm still being on
 
 - **Area:** auth
-- **Detail:** auto-confirm was enabled to unblock testing. The `/auth/confirm` route and branded templates exist and the sender domain `notify.dwellmade.co.uk` is configured, but the real confirm-by-email path has not been validated with auto-confirm off.
-- **Fix:** turn auto-confirm off, sign up with a real inbox, click the link, confirm the session lands on `/projects`, and test the Resend button.
+- **Detail:** auto-confirm was enabled to unblock testing.
+- **Status (2026-08-13):** auto-confirm is now **off** — signups must confirm by email. Recent test accounts were already receiving confirmation emails, so the branded template + sender domain path is live.
+- **Fix:** remaining check — sign up with a real inbox, click the link, confirm the session lands on `/projects`, and test the Resend button.
 
 ### BUG-006 · Right-click is the only way to delete a design
 
