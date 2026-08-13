@@ -290,7 +290,7 @@ function HeroComparison() {
         dragging.current = true;
         update(e.clientX);
       }}
-      className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden select-none cursor-ew-resize shadow-2xl"
+      className="relative w-full aspect-[10/9] rounded-2xl overflow-hidden select-none cursor-ew-resize shadow-2xl"
       style={{ border: `1px solid ${NEAR_BLACK}`, backgroundColor: NEAR_BLACK }}
     >
       <img
