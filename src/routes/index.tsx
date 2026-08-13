@@ -654,6 +654,25 @@ function StageNav({
 
 // --- Designs (saved designs for the room) ------------------------------------
 
+function DeleteButton({ onClick, label }: { onClick: (e: React.MouseEvent) => void; label: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title="Remove"
+      className="absolute top-2 right-2 z-10 flex items-center justify-center w-8 h-8 rounded-full opacity-70 hover:opacity-100 focus:opacity-100 transition-opacity"
+      style={{ backgroundColor: "rgba(26, 26, 46, 0.75)", color: "#F5F0E8" }}
+      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(232, 127, 163, 0.9)")}
+      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "rgba(26, 26, 46, 0.75)")}
+    >
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M11 3L3 11M3 3L11 11" />
+      </svg>
+    </button>
+  );
+}
+
 function GenerationGallery({
   history,
   selectedId,
@@ -671,24 +690,30 @@ function GenerationGallery({
       <h3 className="text-xs uppercase tracking-widest text-muted-ink">Versions</h3>
       <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 gap-3">
         {history.map((h) => (
-          <button
-            key={h.id}
-            onClick={() => onSelect(h.id)}
-            onContextMenu={(e) => {
-              e.preventDefault();
-              onRemove(h.id);
-            }}
-            className={`relative aspect-square bg-zinc-200 rounded-sm overflow-hidden ring-1 transition-all ${
-              h.id === selectedId ? "ring-ink" : "ring-black/5 hover:ring-ink/30"
-            }`}
-            title="Click to view, right-click to remove"
-          >
-            {h.dataUrl ? (
-              <img src={h.dataUrl} alt="Generation" className="size-full object-cover" />
-            ) : (
-              <div className="size-full animate-pulse bg-zinc-300" />
-            )}
-          </button>
+          <div key={h.id} className="relative group">
+            <button
+              onClick={() => onSelect(h.id)}
+              className={`relative aspect-square bg-zinc-200 rounded-sm overflow-hidden ring-1 transition-all w-full ${
+                h.id === selectedId ? "ring-ink" : "ring-black/5 hover:ring-ink/30"
+              }`}
+              title={`Select version ${h.id.slice(0, 6)}`}
+            >
+              {h.dataUrl ? (
+                <img src={h.dataUrl} alt="Generation" className="size-full object-cover" />
+              ) : (
+                <div className="size-full animate-pulse bg-zinc-300" />
+              )}
+            </button>
+            <DeleteButton
+              label="Remove version"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (confirm("Remove this version? This cannot be undone.")) {
+                  onRemove(h.id);
+                }
+              }}
+            />
+          </div>
         ))}
       </div>
     </div>
@@ -746,14 +771,10 @@ function DesignsStage({
           {withImages.map((g, i) => {
             const active = g.id === activeGenerationId;
             return (
-              <figure key={g.id} className="space-y-2">
+              <figure key={g.id} className="space-y-2 relative">
                 <button
                   onClick={() => useStore.setState({ activeGenerationId: g.id })}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    removeGeneration(g.id);
-                  }}
-                  title="Click to select, right-click to remove"
+                  title={`Select design ${i + 1}`}
                   className={`block w-full rounded-lg overflow-hidden ring-1 transition-all bg-zinc-100 ${
                     active ? "ring-ink" : "ring-border-card hover:ring-ink/30"
                   }`}
@@ -764,6 +785,15 @@ function DesignsStage({
                     className={`w-full h-auto block ${g.isFinal ? "" : "blur-sm"}`}
                   />
                 </button>
+                <DeleteButton
+                  label={`Remove design ${i + 1}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm(`Delete Design ${i + 1}? This cannot be undone.`)) {
+                      removeGeneration(g.id);
+                    }
+                  }}
+                />
                 <figcaption className="flex items-center justify-between gap-3 text-[10px] uppercase tracking-widest text-muted-ink">
                   <span className="truncate">
                     Design {i + 1}
@@ -802,6 +832,7 @@ function DesignsStage({
     </div>
   );
 }
+
 
 // --- Stage 1: Collect --------------------------------------------------------
 
