@@ -253,7 +253,7 @@ function Hero() {
             </span>
           </div>
         </div>
-        <div className="relative">
+        <div className="relative w-full">
           <HeroComparison />
         </div>
       </div>
