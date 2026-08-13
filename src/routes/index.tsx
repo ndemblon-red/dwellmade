@@ -225,7 +225,7 @@ function Hero() {
           </span>
           <h1
             style={serif}
-            className="mt-6 text-5xl sm:text-6xl lg:text-7xl leading-[1.02] tracking-tight"
+            className="mt-6 text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight"
           >
             From inspiration
             <br />
