@@ -24,7 +24,7 @@ function Wordmark() {
   );
 }
 
-function UserMenu({ email, onSignOut }: { email: string; onSignOut: () => void }) {
+export function UserMenu({ email, onSignOut }: { email: string; onSignOut: () => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const initial = (email[0] ?? "?").toUpperCase();

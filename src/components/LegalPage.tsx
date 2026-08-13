@@ -1,5 +1,10 @@
 import { Link } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import { UserMenu } from "@/components/AppHeader";
+import { useRouter } from "@tanstack/react-router";
 
 export const CREAM = "#F5F0E8";
 export const MUSTARD = "#F0A500";
