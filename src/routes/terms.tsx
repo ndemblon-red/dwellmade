@@ -16,10 +16,10 @@ export const Route = createFileRoute("/terms")({
         content: "Subscription, cancellation, acceptable use and liability terms for dwellmade.",
       },
       { property: "og:type", content: "article" },
-      { property: "og:url", content: "https://dwellmade.lovable.app/terms" },
+      { property: "og:url", content: "https://dwellmade.co.uk/terms" },
       { name: "twitter:card", content: "summary" },
     ],
-    links: [{ rel: "canonical", href: "https://dwellmade.lovable.app/terms" }],
+    links: [{ rel: "canonical", href: "https://dwellmade.co.uk/terms" }],
   }),
   component: TermsPage,
 });
