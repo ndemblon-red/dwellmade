@@ -499,8 +499,8 @@ function LandingFooter() {
         <Link to="/terms" style={linkStyle}>
           Terms
         </Link>
-        <a href="mailto:hello@dwellmade.co.uk" style={linkStyle}>
-          HELLO@DWELLMADE.CO.UK
+        <a href="mailto:dwellmade.app@gmail.com" style={linkStyle}>
+          DWELLMADE.APP@GMAIL.COM
         </a>
       </div>
       <div
