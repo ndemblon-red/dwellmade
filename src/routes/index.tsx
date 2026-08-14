@@ -500,7 +500,7 @@ function LandingFooter() {
           Terms
         </Link>
         <a href="mailto:hello@dwellmade.co.uk" style={linkStyle}>
-          hello@dwellmade.co.uk
+          HELLO@DWELLMADE.CO.UK
         </a>
       </div>
       <div
