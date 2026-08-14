@@ -131,7 +131,7 @@ export function UserMenu({ email, onSignOut }: { email: string; onSignOut: () =>
             Terms
           </Link>
           <a
-            href="mailto:hello@dwellmade.co.uk"
+            href="mailto:dwellmade.app@gmail.com"
             onClick={() => setOpen(false)}
             className="block normal-case tracking-normal"
             style={{

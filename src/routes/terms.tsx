@@ -36,8 +36,8 @@ function TermsPage() {
         <p>
           dwellmade is an interior design visualisation service operated from the United Kingdom.
           You can reach us at{" "}
-          <a href="mailto:hello@dwellmade.co.uk" className="underline underline-offset-4">
-            hello@dwellmade.co.uk
+          <a href="mailto:dwellmade.app@gmail.com" className="underline underline-offset-4">
+            dwellmade.app@gmail.com
           </a>{" "}
           for anything to do with your account, billing or these terms.
         </p>

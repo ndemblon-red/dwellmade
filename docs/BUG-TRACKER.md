@@ -1,6 +1,6 @@
 # dwellmade — Prioritised Bug Tracker
 
-Last updated: 2026-08-13, after the paid limit reached modal fix.
+Last updated: 2026-08-14, after updating the contact email address.
 
 Severity key:
 
@@ -71,7 +71,7 @@ Severity key:
 
 ## Commercial terms — confirmed 2026-08-05
 
-- Seller: Dwellmade, United Kingdom, hello@dwellmade.co.uk
+- Seller: Dwellmade, United Kingdom, dwellmade.app@gmail.com
 - Price: £15/month, 50 generations per month, monthly only
 - Free allowance: 3 generations per browser before signup; accounts get no extra free allowance
 - Cancellation: cancel anytime, access to end of paid period, no refunds for part-used months

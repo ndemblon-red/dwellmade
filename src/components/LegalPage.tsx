@@ -88,8 +88,8 @@ export function SiteFooter() {
           <Link to="/terms" style={linkStyle}>
             Terms
           </Link>
-          <a href="mailto:hello@dwellmade.co.uk" style={linkStyle}>
-            hello@dwellmade.co.uk
+          <a href="mailto:dwellmade.app@gmail.com" style={linkStyle}>
+            dwellmade.app@gmail.com
           </a>
         </nav>
       </div>
