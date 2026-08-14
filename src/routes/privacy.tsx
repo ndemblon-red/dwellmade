@@ -36,8 +36,8 @@ function PrivacyPage() {
         <p>
           dwellmade, based in the United Kingdom, is the data controller for the information
           described here. Contact us about anything in this policy at{" "}
-          <a href="mailto:hello@dwellmade.co.uk" className="underline underline-offset-4">
-            hello@dwellmade.co.uk
+          <a href="mailto:dwellmade.app@gmail.com" className="underline underline-offset-4">
+            dwellmade.app@gmail.com
           </a>
           .
         </p>
@@ -131,8 +131,8 @@ function PrivacyPage() {
         <p>
           Under UK GDPR you can ask for a copy of your data, correct it, delete it, restrict or
           object to how we use it, or ask for it in a portable format. Email{" "}
-          <a href="mailto:hello@dwellmade.co.uk" className="underline underline-offset-4">
-            hello@dwellmade.co.uk
+          <a href="mailto:dwellmade.app@gmail.com" className="underline underline-offset-4">
+            dwellmade.app@gmail.com
           </a>{" "}
           and we'll respond within one month.
         </p>
