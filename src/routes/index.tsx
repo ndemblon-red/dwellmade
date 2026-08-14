@@ -451,9 +451,9 @@ function HowItWorks() {
               >
                 {c.label}
               </div>
-              <h3 style={serif} className="mt-2 text-3xl lg:text-4xl italic leading-tight">
+              <h2 style={serif} className="mt-2 text-3xl lg:text-4xl italic leading-tight">
                 <span style={{ color: CREAM }}>{c.title}</span>
-              </h3>
+              </h2>
               <p className="mt-4 text-sm leading-relaxed" style={{ color: MUTED_CREAM }}>
                 {c.body}
               </p>
@@ -752,6 +752,7 @@ function GenerationGallery({
                 h.id === selectedId ? "ring-ink" : "ring-black/5 hover:ring-ink/30"
               }`}
               title={`Select version ${h.id.slice(0, 6)}`}
+              aria-label={`Select version ${h.id.slice(0, 6)}`}
             >
               {h.dataUrl ? (
                 <img src={h.dataUrl} alt="Generation" className="size-full object-cover" />
@@ -830,6 +831,7 @@ function DesignsStage({
                 <button
                   onClick={() => useStore.setState({ activeGenerationId: g.id })}
                   title={`Select design ${i + 1}`}
+                  aria-label={`Select design ${i + 1}`}
                   className={`block w-full rounded-lg overflow-hidden ring-1 transition-all bg-zinc-100 ${
                     active ? "ring-ink" : "ring-border-card hover:ring-ink/30"
                   }`}
@@ -1156,6 +1158,11 @@ function Moodboard({
                     onClick={() => onToggle(c)}
                     title={
                       sel ? `${c} — selected (click to remove)` : `${c} — click to add to brief`
+                    }
+                    aria-label={
+                      sel
+                        ? `Remove colour ${c} from brief`
+                        : `Add colour ${c} to brief`
                     }
                     className={`group relative flex-1 h-6 rounded-sm transition-all ${
                       sel
