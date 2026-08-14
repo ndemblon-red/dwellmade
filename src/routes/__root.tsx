@@ -78,20 +78,32 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "dwellmade — Interior design from your inspiration" },
-      {
-        name: "description",
-        content:
-          "Upload your room, drop in your inspiration images, and generate a redesign that blends your references into the space you live in.",
-      },
-      { property: "og:title", content: "dwellmade — Interior design from your inspiration" },
-      {
-        property: "og:description",
-        content:
-          "Upload your room, drop in your inspiration images, and generate a redesign that blends your references into the space you live in.",
-      },
+      { title: "dwellmade" },
+      { property: "og:site_name", content: "dwellmade" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              name: "dwellmade",
+              url: "https://dwellmade.co.uk",
+            },
+            {
+              "@type": "Organization",
+              name: "dwellmade",
+              url: "https://dwellmade.co.uk",
+              logo: "https://dwellmade.co.uk/android-chrome-512x512.png",
+              email: "dwellmade.app@gmail.com",
+            },
+          ],
+        }),
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

@@ -37,23 +37,20 @@ export const Route = createFileRoute("/")({
         },
       })),
     };
+    const title = "AI interior design from your inspiration | dwellmade";
+    const description =
+      "Upload your room, add the inspiration images you love, and dwellmade generates a redesign of your actual space. 3 free generations, no card needed.";
     return {
       meta: [
-        { title: "dwellmade — Interior design from your inspiration" },
-        {
-          name: "description",
-          content:
-            "Upload your room, drop in your inspiration images, and generate a redesign that blends your references into the space you live in.",
-        },
-        { property: "og:title", content: "dwellmade — Interior design from your inspiration" },
-        {
-          property: "og:description",
-          content:
-            "Upload your room, drop in your inspiration images, and generate a redesign that blends your references into the space you live in.",
-        },
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
         { property: "og:type", content: "website" },
+        { property: "og:url", content: "https://dwellmade.co.uk/" },
         { name: "twitter:card", content: "summary_large_image" },
       ],
+      links: [{ rel: "canonical", href: "https://dwellmade.co.uk/" }],
       scripts: [
         {
           type: "application/ld+json",
@@ -451,9 +448,9 @@ function HowItWorks() {
               >
                 {c.label}
               </div>
-              <h3 style={serif} className="mt-2 text-3xl lg:text-4xl italic leading-tight">
+              <h2 style={serif} className="mt-2 text-3xl lg:text-4xl italic leading-tight">
                 <span style={{ color: CREAM }}>{c.title}</span>
-              </h3>
+              </h2>
               <p className="mt-4 text-sm leading-relaxed" style={{ color: MUTED_CREAM }}>
                 {c.body}
               </p>
@@ -752,6 +749,7 @@ function GenerationGallery({
                 h.id === selectedId ? "ring-ink" : "ring-black/5 hover:ring-ink/30"
               }`}
               title={`Select version ${h.id.slice(0, 6)}`}
+              aria-label={`Select version ${h.id.slice(0, 6)}`}
             >
               {h.dataUrl ? (
                 <img src={h.dataUrl} alt="Generation" className="size-full object-cover" />
@@ -830,6 +828,7 @@ function DesignsStage({
                 <button
                   onClick={() => useStore.setState({ activeGenerationId: g.id })}
                   title={`Select design ${i + 1}`}
+                  aria-label={`Select design ${i + 1}`}
                   className={`block w-full rounded-lg overflow-hidden ring-1 transition-all bg-zinc-100 ${
                     active ? "ring-ink" : "ring-border-card hover:ring-ink/30"
                   }`}
@@ -1156,6 +1155,11 @@ function Moodboard({
                     onClick={() => onToggle(c)}
                     title={
                       sel ? `${c} — selected (click to remove)` : `${c} — click to add to brief`
+                    }
+                    aria-label={
+                      sel
+                        ? `Remove colour ${c} from brief`
+                        : `Add colour ${c} to brief`
                     }
                     className={`group relative flex-1 h-6 rounded-sm transition-all ${
                       sel

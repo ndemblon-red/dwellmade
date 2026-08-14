@@ -25,10 +25,10 @@ export const Route = createFileRoute("/pricing")({
           "£15 a month for 50 room designs. 3 free generations before signup. Cancel anytime.",
       },
       { property: "og:type", content: "product" },
-      { property: "og:url", content: "https://dwellmade.lovable.app/pricing" },
+      { property: "og:url", content: "https://dwellmade.co.uk/pricing" },
       { name: "twitter:card", content: "summary" },
     ],
-    links: [{ rel: "canonical", href: "https://dwellmade.lovable.app/pricing" }],
+    links: [{ rel: "canonical", href: "https://dwellmade.co.uk/pricing" }],
   }),
   component: PricingPage,
 });

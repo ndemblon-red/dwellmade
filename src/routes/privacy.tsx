@@ -16,10 +16,10 @@ export const Route = createFileRoute("/privacy")({
         content: "What dwellmade collects, why, who processes it, and your data rights.",
       },
       { property: "og:type", content: "article" },
-      { property: "og:url", content: "https://dwellmade.lovable.app/privacy" },
+      { property: "og:url", content: "https://dwellmade.co.uk/privacy" },
       { name: "twitter:card", content: "summary" },
     ],
-    links: [{ rel: "canonical", href: "https://dwellmade.lovable.app/privacy" }],
+    links: [{ rel: "canonical", href: "https://dwellmade.co.uk/privacy" }],
   }),
   component: PrivacyPage,
 });
