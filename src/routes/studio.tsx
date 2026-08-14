@@ -40,6 +40,7 @@ function StudioPage() {
   return (
     <div>
       <AppHeader />
+      <h1 className="sr-only">Design your room with dwellmade</h1>
       <AnonymousBanner />
       <Workspace />
     </div>
