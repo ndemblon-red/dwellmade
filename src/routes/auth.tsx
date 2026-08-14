@@ -175,8 +175,24 @@ const searchSchema = z.object({
   next: z.enum(["checkout"]).optional(),
 });
 
+const AUTH_TITLE = "Sign in or create an account | dwellmade";
+const AUTH_DESCRIPTION =
+  "Sign in to dwellmade to save your rooms, inspiration boards and generated designs, or create an account to start redesigning your home.";
+
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
+  head: () => ({
+    meta: [
+      { title: AUTH_TITLE },
+      { name: "description", content: AUTH_DESCRIPTION },
+      { property: "og:title", content: AUTH_TITLE },
+      { property: "og:description", content: AUTH_DESCRIPTION },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://dwellmade.co.uk/auth" },
+      { name: "twitter:card", content: "summary" },
+    ],
+    links: [{ rel: "canonical", href: "https://dwellmade.co.uk/auth" }],
+  }),
   component: AuthPage,
 });
 
