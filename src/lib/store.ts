@@ -71,6 +71,10 @@ type State = {
   blobError: string | null;
   /** Non-null when this store is mirroring a DB-backed room. */
   currentRoomId: string | null;
+  /** True once the user has interacted with the style blend modal this session. */
+  blendModalSeen: boolean;
+  /** Ranked style blend the user set in the modal (null = auto-blend). */
+  styleBlend: string[] | null;
 
   setStage: (s: Stage) => void;
   setRoom: (dataUrl: string | null) => void;
@@ -90,6 +94,8 @@ type State = {
   removeGeneration: (id: string) => void;
   clearBlobError: () => void;
   setCurrentRoomId: (id: string | null) => void;
+  setBlendModalSeen: (v: boolean) => void;
+  setStyleBlend: (styles: string[] | null) => void;
   replaceWorkspace: (s: {
     room: Room | null;
     inspo: InspoImage[];
@@ -156,7 +162,11 @@ export const useStore = create<State>()(
       activeGenerationId: null,
       blobError: null,
       currentRoomId: null,
+      blendModalSeen: false,
+      styleBlend: null,
 
+      setBlendModalSeen: (blendModalSeen) => set({ blendModalSeen }),
+      setStyleBlend: (styleBlend) => set({ styleBlend }),
       setCurrentRoomId: (currentRoomId) => set({ currentRoomId }),
       replaceWorkspace: ({ room, inspo, brief, generations }) =>
         set({
@@ -166,6 +176,8 @@ export const useStore = create<State>()(
           generations,
           activeGenerationId: generations.find((g) => g.isFinal)?.id ?? null,
           stage: "collect",
+          blendModalSeen: false,
+          styleBlend: null,
         }),
       resetWorkspace: () =>
         set({
@@ -178,6 +190,8 @@ export const useStore = create<State>()(
           notes: "",
           keepChange: DEFAULT_KEEP_CHANGE,
           currentRoomId: null,
+          blendModalSeen: false,
+          styleBlend: null,
         }),
 
       setStage: (stage) => set({ stage }),
@@ -203,6 +217,7 @@ export const useStore = create<State>()(
         set((s) => ({
           inspo: [...s.inspo, { id, blobId, dataUrl, status: "tagging" }],
           blobError: null,
+          blendModalSeen: false,
         }));
         void trySetBlob(blobId, dataUrl, (msg) => set({ blobError: msg }));
         return id;
@@ -357,6 +372,8 @@ export const useStore = create<State>()(
             promptSummary: g.promptSummary,
           })),
         activeGenerationId: s.activeGenerationId,
+        blendModalSeen: s.blendModalSeen,
+        styleBlend: s.styleBlend,
       }),
       onRehydrateStorage: () => (state) => {
         if (!state || typeof window === "undefined") return;
@@ -395,6 +412,8 @@ export const useStore = create<State>()(
           generations: [],
           activeGenerationId: null,
           blobError: null,
+          blendModalSeen: false,
+          styleBlend: null,
         }) as unknown as State,
     },
   ),

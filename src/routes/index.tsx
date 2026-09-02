@@ -21,6 +21,8 @@ import { downloadImage } from "@/lib/downloadImage";
 import heroBefore from "@/assets/hero-before.png.asset.json";
 import heroAfter from "@/assets/hero-after.png.asset.json";
 import { FaqSection, FAQ_ITEMS } from "@/components/FaqSection";
+import { StyleBlendModal, formatBlend } from "@/components/StyleBlendModal";
+import { regenerateVibe } from "@/lib/vibe.functions";
 
 
 export const Route = createFileRoute("/")({
@@ -567,6 +569,13 @@ const STAGE_LABELS: Record<Stage, { num: string; title: string; sub: string }> =
 export function Workspace() {
   const stage = useStore((s) => s.stage);
   const setStage = useStore((s) => s.setStage);
+  const patchBrief = useStore((s) => s.patchBrief);
+  const blendModalSeen = useStore((s) => s.blendModalSeen);
+  const setBlendModalSeen = useStore((s) => s.setBlendModalSeen);
+  const styleBlend = useStore((s) => s.styleBlend);
+  const setStyleBlend = useStore((s) => s.setStyleBlend);
+  const [blendOpen, setBlendOpen] = useState(false);
+  const [vibeUpdating, setVibeUpdating] = useState(false);
   const room = useStore((s) => s.room);
   const inspo = useStore((s) => s.inspo);
   const brief = useStore((s) => s.brief);
@@ -578,6 +587,48 @@ export function Workspace() {
     (brief.palette.length > 0 || brief.materials.length > 0 || brief.furnitureStyle || brief.vibe);
 
   const hasResults = generations.some((g) => g.dataUrl);
+
+  const conflictStyles = useMemo(() => deriveBrief(inspo).conflicts.styles, [inspo]);
+  const readyCount = inspo.filter((i) => i.status === "ready").length;
+  const blendEligible = readyCount >= 2 && conflictStyles.length > 1;
+
+  // Step transition into Curate: surface the blend modal first when the
+  // references disagree and the user hasn't already answered it.
+  const requestCurate = useCallback(() => {
+    if (!canCurate) return;
+    if (blendEligible && !blendModalSeen) {
+      setBlendOpen(true);
+      return;
+    }
+    setStage("curate");
+  }, [canCurate, blendEligible, blendModalSeen, setStage]);
+
+  const confirmBlend = useCallback(
+    (ranked: string[]) => {
+      patchBrief({ furnitureStyle: formatBlend(ranked) });
+      setStyleBlend(ranked);
+      setBlendModalSeen(true);
+      setBlendOpen(false);
+      setStage("curate");
+      setVibeUpdating(true);
+      void regenerateVibe({
+        data: { styles: ranked, currentVibe: useStore.getState().brief.vibe },
+      })
+        .then((r) => patchBrief({ vibe: r.vibe }))
+        .catch(() => {
+          // Fail silently — keep the existing vibe.
+        })
+        .finally(() => setVibeUpdating(false));
+    },
+    [patchBrief, setStyleBlend, setBlendModalSeen, setStage],
+  );
+
+  const skipBlend = useCallback(() => {
+    setBlendModalSeen(true);
+    setStyleBlend(null);
+    setBlendOpen(false);
+    setStage("curate");
+  }, [setBlendModalSeen, setStyleBlend, setStage]);
   const stages = useMemo(
     () => (hasResults ? ([...BASE_STAGE_ORDER, "designs"] as Stage[]) : BASE_STAGE_ORDER),
     [hasResults],
@@ -593,7 +644,7 @@ export function Workspace() {
       <StageNav
         stages={stages}
         stage={stage}
-        setStage={setStage}
+        setStage={(s) => (s === "curate" ? requestCurate() : setStage(s))}
         canCurate={canCurate}
         canGenerate={!!canGenerate}
       />
@@ -605,9 +656,15 @@ export function Workspace() {
               onCreateVersion={() => setStage("generate")}
             />
           ) : stage === "collect" ? (
-            <CollectStage onNext={() => canCurate && setStage("curate")} canNext={canCurate} />
+            <CollectStage onNext={requestCurate} canNext={canCurate} />
           ) : stage === "curate" ? (
-            <CurateStage onBack={() => setStage("collect")} onNext={() => setStage("generate")} />
+            <CurateStage
+              onBack={() => setStage("collect")}
+              onNext={() => setStage("generate")}
+              blendSet={!!styleBlend}
+              vibeUpdating={vibeUpdating}
+              onEditBlend={() => setBlendOpen(true)}
+            />
           ) : (
             <GenerateStage
               onBack={() => setStage("curate")}
@@ -616,6 +673,14 @@ export function Workspace() {
           )}
         </div>
       </main>
+      {blendOpen ? (
+        <StyleBlendModal
+          styles={styleBlend && styleBlend.length > 0 ? styleBlend : conflictStyles}
+          inspo={inspo}
+          onConfirm={confirmBlend}
+          onSkip={skipBlend}
+        />
+      ) : null}
     </div>
   );
 }
@@ -1034,7 +1099,19 @@ function CollectInspoTile({ inspo, onRemove }: { inspo: InspoImage; onRemove: ()
 
 // --- Stage 2: Curate ---------------------------------------------------------
 
-function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => void }) {
+function CurateStage({
+  onBack,
+  onNext,
+  blendSet,
+  vibeUpdating,
+  onEditBlend,
+}: {
+  onBack: () => void;
+  onNext: () => void;
+  blendSet: boolean;
+  vibeUpdating: boolean;
+  onEditBlend: () => void;
+}) {
   const inspo = useStore((s) => s.inspo);
   const brief = useStore((s) => s.brief);
   const patchBrief = useStore((s) => s.patchBrief);
@@ -1091,6 +1168,9 @@ function CurateStage({ onBack, onNext }: { onBack: () => void; onNext: () => voi
           onAddColor={addPaletteColor}
           onRemoveColor={removePaletteColor}
           countFor={countFor}
+          blendSet={blendSet}
+          vibeUpdating={vibeUpdating}
+          onEditBlend={onEditBlend}
         />
       </section>
 
@@ -1191,6 +1271,9 @@ function BriefEditor({
   onAddColor,
   onRemoveColor,
   countFor,
+  blendSet,
+  vibeUpdating,
+  onEditBlend,
 }: {
   brief: AestheticBrief;
   patch: (p: Partial<Omit<AestheticBrief, "userEdited">>) => void;
@@ -1198,6 +1281,9 @@ function BriefEditor({
   onAddColor: (hex: string) => void;
   onRemoveColor: (hex: string) => void;
   countFor: (hex: string) => number;
+  blendSet: boolean;
+  vibeUpdating: boolean;
+  onEditBlend: () => void;
 }) {
   return (
     <div className="bg-paper ring-1 ring-border-card rounded-xl p-4 sm:p-6 space-y-7">
@@ -1230,18 +1316,40 @@ function BriefEditor({
         <Label
           title="Furniture style"
           hint={
-            conflicts.styles.length > 1
+            !blendSet && conflicts.styles.length > 1
               ? `${conflicts.styles.length} conflicting styles detected — your selection overrides.`
               : null
           }
         />
+        {blendSet ? (
+          <div className="space-y-2">
+            <div className="flex items-start gap-2">
+              <p className="min-w-0 flex-1 bg-canvas/70 ring-1 ring-black/5 rounded-md px-3 py-2 text-sm">
+                {brief.furnitureStyle}
+              </p>
+              <span
+                className="mt-1 shrink-0 text-[10px] px-2 py-0.5 rounded-full ring-1 ring-black/10"
+                style={{ backgroundColor: "rgba(240,165,0,0.15)" }}
+              >
+                ✦ blended
+              </span>
+            </div>
+            <button
+              onClick={onEditBlend}
+              className="text-[10px] uppercase tracking-widest underline underline-offset-4 text-muted-ink hover:text-ink"
+            >
+              Edit blend
+            </button>
+          </div>
+        ) : (
         <input
           value={brief.furnitureStyle}
           onChange={(e) => patch({ furnitureStyle: e.target.value })}
           placeholder="e.g. mid-century lounge blended with japandi"
           className="w-full bg-canvas/70 ring-1 ring-black/5 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-ink/40"
         />
-        {conflicts.styles.length > 1 ? (
+        )}
+        {!blendSet && conflicts.styles.length > 1 ? (
           <div className="flex flex-wrap gap-1.5">
             {conflicts.styles.map((s) => (
               <button
@@ -1258,7 +1366,12 @@ function BriefEditor({
 
       {/* Vibe */}
       <div className="space-y-3">
-        <Label title="Vibe" />
+        <div className="flex items-center justify-between gap-3">
+          <Label title="Vibe" />
+          {vibeUpdating ? (
+            <span className="shrink-0 text-[10px] italic text-muted-ink">updating vibe…</span>
+          ) : null}
+        </div>
         <textarea
           value={brief.vibe}
           onChange={(e) => patch({ vibe: e.target.value })}
@@ -1455,6 +1568,17 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
 
   const activeGen = generations.find((g) => g.id === activeGenerationId) ?? generations[0];
 
+  // Lighting isn't an editable brief field — take the most common tag
+  // across the ready references so the generator receives it.
+  const lightingMood = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const i of inspo) {
+      const v = i.status === "ready" ? (i.aspects?.lightingMood ?? "").trim() : "";
+      if (v) counts.set(v, (counts.get(v) ?? 0) + 1);
+    }
+    return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "";
+  }, [inspo]);
+
   const briefIsEmpty =
     brief.palette.length === 0 &&
     brief.materials.length === 0 &&
@@ -1500,6 +1624,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
             palette: brief.palette,
             materials: brief.materials,
             furnitureStyle: brief.furnitureStyle,
+            lightingMood: lightingMood,
             vibe: brief.vibe,
           },
           keepChange,
@@ -1526,6 +1651,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
     brief,
     keepChange,
     notes,
+    lightingMood,
     generating,
     briefIsEmpty,
     usage?.kind,
