@@ -63,7 +63,7 @@ export function buildPrompt(payload: GeneratePromptPayload): string {
   const isBlend = blendStyles.length > 1;
   const accentStyles = blendStyles
     .slice(1)
-    .join(blendStyles.length > 2 ? ", " : "")
+    .join(", ")
     .trim();
   const styleStr = isBlend
     ? `${blendStyles[0]} as the primary direction throughout, with ${accentStyles} as deliberate accent moments — not competing, just intentional`
