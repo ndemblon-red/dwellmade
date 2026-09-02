@@ -12,11 +12,17 @@ export function formatBlend(styles: string[]): string {
     .join(", ");
 }
 
-/** Default influence weights before any user interaction. */
+/** Default influence weights: dominant always 80%, remaining 20% split evenly. */
 export function defaultWeights(count: number): number[] {
-  if (count === 2) return [70, 30];
-  if (count === 3) return [65, 25, 10];
-  return Array.from({ length: count }, () => Math.round(100 / Math.max(count, 1)));
+  if (count <= 0) return [];
+  if (count === 1) return [100];
+  const others = count - 1;
+  const base = Math.floor(20 / others);
+  const weights = [80, ...Array.from({ length: others }, () => base)];
+  let remainder = 20 - base * others;
+  // Distribute leftover points to the highest-ranked non-dominant styles.
+  for (let i = 1; i <= others && remainder > 0; i++, remainder--) weights[i] += 1;
+  return weights;
 }
 
 function thumbsFor(inspo: InspoImage[], style: string): string[] {
