@@ -59,7 +59,15 @@ export function buildPrompt(payload: GeneratePromptPayload): string {
   const paletteStr = brief.palette.length > 0 ? brief.palette.join(", ") : "(no palette set)";
   const materialsStr =
     brief.materials.length > 0 ? brief.materials.join(", ") : "(no materials set)";
-  const styleStr = brief.furnitureStyle || "(no style set)";
+  const blendStyles = parseBlend(brief.furnitureStyle || "");
+  const isBlend = blendStyles.length > 1;
+  const accentStyles = blendStyles
+    .slice(1)
+    .join(blendStyles.length > 2 ? ", " : "")
+    .trim();
+  const styleStr = isBlend
+    ? `${blendStyles[0]} as the primary direction throughout, with ${accentStyles} as deliberate accent moments — not competing, just intentional`
+    : brief.furnitureStyle || "(no style set)";
   const vibeStr = brief.vibe || "(no vibe set)";
   const lightingStr = brief.lightingMood || "(no lighting set)";
 
