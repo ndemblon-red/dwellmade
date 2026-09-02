@@ -19,6 +19,34 @@ export type GeneratePromptPayload = {
   notes?: string;
 };
 
+const BLEND_DESCRIPTIONS = [
+  "dominant, evident throughout the whole room",
+  "accent, present in specific intentional moments only",
+  "hint, a subtle trace that rewards attention",
+];
+const MINOR_DESCRIPTION = "minor influence, barely perceptible but intentional";
+
+/** Parses "a (dominant), b (accent)" into ordered style names. */
+export function parseBlend(furnitureStyle: string): string[] {
+  if (!furnitureStyle.includes("(dominant)")) return [];
+  return furnitureStyle
+    .split(/,\s*(?=[^,]*\((?:dominant|accent|hint|minor influence)\))/)
+    .map((part) => part.replace(/\((?:dominant|accent|hint|minor influence)\)\s*$/, "").trim())
+    .filter(Boolean);
+}
+
+function blendBlock(styles: string[]): string {
+  const lines = styles.map(
+    (s, i) => `${s} — ${BLEND_DESCRIPTIONS[i] ?? MINOR_DESCRIPTION}`,
+  );
+  return [
+    "This room should express a deliberately weighted blend of aesthetic styles, applied consistently across all design decisions — colour, atmosphere, materials, and furniture:",
+    ...lines,
+    "",
+    "The dominant style should be immediately obvious. Each subsequent style should be progressively more subtle. Apply this hierarchy across everything — palette, materials, lighting, furniture and atmosphere.",
+  ].join("\n");
+}
+
 export function buildPrompt(payload: GeneratePromptPayload): string {
   const { brief, keepChange, notes } = payload;
 
