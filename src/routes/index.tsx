@@ -1883,7 +1883,7 @@ function ControlsPanel({
           value={notes}
           onChange={(e) => setNotes(e.target.value.slice(0, NOTES_MAX_LENGTH))}
           maxLength={NOTES_MAX_LENGTH}
-          placeholder="e.g. keep the kids' play corner; lean cosier than the references."
+          placeholder="e.g. lighten the walls but keep the dark furniture, remove one of the sofas, less pattern on the ceiling, add a rug"
           rows={4}
           className="w-full bg-canvas/70 ring-1 ring-black/5 rounded-md p-3 text-sm font-sans resize-none focus:outline-none focus:ring-ink/40"
         />
