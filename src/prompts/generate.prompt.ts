@@ -72,6 +72,7 @@ export function buildPrompt(payload: GeneratePromptPayload): string {
   const lightingStr = brief.lightingMood || "(no lighting set)";
 
   const lines = [
+    isBlend ? blendBlock(blendStyles) : "",
     `Redesign this room applying: palette [${paletteStr}], materials [${materialsStr}], furniture style [${styleStr}], vibe [${vibeStr}], lighting [${lightingStr}], keeping [${keepList.join(", ") || "nothing"}] unchanged${changeList.length ? `, while reimagining [${changeList.join(", ")}]` : ""}.`,
     "Maintain the exact room geometry, camera angle, perspective, and window placement of the source room.",
     "Use the additional reference images only as visual anchors for the brief above — do not blend their geometry into the room.",
