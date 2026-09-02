@@ -1568,6 +1568,17 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
 
   const activeGen = generations.find((g) => g.id === activeGenerationId) ?? generations[0];
 
+  // Lighting isn't an editable brief field — take the most common tag
+  // across the ready references so the generator receives it.
+  const lightingMood = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const i of inspo) {
+      const v = i.status === "ready" ? (i.aspects?.lightingMood ?? "").trim() : "";
+      if (v) counts.set(v, (counts.get(v) ?? 0) + 1);
+    }
+    return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "";
+  }, [inspo]);
+
   const briefIsEmpty =
     brief.palette.length === 0 &&
     brief.materials.length === 0 &&
@@ -1613,6 +1624,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
             palette: brief.palette,
             materials: brief.materials,
             furnitureStyle: brief.furnitureStyle,
+            lightingMood: lightingMood,
             vibe: brief.vibe,
           },
           keepChange,
@@ -1639,6 +1651,7 @@ function GenerateStage({ onBack, onEditBrief }: { onBack: () => void; onEditBrie
     brief,
     keepChange,
     notes,
+    lightingMood,
     generating,
     briefIsEmpty,
     usage?.kind,
